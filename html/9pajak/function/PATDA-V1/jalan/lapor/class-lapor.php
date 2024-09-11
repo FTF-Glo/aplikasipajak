@@ -1,0 +1,4811 @@
+<?php
+
+/**
+Modified :
+1. Penambahan konfigurasi nama badan pengelola :
+	- modified by : RDN
+	- date : 2016/01/03
+	- function : print_sptpd, print_sspd
+ */
+class LaporPajak extends Pajak
+{
+    #field
+    #jalan
+
+    public $id_pajak = 6;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $PAJAK = isset($_POST['PAJAK']) ? $_POST['PAJAK'] : array();
+        foreach ($PAJAK as $a => $b) {
+            $this->$a = mysqli_escape_string($this->Conn, trim($b));
+        }
+        $this->CPM_NPWPD = preg_replace("/[^A-Za-z0-9 ]/", '', $this->CPM_NPWPD);
+        if (isset($_REQUEST['CPM_NPWPD'])) $_REQUEST['CPM_NPWPD'] = preg_replace("/[^A-Za-z0-9 ]/", '', $_REQUEST['CPM_NPWPD']);
+    }
+
+    public function get_pajak($npwpd = '', $nop = '')
+    {
+        $Op = new ObjekPajak();
+        $arr_rekening = $this->getRekening("4.1.01.10");
+        $list_nop = array();
+
+        $query = "
+			SELECT DOC.*, DATE_FORMAT(DOC.CPM_TGL_JATUH_TEMPO,'%d-%m-%Y') as CPM_TGL_JATUH_TEMPO
+			FROM PATDA_JALAN_DOC AS DOC WHERE DOC.CPM_ID = '{$this->_id}' LIMIT 0,1";
+
+        $result = mysqli_query($this->Conn, $query);
+        $pajak = $this->get_field_array($result);
+        // var_dump($pajak['CPM_ID']);
+        // die;
+        //if new entry
+        if (empty($pajak['CPM_ID'])) {
+            $ms = $this->inisialisasi_masa_pajak();
+
+            $pajak['CPM_TAHUN_PAJAK'] = $ms['tahun_pajak'];
+            $pajak['CPM_MASA_PAJAK'] = $ms['masa_pajak'];
+            $pajak['CPM_MASA_PAJAK1'] = $ms['masa_pajak1'];
+            $pajak['CPM_MASA_PAJAK2'] = $ms['masa_pajak2'];
+            $pajak['CPM_HARGA'] = 0;
+
+            $profil = $Op->get_last_profil($npwpd, $nop);
+            $atr = array(
+                `CPM_ATR_ID` => '',
+                `CPM_ATR_JALAN_ID` => '',
+                `CPM_ATR_ID_PROFIL` => '',
+                `CPM_ATR_TIPE_PAJAK` => '',
+                `CPM_ATR_REKENING` => '',
+                `CPM_ATR_JENIS` => '',
+                `CPM_ATR_MERK_JENSET` => '',
+                `CPM_ATR_UNIT` => '',
+                `CPM_ATR_PEMBANGKIT` => '',
+                `CPM_ATR_FAKTOR_DAYA` => '',
+                `CPM_ATR_TOTAL_KWH` => '',
+                `CPM_ATR_SATUAN` => '',
+                `CPM_ATR_HARGA_SATUAN` => '',
+                `CPM_ATR_TARIF_PAJAK` => '',
+                `CPM_ATR_KETERANGAN` => '',
+                `CPM_ATR_TOTAL_OMZET` => '',
+                `CPM_ATR_BAYAR_LAINNYA` => '',
+                `CPM_ATR_DPP` => '',
+                `CPM_ATR_TIMESTAMP`  => '',
+                `CPM_ATR_TGL_INPUT` => '',
+                `CPM_ATR_MASA_PAJAK1` => '',
+                `CPM_ATR_MASA_PAJAK2` => '',
+                `CPM_ATR_TYPE_MASA` => '',
+                `CPM_ATR_TAHUN_PAJAK` => '',
+                `CPM_ATR_MASA_PAJAK` => '',
+            );
+            $pajak_atr[] = $atr;
+
+            $tarif = ($profil['CPM_REKENING'] == '') ? 0 : $arr_rekening['ARR_REKENING'][$profil['CPM_REKENING']]['tarif'];
+            $list_nop = $Op->get_list_nop($npwpd);
+        } else { //if data available
+            $query = "SELECT atr.*,atr.CPM_ATR_ID_PROFIL,prf.CPM_NPWPD
+			FROM PATDA_JALAN_DOC_ATR AS atr
+			INNER JOIN PATDA_JALAN_DOC AS doc ON doc.CPM_ID = atr.CPM_ATR_JALAN_ID
+			INNER JOIN PATDA_JALAN_PROFIL AS prf ON prf.CPM_ID = atr.CPM_ATR_ID_PROFIL
+			LEFT JOIN patda_mst_kecamatan AS kec ON kec.CPM_KEC_ID = prf.CPM_KECAMATAN_OP
+			LEFT JOIN patda_mst_kelurahan AS kel ON kel.CPM_KEL_ID = prf.CPM_KELURAHAN_OP
+			WHERE atr.CPM_ATR_JALAN_ID = '{$this->_id}'";
+            // var_dump($query);
+            // die;
+            $result = mysqli_query($this->Conn, $query);
+            $x = 0;
+            while ($data = mysqli_fetch_assoc($result)) {
+                $pajak_atr[$x] = $data;
+                // var_dump($data);
+                // die;
+                $npwpd = $data['CPM_NPWPD'];
+                $x++;
+            }
+            $profil = $Op->get_profil_byid($pajak['CPM_ID_PROFIL']);
+            $tarif = $pajak['CPM_TARIF_PAJAK'];
+        }
+
+        $harga_dasar = $this->get_config_value($this->_a, "HARGA_DASAR_ENABLE_{$this->id_pajak}");
+        $pajak['HARGA_DASAR_ENABLE'] = $harga_dasar;
+        $pajak['CPM_HARGA_DASAR'] = (empty($pajak['CPM_HARGA_DASAR'])) ?
+            (!empty($profil['CPM_REKENING'])) ? $arr_rekening['ARR_REKENING'][$profil['CPM_REKENING']]['harga'] : 0
+            : $pajak['CPM_HARGA_DASAR'];
+        $pajak['CPM_TERBILANG'] = $this->SayInIndonesian($pajak['CPM_TOTAL_PAJAK']);
+        $pajak['CPM_JENIS_PAJAK'] = $this->id_pajak;
+        $pajak['ARR_TIPE_PAJAK'] = $this->arr_tipe_pajak;
+        $pajak = array_merge($pajak, $arr_rekening);
+
+        return array(
+            'pajak' => $pajak,
+            'tarif' => $tarif,
+            'profil' => $profil,
+            'pajak_atr' => $pajak_atr,
+            'list_nop' => $list_nop
+        );
+    }
+
+    public function filtering($id)
+    {
+        $opt_tahun = '<option value="">All</option>';
+        for ($th = date("Y") - 5; $th <= date("Y"); $th++) {
+            $opt_tahun .= "<option value='{$th}'>{$th}</option>";
+        }
+
+        $opt_bulan = '<option value="">All</option>';
+        foreach ($this->arr_bulan as $x => $y) {
+            $opt_bulan .= "<option value='{$x}'>{$y}</option>";
+        }
+
+        $kec = $this->get_list_kecamatan();
+        $opt_kecamatan = "<option value=\"\">All</option>";
+        foreach ($kec as $k => $v) {
+            $opt_kecamatan .= "<option value=\"{$k}\">{$v->CPM_KECAMATAN}</option>";
+        }
+
+        $reks = $this->getRekening("4.1.01.10");
+        $opt_rekening = '<option value="">All</option>' . json_encode($reks);
+        foreach ($reks['ARR_REKENING'] as $k => $v) {
+            $opt_rekening .= "<option value=\"{$k}\">$k - {$v['nmrek']}</option>";
+        }
+
+        $opt_pilih = "<option value=\"\">All</option>";
+        foreach ($this->arr_jenis as $k => $v) {
+            $opt_pilih .= "<option value=\"{$k}\">{$v}</option>";
+        }
+
+        // $html = "<div class=\"filtering\">
+        //             <form><table><tr valign=\"bottom\">
+        //                 <td><input type=\"hidden\" id=\"hidden-{$id}\" mod=\"{$this->_mod}\" id_pajak=\"{$this->id_pajak}\" s=\"{$this->_s}\">
+        //                 NPWPD :<br><input style=\"width:100px; height:30px;\" class=\"form-control\" type=\"text\" name=\"CPM_NPWPD-{$id}\" id=\"CPM_NPWPD-{$id}\" >  </td>
+        //                 <td>Nama/No Laporan  :<br><input style=\"width:130px; height:30px;\" class=\"form-control\" type=\"text\" name=\"CPM_NAMA_WP-{$id}\" id=\"CPM_NAMA_WP-{$id}\" >  </td>
+        //                 <td>Tahun Pajak :<br><select style=\"width:80px; height:30px;\" class=\"form-control\" name=\"CPM_TAHUN_PAJAK-{$id}\" id=\"CPM_TAHUN_PAJAK-{$id}\">{$opt_tahun}</select></td>
+        //                 <td>Masa Pajak :<br><select style=\"width:80px; height:30px;\" class=\"form-control\" name=\"CPM_MASA_PAJAK-{$id}\" id=\"CPM_MASA_PAJAK-{$id}\">{$opt_bulan}</select></td>
+        //                 <td>Kecamatan :<br><select style=\"width:80px; height:30px;\" class=\"form-control\" name=\"CPM_KECAMATAN-{$id}\" id=\"CPM_KECAMATAN-{$id}\">{$opt_kecamatan}</select></td>
+        //                 <td>Kelurahan :<br><select style=\"width:80px; height:30px;\" class=\"form-control\" name=\"CPM_KELURAHAN-{$id}\" id=\"CPM_KELURAHAN-{$id}\"><option value=\"\">All</option></select></td>
+        //                 <td>Tanggal Lapor :<br>
+        // 				<input style=\"width:100px;  height:30px;\" type=\"text\" name=\"CPM_TGL_LAPOR1-{$id}\" id=\"CPM_TGL_LAPOR1-{$id}\" readonly size=\"10\" class=\"date\" >
+        // 				<button type=\"button\" value=\"x\" onclick=\"javascript:$('#CPM_TGL_LAPOR1-{$id}').val('');\">x</button> s.d 
+        // 				<input style=\"width:100px; height:30px;\" type=\"text\"  name=\"CPM_TGL_LAPOR2-{$id}\" id=\"CPM_TGL_LAPOR2-{$id}\" size=\"10\" class=\"date\" >
+        // 				<button type=\"button\" value=\"x\" onclick=\"javascript:$('#CPM_TGL_LAPOR2-{$id}').val('');\">x</button>
+        // 				</td>";
+        //                 if ($this->_i == 4) { 
+        // 					$html .= "<td>Total Pajak :<br><input type=\"number\" name=\"TOTAL_PAJAK-{$id}\" id=\"TOTAL_PAJAK-{$id}\" onkeypress=\"return isNumberKey(event)\"> </td>";
+        // 				}
+
+        //                 $html .= "<td>Pilih Jenis :<br><select style=\"width:90px; height:30px;\" class=\"form-control\" name=\"CPM_PIUTANG-{$id}\" id=\"CPM_PIUTANG-{$id}\">{$opt_pilih}</select></td>
+
+        //                 <td bgcolor=\"#ffff00\">
+        //                     <button type=\"submit\"  style=\"width:50px; height:30px;\" class=\"btn btn-sm btn-secondary\" id=\"cari-{$id}\">Cari</button>
+        //                     <button type=\"button\"  style=\"width:90px; height:30px;\" class=\"btn btn-sm btn-secondary\" onclick=\"javascript:download_excel('{$id}','function/PATDA-V1/svc-download-pajak.xls.php')\">Export to xls</button>
+        // 					<button type=\"button\"  style=\"width:150px; height:30px;\" class=\"btn btn-sm btn-secondary\" onclick=\"javascript:download_excel('{$id}','function/PATDA-V1/cetakpanjang/svc-download-bentang-panjang-jal.xls.php')\">Cetak Bentang Panjang</button>            
+        //                 </td>
+        //             </tr></table></form>
+        //         </div> ";
+
+        $html = "
+        <style>
+        .form-filtering {
+            background-color: #fff;
+            padding: 20px 40px;
+            
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
+        }
+        </style>
+        <div  class=\"p-2\">
+            <div class=\"row\"> 
+                <div class=\"col-12 pb-1\" style=\"display:flex; align-items:center;justify-content:end;\"> 
+                    <button class=\"btn btn-success\" type=\"button\" style=\"border-radius:8px\" data-toggle=\"collapse\" data-target=\"#collapsFilter-{$id}\" aria-expanded=\"false\" aria-controls=\"collapsFilter-{$id}\">
+                        <i class=\"fa fa-filter\"></i> Filter Data
+                    </button>
+                </div>
+                <div class=\"col-12\"> 
+                    <div class=\"collapse\" id=\"collapsFilter-{$id}\">
+                        <div class=\"form-filtering\">
+                        
+                            <form>
+                            
+                                    <div class=\"row\">
+                                        <div class=\"form-group col-md-3\" >
+                                            <input type=\"hidden\" id=\"hidden-{$id}\" mod=\"{$this->_mod}\" id_pajak=\"{$this->id_pajak}\" s=\"{$this->_s}\">
+                                            <label>NPWPD</label>
+                                            <input class=\"form-control\" type=\"text\" name=\"CPM_NPWPD-{$id}\" id=\"CPM_NPWPD-{$id}\" >
+                                        </div>
+                                            
+                                        <div class=\" form-group col-md-3\"> 
+                                            <label>Nama/No Laporan</label>
+                                            <input class=\"form-control\" type=\"text\" name=\"CPM_NAMA_WP-{$id}\" id=\"CPM_NAMA_WP-{$id}\" >
+                                        </div>
+                    
+                                        <div class=\" form-group col-md-3\"> 
+                                            <label>Tahun Pajak</label>
+                                            <select class=\"form-control\" name=\"CPM_TAHUN_PAJAK-{$id}\" id=\"CPM_TAHUN_PAJAK-{$id}\">{$opt_tahun}</select>
+                                        </div>
+                    
+                                        <div class=\" form-group col-md-3\"> 
+                                            <label>Masa Pajak</label>
+                                            <select class=\"form-control\" name=\"CPM_MASA_PAJAK-{$id}\" id=\"CPM_MASA_PAJAK-{$id}\">{$opt_bulan}</select>
+                                        </div>
+                                        <div class=\" form-group col-md-3\"> 
+                                            <label>Kecamatan</label>
+                                            <select class=\"form-control\" name=\"CPM_KECAMATAN-{$id}\" id=\"CPM_KECAMATAN-{$id}\">{$opt_kecamatan}</select>
+                                        </div>
+                                        
+                                        <div class=\" form-group col-md-3\"> 
+                                            <label>kelurahan</label>
+                                            <select class=\"form-control\" name=\"CPM_KELURAHAN-{$id}\" id=\"CPM_KELURAHAN-{$id}\"><option value=\"\">All</option></select>
+                                        </div>";
+
+
+
+        $html .= " 
+                    
+                                        <div class=\"form-group col-md-3\">
+                                            <label>Tanggal Lapor </label>
+                                            <div style=\"display: flex; align-items: center;\">
+                                                <input type=\"text\" name=\"CPM_TGL_LAPOR1-{$id}\" id=\"CPM_TGL_LAPOR1-{$id}\" readonly class=\"form-control date\" style=\"flex-grow: 1; margin-right: 10px;\">
+                                                <button type=\"button\" value=\"x\" onclick=\"javascript:$('#CPM_TGL_LAPOR1-{$id}').val('');\" class=\"btn btn-secondary\">x</button>
+                                            </div>
+                                        </div>
+                                        <div class=\"form-group col-md-3\">
+                                            <label>Tanggal Lapor</label>
+                                            <div style=\"display: flex; align-items: center;\">
+                                                <input type=\"text\" name=\"CPM_TGL_LAPOR2-{$id}\" id=\"CPM_TGL_LAPOR2-{$id}\" readonly class=\"form-control date\" style=\"flex-grow: 1; margin-right: 10px;\">
+                                                <button type=\"button\" value=\"x\" onclick=\"javascript:$('#CPM_TGL_LAPOR2-{$id}').val('');\" class=\"btn btn-secondary\">x</button>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+
+
+                                    <div class=\"row\">";
+
+        if ($this->_i == 4) {
+            $html .= "<div class=\" form-group col-md-3\"> 
+                                            <label>Total Pajak</label>
+                                            <input class=\"form-control\" type=\"number\" name=\"TOTAL_PAJAK-{$id}\" id=\"TOTAL_PAJAK-{$id}\" onkeypress=\"return isNumberKey(event)\">
+                                        </div>";
+        }
+
+        $html .=  "<div class=\" form-group col-md-3\"> 
+                                            <label>Pilih Jenis</label>
+                                            <select class=\"form-control\" name=\"CPM_PIUTANG-{$id}\" id=\"CPM_PIUTANG-{$id}\">{$opt_pilih}</select>
+                                        </div>
+                                        <div class=\" form-group col-md-12\">    
+                                            <button type=\"submit\" class=\"btn btn-success\" id=\"cari-{$id}\"><i class=\"fa fa-search\"></i> Cari</button>                                                
+                                            <button type=\"button\"  class=\"btn btn-success\" onclick=\"javascript:download_excel('{$id}','function/PATDA-V1/svc-download-pajak.xls.php')\"><i class=\"fa fa-download\"></i> Export to xls</button>
+                                            <button type=\"button\"  class=\"btn btn-success\" onclick=\"javascript:download_excel('{$id}','function/PATDA-V1/cetakpanjang/svc-download-bentang-panjang-jal.xls.php')\"><i class=\"fa fa-print\"></i> Cetak Bentang Panjang</button>            
+                                        </div>
+                                    </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>";
+
+        return $html;
+    }
+
+    public function grid_table()
+    {
+        $DIR = "PATDA-V1";
+        $modul = "jalan";
+        $html = "<link href=\"inc/{$DIR}/jtable/themes/jtable.min.css\" rel=\"stylesheet\" type=\"text/css\" />
+                <script src=\"inc/{$DIR}/jtable/jquery.jtable.min.js\" type=\"text/javascript\"></script>
+                <style>.filtering td{background:transparent!important}.filtering input,.filtering select{height:23px}</style>
+                {$this->filtering($this->_i)}
+                <div id=\"laporanPajak-{$this->_i}\" style=\"width:100%;\"></div>
+                <script type=\"text/javascript\">
+
+                    $(document).ready(function() {
+                    	$('.date').datepicker({
+							dateFormat: 'yy-mm-dd',
+							changeYear: true,
+							changeMonth: true
+						});
+                        $('#laporanPajak-{$this->_i}').jtable({
+                            title: '',
+                            columnResizable : false,
+                            columnSelectable : false,
+                            paging: true,
+                            pageSize: {$this->pageSize},
+                            sorting: true,
+                            defaultSorting: 'CPM_TGL_LAPOR DESC',
+                            selecting: true,
+                            actions: {
+                                listAction: 'view/{$DIR}/{$modul}/svc-list-data.php?action=list&s={$this->_s}&a={$this->_a}&m={$this->_m}&mod={$this->_mod}&f={$this->_f}&i={$this->_i}',
+                            },
+                            fields: {
+                                NO : {title: 'No',width: '3%'},
+                                CPM_ID: {key: true,list: false},
+                                CPM_TGL_LAPOR: {title:'Tanggal Lapor',width: '10%', type: 'date', displayFormat: 'dd-mm-yy'},
+                                CPM_NO: {title: 'Nomor Laporan',width: '10%'},
+                                CPM_NPWPD: {title: 'NPWPD',width: '10%'},
+                                CPM_NAMA_WP: {title: 'Wajib Pajak',width: '10%'},
+                                CPM_NAMA_OP: {title: 'Objek Pajak',width: '10%'},
+                                CPM_ATR_TAHUN_PAJAK: {title: 'Tahun Pajak',width: '10%'},
+                                CPM_MASA_PAJAK: {title: 'Masa Pajak',width: '10%'},
+                                CPM_TOTAL_PAJAK: {title: 'Total Pajak',width: '10%'},
+                                payment_flag: {title: 'Status',width: '10%'},
+                                CPM_VERSION: {title: 'Versi Dok',width: '5%'},
+                                " . ($this->_s == 0 ? "CPM_TRAN_STATUS: {title: 'Status',width: '10%'}," : "") . "
+                                " . ($this->_s == 4 ? "CPM_TRAN_INFO: {title: 'Keterangan',width: '10%'}," : "") . "
+                                CPM_AUTHOR: {title: 'User Input',width: '10%'}
+                            },
+                            recordsLoaded: function (event, data) {
+                                for (var i in data.records) {
+                                    if (data.records[i].READ == '0') {
+                                        $('#laporanPajak-{$this->_i}').find('.jtable tbody tr:eq('+i+') td').css({'background-color':'#a0a0a0','border':'1px #CCC solid'});
+                                    }
+                                }
+                            }
+                        });
+                        $('#cari-{$this->_i}').click(function (e) {
+                            e.preventDefault();
+                            $('#laporanPajak-{$this->_i}').jtable('load', {
+                                CPM_NPWPD : $('#CPM_NPWPD-{$this->_i}').val(),
+                                CPM_NAMA_WP : $('#CPM_NAMA_WP-{$this->_i}').val(),
+                                CPM_TAHUN_PAJAK : $('#CPM_TAHUN_PAJAK-{$this->_i}').val(),
+                                CPM_MASA_PAJAK : $('#CPM_MASA_PAJAK-{$this->_i}').val(),
+                                CPM_TGL_LAPOR1 : $('#CPM_TGL_LAPOR1-{$this->_i}').val(),
+                                CPM_TGL_LAPOR2 : $('#CPM_TGL_LAPOR2-{$this->_i}').val(),
+                                CPM_KECAMATAN : $('#CPM_KECAMATAN-{$this->_i}').val(),
+                                CPM_KELURAHAN : $('#CPM_KELURAHAN-{$this->_i}').val(),
+                                CPM_KODE_REKENING : $('#CPM_KODE_REKENING-{$this->_i}').val()
+                            });
+                        });
+                        $('#cari-{$this->_i}').click();
+                        $('#CPM_KECAMATAN-{$this->_i}').change(function(){
+                            if($(this).val()==''){
+                                $('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>All</option>');
+                                return false;
+                            }
+							$.ajax({
+								type: \"POST\",
+								url: \"function/PATDA-V1/airbawahtanah/lapor/svc-lapor.php\",
+								data: {'function' : 'get_list_kelurahan', 'CPM_KEC_ID' : $(this).val()},
+                                cache:false,
+                                beforeSend:function(){
+                                    $('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>Loading...</option>');
+                                },
+								success: function(html){
+									$('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>All</option>'+html);
+								}
+							});
+						});
+                    });
+                </script>";
+        echo $html;
+    }
+
+    public function grid_data()
+    {
+        try {
+            $where = "(";
+            $where .= ($this->_s == 4) ? " 1=1 " : " tr.CPM_TRAN_FLAG = '0' "; #jika status ditolak, maka flag tidak ditentukan
+
+            if ($this->_mod == "pel") { #pelaporan
+                if ($this->_s == 0) { #semua data
+                    $where = " pr.CPM_NPWPD = '{$_SESSION['npwpd']}' AND ((tr.CPM_TRAN_FLAG = '0' AND tr.CPM_TRAN_STATUS in (1,2,3,4,5)) OR (tr.CPM_TRAN_FLAG in ('0','1') AND tr.CPM_TRAN_STATUS='4') ";
+                } elseif ($this->_s == 2) { #tab proses
+                    $where .= " AND tr.CPM_TRAN_STATUS in (2,3) ";
+                } else {
+                    $where .= " AND tr.CPM_TRAN_STATUS = '{$this->_s}' ";
+                }
+            } elseif ($this->_mod == "ver") { #verifikasi
+                if ($this->_s == 0) { #semua data
+                    $where .= " AND tr.CPM_TRAN_STATUS in (2,3,4,5) OR (tr.CPM_TRAN_FLAG in ('0','1') AND tr.CPM_TRAN_STATUS='4') ";
+                } else {
+                    $where .= " AND tr.CPM_TRAN_STATUS = '{$this->_s}' ";
+                }
+            } elseif ($this->_mod == "per") { #persetujuan
+                if ($this->_s == 0) { #semua data
+                    $where .= " AND tr.CPM_TRAN_STATUS in (3,4,5) OR (tr.CPM_TRAN_FLAG in ('0','1') AND tr.CPM_TRAN_STATUS='4') ";
+                } else {
+                    $where .= " AND tr.CPM_TRAN_STATUS = '{$this->_s}' ";
+                }
+            } elseif ($this->_mod == "ply") { #pelayanan
+                $where .= " AND tr.CPM_TRAN_STATUS = '{$this->_s}' ";
+            }
+            $where .= ") ";
+            $where .= ($this->_mod == "pel") ? " AND pr.CPM_NPWPD = '{$_SESSION['npwpd']}' " : "";
+            $where .= (isset($_REQUEST['CPM_NPWPD']) && $_REQUEST['CPM_NPWPD'] != "") ? " AND CPM_NPWPD like \"{$_REQUEST['CPM_NPWPD']}%\" " : "";
+            // $where.= (isset($_REQUEST['CPM_NAMA_WP']) && $_REQUEST['CPM_NAMA_WP'] != "") ? " AND CPM_NAMA_WP like \"%{$_REQUEST['CPM_NAMA_WP']}%\" " : "";
+            $where .= (isset($_REQUEST['CPM_NAMA_WP']) && $_REQUEST['CPM_NAMA_WP'] != "") ? " AND (CPM_NAMA_WP like \"%{$_REQUEST['CPM_NAMA_WP']}%\" OR CPM_NO like \"%{$_REQUEST['CPM_NAMA_WP']}%\" )" : "";
+
+            $where .= (isset($_REQUEST['CPM_TAHUN_PAJAK']) && $_REQUEST['CPM_TAHUN_PAJAK'] != "") ? " AND CPM_TAHUN_PAJAK = \"{$_REQUEST['CPM_TAHUN_PAJAK']}\" " : "";
+            $where .= (isset($_REQUEST['CPM_MASA_PAJAK']) && $_REQUEST['CPM_MASA_PAJAK'] != "") ? " AND MONTH(STR_TO_DATE(CPM_MASA_PAJAK1,'%d/%m/%Y')) = \"" . str_pad($_REQUEST['CPM_MASA_PAJAK'], 2, "0", STR_PAD_LEFT) . "\" " : "";
+            $where .= (isset($_REQUEST['CPM_TGL_LAPOR1']) && $_REQUEST['CPM_TGL_LAPOR1'] != "") ? " AND STR_TO_DATE(CPM_TGL_LAPOR,\"%d-%m-%Y\")>= CONCAT(\"{$_REQUEST['CPM_TGL_LAPOR1']}\",\" 00:00:00\") and STR_TO_DATE(CPM_TGL_LAPOR,\"%d-%m-%Y\") <= CONCAT(\"{$_REQUEST['CPM_TGL_LAPOR2']}\",\" 23:59:59\")  " : "";
+            $where .= (isset($_REQUEST['CPM_KECAMATAN']) && $_REQUEST['CPM_KECAMATAN'] != "") ? " AND pr.CPM_KECAMATAN_OP='{$_REQUEST['CPM_KECAMATAN']}' " : "";
+            $where .= (isset($_REQUEST['CPM_KELURAHAN']) && $_REQUEST['CPM_KELURAHAN'] != "") ? " AND pr.CPM_KELURAHAN_OP='{$_REQUEST['CPM_KELURAHAN']}' " : "";
+            $where .= (isset($_REQUEST['CPM_KODE_REKENING']) && $_REQUEST['CPM_KODE_REKENING'] != "") ? " AND pr.CPM_REKENING='{$_REQUEST['CPM_KODE_REKENING']}' " : "";
+
+            #count utk pagging
+            $query = "SELECT COUNT(*) AS RecordCount FROM {$this->PATDA_JALAN_DOC} pj
+                        INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                        INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                        WHERE {$where}";
+            $result = mysqli_query($this->Conn, $query);
+            $row = mysqli_fetch_assoc($result);
+            $recordCount = $row['RecordCount'];
+
+            #query select list data
+            $query = "SELECT pj.CPM_ID, pj.CPM_NO, pj.CPM_TAHUN_PAJAK, pr.CPM_NAMA_OP,
+                        CONCAT(DATE_FORMAT(STR_TO_DATE(atr.CPM_ATR_MASA_PAJAK1,'%d/%m/%Y'),'%d/%m/%Y'),' - ', DATE_FORMAT(STR_TO_DATE(atr.CPM_aTR_MASA_PAJAK2,'%d/%m/%Y'),'%d/%m/%Y')) AS CPM_MASA_PAJAK,
+                        STR_TO_DATE(pj.CPM_TGL_LAPOR,'%d-%m-%Y') as CPM_TGL_LAPOR, pj.CPM_AUTHOR, pj.CPM_VERSION,
+                        pj.CPM_TOTAL_PAJAK, pr.CPM_NPWPD, pr.CPM_NAMA_WP, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_INFO, tr.CPM_TRAN_FLAG,
+                        tr.CPM_TRAN_READ, tr.CPM_TRAN_ID, pj.CPM_PIUTANG, atr.CPM_ATR_TAHUN_PAJAK
+                        FROM {$this->PATDA_JALAN_DOC} pj
+                        INNER JOIN PATDA_JALAN_DOC_ATR atr ON atr.CPM_ATR_JALAN_ID = pj.CPM_ID
+                        INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                        INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                      
+                        WHERE {$where}
+                        GROUP BY CPM_NO
+                        ORDER BY {$_GET["jtSorting"]} LIMIT {$_GET["jtStartIndex"]},{$_GET["jtPageSize"]}";
+            // var_dump($query);
+            // die;
+            $result = mysqli_query($this->Conn, $query);
+
+            $rows = array();
+            $no = ($_GET["jtStartIndex"] / $_GET["jtPageSize"]) * $_GET["jtPageSize"];
+            while ($row = mysqli_fetch_assoc($result)) {
+
+                $row = array_merge($row, array("NO" => ++$no));
+
+                $row['READ'] = 1;
+                if ($this->_s != 0) { #untuk menandai dibaca atau belum
+                    $row['READ'] = stripos($row['CPM_TRAN_READ'], ";{$_SESSION['uname']};") === false ? 0 : 1;
+                }
+
+                $func = $this->_f;
+                if ($row['CPM_PIUTANG'] == 1) {
+                    $func = 'fPatdaLaporPiutang6';
+                }
+
+                if ($row['payment_flag'] == 1) {
+                    $row['payment_flag'] = '<div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width:10px; height:10px; border-radius:50%; background-color:green;"></div>
+                                                <span>Sudah Bayar</span>
+                                            </div>';
+                } else {
+                    $row['payment_flag'] = '<div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width:10px; height:10px; border-radius:50%; background-color:red;"></div>
+                                                <span>Belum Bayar</span>
+                                            </div>';
+                }
+
+                $base64 = "a={$this->_a}&m={$this->_m}&mod={$this->_mod}&f={$func}&id={$row['CPM_ID']}&s={$row['CPM_TRAN_STATUS']}&i={$this->_i}&flg={$row['CPM_TRAN_FLAG']}&info={$row['CPM_TRAN_INFO']}&idtran={$row['CPM_TRAN_ID']}&read={$row['READ']}";
+                $url = "main.php?param=" . base64_encode($base64);
+
+                $row['CPM_NO'] = "<a href=\"{$url}\" title=\"Klik untuk detail\">{$row['CPM_NO']}</a>";
+                $row['CPM_TRAN_STATUS'] = $this->arr_status[$row['CPM_TRAN_STATUS']];
+                $row['CPM_TOTAL_PAJAK'] = number_format($row['CPM_TOTAL_PAJAK'], 2);
+                $row['CPM_NPWPD'] = Pajak::formatNPWPD($row['CPM_NPWPD']);
+                $rows[] = $row;
+            }
+
+            $jTableResult = array();
+            $jTableResult['q'] = $query;
+            $jTableResult['Result'] = "OK";
+            $jTableResult['TotalRecordCount'] = $recordCount;
+            $jTableResult['Records'] = $rows;
+            print $this->Json->encode($jTableResult);
+
+            mysqli_close($this->Conn);
+        } catch (Exception $ex) {
+            #Return error message
+            $jTableResult = array();
+            $jTableResult['Result'] = "ERROR";
+            $jTableResult['Message'] = $ex->getMessage();
+            print $this->Json->encode($jTableResult);
+        }
+    }
+
+    public function grid_table_pelayanan()
+    {
+        $DIR = "PATDA-V1";
+        $modul = "jalan";
+        $html = "<link href=\"inc/{$DIR}/jtable/themes/jtable.min.css\" rel=\"stylesheet\" type=\"text/css\" />
+                <script src=\"inc/{$DIR}/jtable/jquery.jtable.min.js\" type=\"text/javascript\"></script>
+                <style>.filtering td{background:transparent!important}.filtering input,.filtering select{height:23px}</style>
+                {$this->filtering($this->_i)}
+                <div id=\"laporanPajak-{$this->_i}\" style=\"width:100%;\"></div>
+                <script type=\"text/javascript\">
+
+                    $(document).ready(function() {
+                    	$('.date').datepicker({
+							dateFormat: 'yy-mm-dd',
+							changeYear: true,
+							changeMonth: true
+						});
+                        $('#laporanPajak-{$this->_i}').jtable({
+                            title: '',
+                            columnResizable : false,
+                            columnSelectable : false,
+                            paging: true,
+                            pageSize: {$this->pageSize},
+                            sorting: true,
+                            defaultSorting: 'CPM_TGL_LAPOR DESC',
+                            selecting: true,
+                            actions: {
+                                listAction: 'view/{$DIR}/pelayanan/{$modul}/svc-list-data.php?action=list&s={$this->_s}&a={$this->_a}&m={$this->_m}&mod={$this->_mod}&f={$this->_f}&i={$this->_i}',
+                            },
+                            fields: {
+                                NO : {title: 'No',width: '3%'},
+                                CPM_ID: {key: true,list: false},
+                                CPM_TGL_INPUT: {title:'Tanggal Input',width: '10%', type: 'datetime', displayFormat: 'dd-mm-yy HH:MM:SS'}, 
+                                CPM_TGL_LAPOR: {title:'Tanggal Lapor',width: '10%', type: 'date', displayFormat: 'dd-mm-yy'}, 
+                                CPM_TRAN_DATE: {title: 'Tgl Verifikasi',width: '10%'},
+                                CPM_NAMA_WP: {title: 'Wajib Pajak',width: '10%'},
+                                CPM_NAMA_OP: {title: 'Objek Pajak',width: '10%'},
+                                CPM_NO: {title: 'Nomor Laporan',width: '10%'},
+                                CPM_NPWPD: {title: 'NPWPD',width: '10%'},
+                                CPM_ATR_TAHUN_PAJAK: {title: 'Tahun Pajak',width: '10%'},
+                                CPM_MASA_PAJAK: {title: 'Masa Pajak',width: '10%'},
+                                CPM_TOTAL_PAJAK: {title: 'Total Pajak',width: '10%'},
+                                CPM_VERSION: {title: 'Versi Dok',width: '5%'},
+                                " . ($this->_s == 0 ? "CPM_TRAN_STATUS: {title: 'Status',width: '10%'}," : "") . "
+                                " . ($this->_s == 4 ? "CPM_TRAN_INFO: {title: 'Keterangan',width: '10%'}," : "") . "
+                                CPM_AUTHOR: {title: 'User Input',width: '10%'}
+                            },
+                            recordsLoaded: function (event, data) {
+                                for (var i in data.records) {
+                                    if (data.records[i].READ == '0') {
+                                        $('#laporanPajak-{$this->_i}').find('.jtable tbody tr:eq('+i+') td').css({'background-color':'#a0a0a0','border':'1px #CCC solid'});
+                                    }
+                                }
+                            }
+                        });
+                        $('#cari-{$this->_i}').click(function (e) {
+                            e.preventDefault();
+                            $('#laporanPajak-{$this->_i}').jtable('load', {
+                                CPM_NPWPD : $('#CPM_NPWPD-{$this->_i}').val(),
+                                CPM_NAMA_WP : $('#CPM_NAMA_WP-{$this->_i}').val(),
+                                CPM_TAHUN_PAJAK : $('#CPM_TAHUN_PAJAK-{$this->_i}').val(),
+                                CPM_MASA_PAJAK : $('#CPM_MASA_PAJAK-{$this->_i}').val(),
+                                CPM_TGL_LAPOR1 : $('#CPM_TGL_LAPOR1-{$this->_i}').val(),
+                                CPM_TGL_LAPOR2 : $('#CPM_TGL_LAPOR2-{$this->_i}').val(),
+                                CPM_KECAMATAN : $('#CPM_KECAMATAN-{$this->_i}').val(),
+                                CPM_KELURAHAN : $('#CPM_KELURAHAN-{$this->_i}').val(),
+                                CPM_KODE_REKENING : $('#CPM_KODE_REKENING-{$this->_i}').val(),
+                                CPM_PIUTANG : $('#CPM_PIUTANG-{$this->_i}').val(),
+                                TOTAL_PAJAK : $('#TOTAL_PAJAK-{$this->_i}').val()
+
+                            });
+                        });
+                        $('#cari-{$this->_i}').click();
+                        $('#CPM_KECAMATAN-{$this->_i}').change(function(){
+                            if($(this).val()==''){
+                                $('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>All</option>');
+                                return false;
+                            }
+							$.ajax({
+								type: \"POST\",
+								url: \"function/PATDA-V1/airbawahtanah/lapor/svc-lapor.php\",
+								data: {'function' : 'get_list_kelurahan', 'CPM_KEC_ID' : $(this).val()},
+                                cache:false,
+                                beforeSend:function(){
+                                    $('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>Loading...</option>');
+                                },
+								success: function(html){
+									$('#CPM_KELURAHAN-{$this->_i}').html('<option value=\'\'>All</option>'+html);
+								}
+							});
+						});
+                    });
+                </script>";
+        echo $html;
+    }
+
+    public function grid_data_pelayanan()
+    {
+        try {
+
+            $where = "(";
+            $where .= ($this->_s == 4) ? " 1=1 " : " tr.CPM_TRAN_FLAG = '0' "; #jika status ditolak, maka flag tidak ditentukan
+
+            if ($this->_s == 0) { #semua data
+                $where .= " AND tr.CPM_TRAN_STATUS in (1,2,3,4,5) OR (tr.CPM_TRAN_FLAG in ('0','1') AND tr.CPM_TRAN_STATUS='4') ";
+            } elseif ($this->_s == 2) { #tab proses
+                $where .= " AND tr.CPM_TRAN_STATUS in (2,3) ";
+            } else {
+                $where .= " AND tr.CPM_TRAN_STATUS = '{$this->_s}' ";
+            }
+
+            $where .= ") ";
+            $where .= (isset($_REQUEST['CPM_NPWPD']) && $_REQUEST['CPM_NPWPD'] != "") ? " AND CPM_NPWPD like \"{$_REQUEST['CPM_NPWPD']}%\" " : "";
+            // $where.= (isset($_REQUEST['CPM_NAMA_WP']) && $_REQUEST['CPM_NAMA_WP'] != "") ? " AND CPM_NAMA_WP like \"%{$_REQUEST['CPM_NAMA_WP']}%\" " : "";
+            $where .= (isset($_REQUEST['CPM_NAMA_WP']) && $_REQUEST['CPM_NAMA_WP'] != "") ? " AND (CPM_NAMA_WP like \"%{$_REQUEST['CPM_NAMA_WP']}%\" OR CPM_NO like \"%{$_REQUEST['CPM_NAMA_WP']}%\" )" : "";
+            $where .= (isset($_REQUEST['CPM_TAHUN_PAJAK']) && $_REQUEST['CPM_TAHUN_PAJAK'] != "") ? " AND CPM_TAHUN_PAJAK = \"{$_REQUEST['CPM_TAHUN_PAJAK']}\" " : "";
+            //$where.= (isset($_REQUEST['CPM_MASA_PAJAK']) && $_REQUEST['CPM_MASA_PAJAK'] != "") ? " AND CPM_MASA_PAJAK = \"{$_REQUEST['CPM_MASA_PAJAK']}\" " : "";
+            $where .= (isset($_REQUEST['CPM_MASA_PAJAK']) && $_REQUEST['CPM_MASA_PAJAK'] != "") ? " AND MONTH(STR_TO_DATE(CPM_MASA_PAJAK1,'%d/%m/%Y')) = \"" . str_pad($_REQUEST['CPM_MASA_PAJAK'], 2, "0", STR_PAD_LEFT) . "\" " : "";
+            $where .= (isset($_REQUEST['CPM_TGL_LAPOR1']) && $_REQUEST['CPM_TGL_LAPOR1'] != "") ? " AND STR_TO_DATE(CPM_TGL_LAPOR,\"%d-%m-%Y\")>= CONCAT(\"{$_REQUEST['CPM_TGL_LAPOR1']}\",\" 00:00:00\") and STR_TO_DATE(CPM_TGL_LAPOR,\"%d-%m-%Y\") <= CONCAT(\"{$_REQUEST['CPM_TGL_LAPOR2']}\",\" 23:59:59\")  " : "";
+            $where .= (isset($_REQUEST['CPM_KECAMATAN']) && $_REQUEST['CPM_KECAMATAN'] != "") ? " AND pr.CPM_KECAMATAN_OP='{$_REQUEST['CPM_KECAMATAN']}' " : "";
+            $where .= (isset($_REQUEST['CPM_KELURAHAN']) && $_REQUEST['CPM_KELURAHAN'] != "") ? " AND pr.CPM_KELURAHAN_OP='{$_REQUEST['CPM_KELURAHAN']}' " : "";
+            $where .= (isset($_REQUEST['CPM_KODE_REKENING']) && $_REQUEST['CPM_KODE_REKENING'] != "") ? " AND pr.CPM_REKENING='{$_REQUEST['CPM_KODE_REKENING']}' " : "";
+            $where .= (isset($_REQUEST['CPM_PIUTANG']) && $_REQUEST['CPM_PIUTANG'] != "") ? " AND CPM_PIUTANG='{$_REQUEST['CPM_PIUTANG']}' " : "";
+            $where .= (isset($_REQUEST['TOTAL_PAJAK']) && $_REQUEST['TOTAL_PAJAK'] != "") ? " AND CPM_TOTAL_PAJAK = \"{$_REQUEST['TOTAL_PAJAK']}\" " : "";
+
+            #count utk pagging
+            $query = "SELECT COUNT(*) AS RecordCount FROM {$this->PATDA_JALAN_DOC} pj
+                            INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                            INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                            WHERE {$where}";
+            $result = mysqli_query($this->Conn, $query);
+            $row = mysqli_fetch_assoc($result);
+            $recordCount = $row['RecordCount'];
+
+            #query select list data
+            $query = "SELECT pj.CPM_ID, pj.CPM_NO, pj.CPM_TAHUN_PAJAK,
+                            CONCAT(DATE_FORMAT(STR_TO_DATE(atr.CPM_ATR_MASA_PAJAK1,'%d/%m/%Y'),'%d/%m/%Y'),' - ', DATE_FORMAT(STR_TO_DATE(atr.CPM_ATR_MASA_PAJAK2,'%d/%m/%Y'),'%d/%m/%Y')) AS CPM_MASA_PAJAK,
+                            STR_TO_DATE(pj.CPM_TGL_LAPOR,'%d-%m-%Y') as CPM_TGL_LAPOR, pj.CPM_AUTHOR, pj.CPM_VERSION,
+                            pj.CPM_TOTAL_PAJAK, pr.CPM_NPWPD, pr.CPM_NAMA_WP,pr.CPM_NAMA_OP, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_INFO, tr.CPM_TRAN_FLAG,
+                            tr.CPM_TRAN_READ, tr.CPM_TRAN_ID, pj.CPM_TGL_INPUT, tr.CPM_TRAN_DATE, pj.CPM_PIUTANG, atr.CPM_ATR_TAHUN_PAJAK
+                            FROM {$this->PATDA_JALAN_DOC} pj 
+                            INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                            INNER JOIN patda_jalan_doc_atr atr ON atr.CPM_ATR_JALAN_ID = pj.CPM_ID
+                            INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                            WHERE {$where} GROUP BY CPM_NO
+                            ORDER BY pj.CPM_NO, {$_GET["jtSorting"]} LIMIT {$_GET["jtStartIndex"]},{$_GET["jtPageSize"]}";
+
+            // var_dump($query);
+            // die;
+            $result = mysqli_query($this->Conn, $query);
+
+            $rows = array();
+            $no = ($_GET["jtStartIndex"] / $_GET["jtPageSize"]) * $_GET["jtPageSize"];
+            while ($row = mysqli_fetch_assoc($result)) {
+                $row = array_merge($row, array("NO" => ++$no));
+
+                $row['READ'] = stripos($row['CPM_TRAN_READ'], ";{$_SESSION['uname']};") === false ? 0 : 1;
+
+                $func = $this->_f;
+                if ($row['CPM_PIUTANG'] == 1) {
+                    $func = 'fPatdaLaporPiutang6';
+                }
+
+                $base64 = "a={$this->_a}&m={$this->_m}&mod={$this->_mod}&f={$func}&id={$row['CPM_ID']}&s={$row['CPM_TRAN_STATUS']}&i={$this->_i}&flg={$row['CPM_TRAN_FLAG']}&info={$row['CPM_TRAN_INFO']}&idtran={$row['CPM_TRAN_ID']}&read={$row['READ']}";
+                $url = "main.php?param=" . base64_encode($base64);
+
+                if ($row['CPM_TRAN_STATUS'] != '5') {
+                    $row['CPM_TRAN_DATE'] = '-';
+                }
+
+                $row['CPM_NO'] = "<a href=\"{$url}\" title=\"Klik untuk detail\">{$row['CPM_NO']}</a>";
+                $row['CPM_TRAN_STATUS'] = $this->arr_status[$row['CPM_TRAN_STATUS']];
+                $row['CPM_TOTAL_PAJAK'] = number_format($row['CPM_TOTAL_PAJAK'], 2);
+                $row['CPM_NPWPD'] = Pajak::formatNPWPD($row['CPM_NPWPD']);
+                $rows[] = $row;
+            }
+
+            $jTableResult = array();
+            $jTableResult['Result'] = "OK";
+            $jTableResult['q'] = $query;
+            $jTableResult['TotalRecordCount'] = $recordCount;
+            $jTableResult['Records'] = $rows;
+            print $this->Json->encode($jTableResult);
+
+            mysqli_close($this->Conn);
+        } catch (Exception $ex) {
+            #Return error message
+            $jTableResult = array();
+            $jTableResult['Result'] = "ERROR";
+            $jTableResult['Message'] = $ex->getMessage();
+            print $this->Json->encode($jTableResult);
+        }
+    }
+
+    private function last_version()
+    {
+        $query = "SELECT * FROM {$this->PATDA_JALAN_DOC_TRANMAIN} WHERE CPM_TRAN_JALAN_ID='{$this->CPM_ID}' AND CPM_TRAN_FLAG='0'";
+        $res = mysqli_query($this->Conn, $query);
+        $data = mysqli_fetch_assoc($res);
+
+        return $data['CPM_TRAN_JALAN_VERSION'];
+    }
+
+    private function validasi_save()
+    {
+        return $this->validasi_pajak(1);
+    }
+
+    private function validasi_update()
+    {
+        return $this->validasi_pajak(0);
+    }
+
+    private function validasi_pajakAsli($input = 1)
+    {
+        $where = ($input == 1) ? "OR pj.CPM_NO='{$this->CPM_NO}'" : "AND pj.CPM_NO!='{$this->CPM_NO}'";
+
+        #cek apakah sudah ada pajak pada npwpd, tahun dan bulan atau no sptpd yang dimaksud
+        $query = "SELECT pj.CPM_NO, pj.CPM_TAHUN_PAJAK, pj.CPM_MASA_PAJAK, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_FLAG
+                FROM {$this->PATDA_JALAN_DOC} pj
+                INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                WHERE
+                (
+                pr.CPM_NPWPD = '{$this->CPM_NPWPD}' AND
+                pr.CPM_NOP = '{$this->CPM_NOP}' AND
+                pj.CPM_MASA_PAJAK='{$this->CPM_MASA_PAJAK}' AND
+                pj.CPM_TAHUN_PAJAK='{$this->CPM_TAHUN_PAJAK}') {$where}
+                ORDER BY tr.CPM_TRAN_STATUS DESC, pj.CPM_VERSION DESC  LIMIT 0,1";
+
+        $res = mysqli_query($this->Conn, $query);
+        $data = mysqli_fetch_assoc($res);
+
+        if ($this->notif == true) {
+            if ($this->CPM_TAHUN_PAJAK == $data['CPM_TAHUN_PAJAK'] && $this->CPM_MASA_PAJAK == $data['CPM_MASA_PAJAK'] && $this->CPM_TIPE_PAJAK == 1) {
+                $this->Message->setMessage("Gagal disimpan, Pajak untuk tahun <b>{$this->CPM_TAHUN_PAJAK}</b> dan bulan <b>{$this->arr_bulan[$this->CPM_MASA_PAJAK]}</b> sudah dilaporkan sebelumnya!");
+            } elseif ($this->CPM_NO == $data['CPM_NO']) {
+                $this->Message->setMessage("Gagal disimpan, Pajak dengan No. Pelaporan <b>{$this->CPM_NO}</b> sudah dilaporkan sebelumnya!");
+            }
+        }
+
+        $respon['result'] = mysqli_num_rows($res) > 0 ? false : true;
+        $respon['result'] = ($this->CPM_TIPE_PAJAK == 2) ? true : $respon['result'];
+        $respon['data'] = $data;
+
+        return $respon;
+    }
+    private function validasi_pajak($input = 1)
+    {
+        $PAJAK_ATR = $_POST['PAJAK_ATR'];
+        $where = ($input == 1) ? "AND pj.CPM_NO='{$this->CPM_NO}'" : "AND pj.CPM_NO!='{$this->CPM_NO}'";
+        // var_dump($PAJAK_ATR);
+        if ($input != 1) {
+            $sql = "SELECT pj.CPM_NO, pj.CPM_TAHUN_PAJAK, pj.CPM_MASA_PAJAK, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_FLAG
+                    FROM {$this->PATDA_JALAN_DOC} pj
+                    INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                    INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                    WHERE
+                    (
+                    pr.CPM_NPWPD = '{$this->CPM_NPWPD}' AND
+                    pr.CPM_NOP = '{$this->CPM_NOP}' AND
+                    pj.CPM_MASA_PAJAK='{$PAJAK_ATR['CPM_ATR_MASA_PAJAK'][0]}' AND
+                    pj.CPM_TAHUN_PAJAK='{$PAJAK_ATR['CPM_ATR_TAHUN_PAJAK'][0]}') {$where}
+                    ORDER BY tr.CPM_TRAN_STATUS DESC, pj.CPM_VERSION DESC  LIMIT 0,1";
+            // echo $sql;
+            // exit;
+
+            $res = mysqli_query($this->Conn, $sql);
+            if (mysqli_num_rows($res))
+                $this->notif = false;
+            else
+                $this->notif = true;
+        }
+        #cek apakah sudah ada pajak pada npwpd, tahun dan bulan atau no sptpd yang dimaksud
+        /* $query = "SELECT pj.CPM_NO, pj.CPM_TAHUN_PAJAK, pj.CPM_MASA_PAJAK, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_FLAG
+          FROM PATDA_REKLAME_DOC pj INNER JOIN PATDA_REKLAME_DOC_TRANMAIN tr ON pj.CPM_ID = tr.CPM_TRAN_REKLAME_ID
+          INNER JOIN PATDA_REKLAME_PROFIL pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+          WHERE (pr.CPM_NPWPD = '{$this->CPM_NPWPD}' AND pj.CPM_MASA_PAJAK='{$this->CPM_MASA_PAJAK}' AND
+          pj.CPM_TAHUN_PAJAK='{$this->CPM_TAHUN_PAJAK}') {$where}
+          ORDER BY tr.CPM_TRAN_STATUS DESC LIMIT 0,1"; */
+
+        $query = "SELECT pj.CPM_NO, pj.CPM_TAHUN_PAJAK, pj.CPM_MASA_PAJAK, tr.CPM_TRAN_STATUS, tr.CPM_TRAN_FLAG
+                    FROM {$this->PATDA_JALAN_DOC} pj
+                    INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                    INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                    WHERE
+                    (
+                    pr.CPM_NPWPD = '{$this->CPM_NPWPD}' AND
+                    pr.CPM_NOP = '{$this->CPM_NOP}' AND
+                    pj.CPM_MASA_PAJAK='{$PAJAK_ATR['CPM_ATR_MASA_PAJAK'][0]}' AND
+                    pj.CPM_TAHUN_PAJAK='{$PAJAK_ATR['CPM_ATR_TAHUN_PAJAK'][0]}') {$where}
+                    ORDER BY tr.CPM_TRAN_STATUS DESC, pj.CPM_VERSION DESC  LIMIT 0,1";
+
+        // var_dump($query);
+        // die;
+
+        $res = mysqli_query($this->Conn, $query);
+        $data = mysqli_fetch_assoc($res);
+        // var_dump($res);
+        // die;
+        if ($this->notif == true) {
+            if (mysqli_num_rows($res)) {
+                $this->Message->setMessage("Gagal disimpan, Data termasuk dalam masa pajak <b>{$data['AWAL']} s/d {$data['AKHIR']}</b> yang telah dilaporkan sebelumnya!");
+            } elseif ($this->CPM_NO == $data['CPM_NO']) {
+                $this->Message->setMessage("Gagal disimpan, Pajak dengan No. Pelaporan <b>{$this->CPM_NO}</b> sudah dilaporkan sebelumnya!");
+            }
+        }
+
+        $respon['result'] = mysqli_num_rows($res) > 0 ? false : true;
+        $respon['result'] = ($input == 0) ? true : $respon['result'];
+        $respon['data'] = $data;
+
+        //echo '<pre>'.print_r($respon,true).'</pre>';exit;
+        return $respon;
+    }
+
+    private function save_pajakAsli($cpm_no = '')
+    {
+
+        $validasi = $this->validasi_save();
+
+        if ($validasi['result'] == true || ($validasi['data']['CPM_TRAN_STATUS'] == '4')) {
+            $this->Message->clearMessage();
+            // var_dump($cpm_no);
+            // die;
+            #update profil baru
+            $query = "UPDATE {$this->PATDA_JALAN_PROFIL} SET CPM_APPROVE ='1' WHERE CPM_NPWPD = '{$this->CPM_NPWPD}' AND CPM_AKTIF='1'";
+
+            mysqli_query($this->Conn, $query);
+
+            if (empty($cpm_no)) {
+                #query untuk mengambil no urut pajak
+                $no = $this->get_config_value($this->_a, "PATDA_TAX{$this->id_pajak}_COUNTER");
+                $this->CPM_NO = $this->get_config_value($this->_a, "KODE_SPTPD") . str_pad($no, 8, "0", STR_PAD_LEFT) . "/" . $this->arr_kdpajak[$this->id_pajak] . "/" . date("y");
+                $this->update_counter($this->_a, "PATDA_TAX{$this->id_pajak}_COUNTER");
+            } else {
+                $this->CPM_NO = $cpm_no;
+            }
+            $PAJAK_ATR = $_POST['PAJAK_ATR'];
+            // var_dump($PAJAK_ATR);
+            // die;
+            #insert pajak baru
+            $this->CPM_ID = c_uuid();
+
+            $this->CPM_TGL_LAPOR = date("d-m-Y");
+            $this->CPM_PEMBANGKIT = str_replace(",", "", $this->CPM_PEMBANGKIT);
+            $this->CPM_FAKTOR_DAYA = str_replace(",", "", $this->CPM_FAKTOR_DAYA);
+            $this->CPM_SATUAN = str_replace(",", "", $this->CPM_SATUAN);
+            $this->CPM_TOTAL_KWH = str_replace(",", "", $this->CPM_TOTAL_KWH);
+            $this->CPM_HARGA_DASAR = str_replace(",", "", $this->CPM_HARGA_DASAR);
+
+            $this->CPM_TOTAL_OMZET = str_replace(",", "", $this->CPM_TOTAL_OMZET);
+            $this->CPM_TOTAL_PAJAK = str_replace(",", "", $this->CPM_TOTAL_PAJAK);
+            $this->CPM_TARIF_PAJAK = str_replace(",", "", $this->CPM_TARIF_PAJAK);
+
+            $this->CPM_BAYAR_LAINNYA = str_replace(",", "", $this->CPM_BAYAR_LAINNYA);
+            $this->CPM_DPP = str_replace(",", "", $this->CPM_DPP);
+            $this->CPM_BAYAR_TERUTANG = str_replace(",", "", $this->CPM_BAYAR_TERUTANG);
+            $this->CPM_DENDA_TERLAMBAT_LAP = str_replace(",", "", $this->CPM_DENDA_TERLAMBAT_LAP);
+
+            #$this->CPM_NO_SSPD = substr($this->CPM_NOP, 0, 11) . "" . substr($this->CPM_NO, 0, 9);
+            $this->CPM_NO_SSPD = $this->CPM_NO;
+            $this->CPM_PIUTANG =  isset($this->CPM_PIUTANG) ? $this->CPM_PIUTANG : 0;
+            // var_dump($this->CPM_MASA_PAJAK1);
+            // die;
+            $query = sprintf(
+                "INSERT INTO {$this->PATDA_JALAN_DOC}
+                    (CPM_ID,CPM_ID_PROFIL,CPM_NO,
+                    CPM_MASA_PAJAK,CPM_TAHUN_PAJAK, CPM_PEMBANGKIT, CPM_FAKTOR_DAYA, CPM_SATUAN,
+                    CPM_TOTAL_KWH, CPM_HARGA_DASAR, CPM_TOTAL_OMZET,
+                    CPM_TOTAL_PAJAK,CPM_TARIF_PAJAK,
+                    CPM_KETERANGAN,CPM_VERSION,
+                    CPM_AUTHOR,CPM_ID_TARIF,CPM_BAYAR_LAINNYA,
+                    CPM_DPP,CPM_BAYAR_TERUTANG,CPM_NO_SSPD,
+                    CPM_MASA_PAJAK1,CPM_MASA_PAJAK2,CPM_TIPE_PAJAK,CPM_DENDA_TERLAMBAT_LAP, CPM_PIUTANG)
+                    VALUES ( '%s','%s','%s',
+                             '%s','%s','%s',
+                             '%s','%s','%s',
+                             '%s','%s','%s',
+                             '%s','%s','%s',
+                             '%s','%s','%s',
+                             '%s','%s','%s','%s','%s','%s','%s','%s')",
+                $this->CPM_ID,
+                $this->CPM_ID_PROFIL,
+                $this->CPM_NO,
+                $this->CPM_MASA_PAJAK,
+                $this->CPM_TAHUN_PAJAK,
+                $this->CPM_PEMBANGKIT,
+                $this->CPM_FAKTOR_DAYA,
+                $this->CPM_SATUAN,
+                $this->CPM_TOTAL_KWH,
+                $this->CPM_HARGA_DASAR,
+                $this->CPM_TOTAL_OMZET,
+                $this->CPM_TOTAL_PAJAK,
+                $this->CPM_TARIF_PAJAK,
+                $this->CPM_KETERANGAN,
+                $this->CPM_VERSION,
+                $this->CPM_AUTHOR,
+                $this->CPM_ID_TARIF,
+                $this->CPM_BAYAR_LAINNYA,
+                $this->CPM_DPP,
+                $this->CPM_BAYAR_TERUTANG,
+                $this->CPM_NO_SSPD,
+                $this->CPM_MASA_PAJAK1,
+                $this->CPM_MASA_PAJAK2,
+                $this->CPM_TIPE_PAJAK,
+                $this->CPM_DENDA_TERLAMBAT_LAP,
+                $this->CPM_PIUTANG
+            );
+
+            $res = mysqli_query($this->Conn, $query) or die(mysqli_error($this->Conn) . ' ' . $query);
+            if ($res) {
+                $j = count($PAJAK_ATR['CPM_ATR_TIPE_PAJAK']);
+                for ($x = 0; $x < $j; $x++) {
+                }
+            }
+            return mysqli_query($this->Conn, $query);
+        }
+        return false;
+    }
+    private function toNumber($str)
+    {
+        return preg_replace("/([^0-9\\.])/i", "", $str);
+    }
+    private function save_pajak($cpm_no = '')
+    {
+        $validasi = $this->validasi_save();
+        // var_dump($validasi);
+        // die;
+        if ($validasi['result'] == true || ($validasi['data']['CPM_TRAN_STATUS'] == '4')) {
+            $this->Message->clearMessage();
+
+            #update profil baru
+            $query = "UPDATE {$this->PATDA_JALAN_PROFIL} SET CPM_APPROVE ='1' WHERE CPM_NPWPD = '{$this->CPM_NPWPD}' AND CPM_AKTIF='1'";
+            mysqli_query($this->Conn, $query);
+
+            if (empty($cpm_no)) {
+                #query untuk mengambil no urut pajak
+                $no = $this->get_config_value($this->_a, "PATDA_TAX{$this->id_pajak}_COUNTER");
+                $this->CPM_NO = $this->get_config_value($this->_a, "KODE_SPTPD") . str_pad($no, 8, "0", STR_PAD_LEFT) . "/" . $this->arr_kdpajak[$this->id_pajak] . "/" . date("y");
+                $this->update_counter($this->_a, "PATDA_TAX{$this->id_pajak}_COUNTER");
+            } else {
+                $this->CPM_NO = $cpm_no;
+            }
+
+            #insert pajak baru
+            $PAJAK_ATR = $_POST['PAJAK_ATR'];
+            // var_dump($PAJAK_ATR);
+            // die;
+            $this->CPM_ID = c_uuid();
+            $this->CPM_TGL_LAPOR = date("d-m-Y");
+
+            $this->CPM_TOTAL_KWH = str_replace(",", "", $this->CPM_TOTAL_KWH);
+            $this->CPM_HARGA_DASAR = str_replace(",", "", $this->CPM_HARGA_DASAR);
+
+            $this->CPM_TOTAL_OMZET = str_replace(",", "", $this->CPM_TOTAL_OMZET);
+            $this->CPM_TOTAL_PAJAK = str_replace(",", "", $this->CPM_TOTAL_PAJAK);
+            $this->CPM_TARIF_PAJAK = str_replace(",", "", $this->CPM_TARIF_PAJAK);
+
+            // $this->CPM_BAYAR_LAINNYA = str_replace(",", "", $this->CPM_BAYAR_LAINNYA);
+            // $this->CPM_DPP = str_replace(",", "", $this->CPM_DPP);
+            $this->CPM_BAYAR_TERUTANG = str_replace(",", "", $this->CPM_BAYAR_TERUTANG);
+            $this->CPM_DENDA_TERLAMBAT_LAP = str_replace(",", "", $this->CPM_DENDA_TERLAMBAT_LAP);
+
+            $tglinput = date('Y-m-d H:s:i');
+            #$this->CPM_NO_SSPD = substr($this->CPM_NOP, 0, 11) . "" . substr($this->CPM_NO, 0, 9);
+            $this->CPM_NO_SSPD = $this->CPM_NO;
+            $arr_config = $this->get_config_value($this->_a);
+
+
+            /* membuat tanggal jatuh tempo */
+
+            list($day, $month, $year) = explode('/', $this->CPM_MASA_PAJAK2);
+            $newTimestamp = mktime(0, 0, 0, $month, $day + 10, $year);
+            $jatuh_tempo = date('Y-m-d', $newTimestamp);
+
+            if ($this->CPM_TGL_JATUH_TEMPO == NULL || $this->CPM_TGL_JATUH_TEMPO == "") {
+                $this->CPM_TGL_JATUH_TEMPO = $jatuh_tempo;
+            } else {
+                $this->CPM_TGL_JATUH_TEMPO =   $this->CPM_TGL_JATUH_TEMPO;
+            }
+            /* end membuat tanggal jatuh tempo */
+
+            $query = sprintf(
+                "INSERT INTO {$this->PATDA_JALAN_DOC}
+                    (CPM_ID, CPM_ID_PROFIL, CPM_NO,CPM_TGL_JATUH_TEMPO,
+                    CPM_MASA_PAJAK, CPM_TAHUN_PAJAK,
+                    CPM_TOTAL_KWH, CPM_HARGA_DASAR, CPM_TOTAL_OMZET,
+                    CPM_TOTAL_PAJAK, CPM_TARIF_PAJAK,
+                    CPM_KETERANGAN, CPM_VERSION,
+                    CPM_AUTHOR,
+                    CPM_BAYAR_TERUTANG, CPM_NO_SSPD,
+                    CPM_MASA_PAJAK1, CPM_MASA_PAJAK2, CPM_TIPE_PAJAK,
+                    CPM_DENDA_TERLAMBAT_LAP, CPM_TGL_INPUT)
+                VALUES ( '%s','%s','%s','%s',
+                         '%s','%s','%s',
+                         '%s','%s','%s',
+                         '%s','%s','%s',
+                         '%s','%s','%s',
+                         '%s','%s','%s',
+                         '%s',
+                         '%s')",
+                $this->CPM_ID,
+                $this->CPM_ID_PROFIL,
+                $this->CPM_NO,
+                $this->CPM_TGL_JATUH_TEMPO,
+                $this->CPM_MASA_PAJAK,
+                $this->CPM_TAHUN_PAJAK,
+                $this->CPM_TOTAL_KWH,
+                $this->CPM_HARGA_DASAR,
+                $this->CPM_TOTAL_OMZET,
+                $this->CPM_TOTAL_PAJAK,
+                $this->CPM_TARIF_PAJAK,
+                $this->CPM_KETERANGAN,
+                $this->CPM_VERSION,
+                $this->CPM_AUTHOR,
+                $this->CPM_BAYAR_TERUTANG,
+                $this->CPM_NO_SSPD,
+                $this->CPM_MASA_PAJAK1,
+                $this->CPM_MASA_PAJAK2,
+                $this->CPM_TIPE_PAJAK,
+                $this->CPM_DENDA_TERLAMBAT_LAP,
+                $tglinput
+            );
+
+
+            $res = mysqli_query($this->Conn, $query) or die(mysqli_error($this->Conn) . ' ' . $query);
+
+            if ($res) {
+                $j = count($PAJAK_ATR['CPM_ATR_TIPE_PAJAK']);
+                for ($x = 0; $x < $j; $x++) {
+                    $tipePajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_TIPE_PAJAK'][$x]);
+                    $tahunPajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_TAHUN_PAJAK'][$x]);
+                    $masaPajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK'][$x]);
+                    $merk = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MERK_JENSET'][$x]);
+                    $masaPajak1 = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK1'][$x]);
+                    $masaPajak2 = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK2'][$x]);
+                    $atrKet = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_KETERANGAN'][$x]);
+                    $tglInput = date('Y-m-d');
+                    $unit = $this->toNumber($PAJAK_ATR['CPM_ATR_UNIT'][$x]);
+                    $pembangkit = $this->toNumber($PAJAK_ATR['CPM_ATR_PEMBANGKIT'][$x]);
+                    $daya = $this->toNumber($PAJAK_ATR['CPM_ATR_FAKTOR_DAYA'][$x]);
+                    $satuan = $this->toNumber($PAJAK_ATR['CPM_ATR_SATUAN'][$x]);
+                    $pemakaian = $this->toNumber($PAJAK_ATR['CPM_ATR_TOTAL_KWH'][$x]);
+                    $omset = $this->toNumber($PAJAK_ATR['CPM_ATR_TOTAL_OMZET'][$x]);
+                    $dpp = $this->toNumber($PAJAK_ATR['CPM_ATR_DPP'][$x]);
+                    $tarifPajak = $this->toNumber($PAJAK_ATR['CPM_ATR_TARIF_PAJAK'][$x]);
+                    $query = sprintf(
+                        "INSERT INTO {$this->PATDA_JALAN_DOC_ATR}
+                            (CPM_ATR_JALAN_ID,CPM_ATR_ID_PROFIL, CPM_ATR_TIPE_PAJAK, CPM_ATR_TAHUN_PAJAK, CPM_ATR_MASA_PAJAK,
+                            CPM_ATR_MERK_JENSET, CPM_ATR_UNIT, CPM_ATR_PEMBANGKIT, CPM_ATR_FAKTOR_DAYA, CPM_ATR_SATUAN, CPM_ATR_TOTAL_KWH,
+                            CPM_ATR_TOTAL_OMZET, CPM_ATR_DPP, CPM_ATR_TARIF_PAJAK,CPM_ATR_MASA_PAJAK1,CPM_ATR_MASA_PAJAK2,CPM_ATR_KETERANGAN
+                            ,CPM_ATR_TGL_INPUT)
+                        VALUES ('%s', '%s', '%s', '%s', '%s', '%s',
+                            '%s', '%s', '%s', '%s', '%s',
+                            '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                        $this->CPM_ID,
+                        $this->CPM_ID_PROFIL,
+                        $tipePajak,
+                        $tahunPajak,
+                        $masaPajak,
+                        $merk,
+                        $unit,
+                        $pembangkit,
+                        $daya,
+                        $satuan,
+                        $pemakaian,
+                        $omset,
+                        $dpp,
+                        $tarifPajak,
+                        $masaPajak1,
+                        $masaPajak2,
+                        $atrKet,
+                        $tglInput
+                    );
+                    // var_dump($query);
+                    // die;
+
+                    mysqli_query($this->Conn, $query) or die(mysqli_error($this->Conn) . ' ' . $query);
+                }
+            }
+            return $res;
+
+            //  return mysqli_query($this->Conn, $query);
+        }
+        return false;
+    }
+    private function save_tranmain($param)
+    {
+        #insert tranmain
+        $CPM_TRAN_ID = c_uuid();
+        $CPM_TRAN_JALAN_ID = $this->CPM_ID;
+
+        $query = "UPDATE {$this->PATDA_JALAN_DOC_TRANMAIN} SET CPM_TRAN_FLAG = '1' WHERE CPM_TRAN_JALAN_ID = '{$CPM_TRAN_JALAN_ID}'";
+        $res = mysqli_query($this->Conn, $query);
+
+        $query = sprintf(
+            "INSERT INTO {$this->PATDA_JALAN_DOC_TRANMAIN}
+                    (CPM_TRAN_ID, CPM_TRAN_JALAN_ID, CPM_TRAN_JALAN_VERSION, CPM_TRAN_STATUS, CPM_TRAN_FLAG, CPM_TRAN_DATE,
+                    CPM_TRAN_OPR, CPM_TRAN_OPR_DISPENDA, CPM_TRAN_INFO)
+                    VALUES ( '%s','%s','%s','%s','%s',
+                             '%s','%s','%s','%s')",
+            $CPM_TRAN_ID,
+            $CPM_TRAN_JALAN_ID,
+            $param['CPM_TRAN_JALAN_VERSION'],
+            $param['CPM_TRAN_STATUS'],
+            $param['CPM_TRAN_FLAG'],
+            $param['CPM_TRAN_DATE'],
+            $param['CPM_TRAN_OPR'],
+            $param['CPM_TRAN_OPR_DISPENDA'],
+            $param['CPM_TRAN_INFO']
+        );
+        return mysqli_query($this->Conn, $query);
+    }
+
+    private function update_tgl_input()
+    {
+        $tgl_input = date("Y-m-d h:i:s");
+        $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_INPUT = '{$tgl_input}'
+                  WHERE CPM_ID ='{$this->CPM_ID}'";
+
+        return mysqli_query($this->Conn, $query);
+    }
+
+    private function update_tgl_lapor()
+    {
+        $tgl_input = date("d-m-Y");
+        $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_LAPOR = '{$tgl_input}'
+                  WHERE CPM_ID ='{$this->CPM_ID}'";
+
+        return mysqli_query($this->Conn, $query);
+    }
+
+    private function update_tgl_lapor_ditolak($cpm_no, $tgl_lapor, $tgl_input)
+    {
+        $tgl_input = $tgl_input != '' ? $tgl_input : 'NULL';
+
+        if ($tgl_input == 'NULL') {
+            $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_LAPOR = '{$tgl_lapor}'
+                  WHERE CPM_NO ='{$cpm_no}'";
+        } else {
+            $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_LAPOR = '{$tgl_lapor}', CPM_TGL_INPUT = '{$tgl_input}'
+                  WHERE CPM_NO ='{$cpm_no}'";
+        }
+
+        return mysqli_query($this->Conn, $query);
+    }
+    public function save()
+    {
+        $this->CPM_VERSION = "1";
+
+        if ($this->save_pajak()) {
+            $param = array();
+            $param['CPM_TRAN_JALAN_VERSION'] = "1";
+            $param['CPM_TRAN_STATUS'] = "1";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_READ'] = "";
+            $param['CPM_TRAN_INFO'] = "";
+
+            if ($this->update_tgl_input()) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+            // var_dump($param);
+            // die;
+            if ($res = $this->save_tranmain($param)) {
+                $_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak gagal disimpan';
+            }
+        }
+        // var_dump('cek');
+        // die;
+    }
+
+    public function saveAsli()
+    {
+
+        if ($this->CPM_PIUTANG == 1) {
+            if ($this->validasi_piutang() == false) {
+                return false;
+            }
+        }
+
+        $this->CPM_VERSION = "1";
+
+        if ($this->save_pajak($this->CPM_NO)) {
+            $param = array();
+            $param['CPM_TRAN_JALAN_VERSION'] = "1";
+            $param['CPM_TRAN_STATUS'] = "1";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_READ'] = "";
+
+            if ($this->update_tgl_input()) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+
+            if ($res = $this->save_tranmain($param)) {
+                $_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak gagal disimpan';
+            }
+        }
+    }
+
+    public function save_final()
+    {
+        if ($this->CPM_PIUTANG == 1) {
+            if ($this->validasi_piutang() == false) {
+                return false;
+            }
+        }
+
+        $this->CPM_VERSION = "1";
+        if ($this->save_pajak($this->CPM_NO)) {
+            $param['CPM_TRAN_JALAN_VERSION'] = "1";
+            $param['CPM_TRAN_STATUS'] = "2";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_INFO'] = "";
+            $param['CPM_TRAN_READ'] = "";
+            $this->save_tranmain($param);
+
+            if ($this->update_tgl_lapor()) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+
+            $res = $this->save_berkas_masuk($this->id_pajak, "CPM_SPTPD");
+            $berkass = $this->getIDBerkas($this->CPM_NO);
+            $base644 = "a=aPatda&m=mPatdaPelayanan&f=fPatdaBerkas&id={$berkass}&sts=0&read=1";
+            $urlberkas = "main.php?param=" . base64_encode($base644);
+
+            if ($res) {
+                $_SESSION['_success'] = 'Data Pajak berhasil difinalkan';
+                header("Location: ../../../../{$urlberkas}");
+                exit();
+            } else {
+                $_SESSION['_error'] = 'Data Pajak gagal difinalkan';
+            }
+        }
+    }
+
+    public function new_version()
+    {
+        $new_version = $this->last_version() + 1;
+        $this->CPM_VERSION = $new_version;
+        $id = $this->CPM_ID;
+
+        $this->notif = false;
+        if ($this->save_pajak($this->CPM_NO)) {
+
+            $query = "UPDATE {$this->PATDA_JALAN_DOC_TRANMAIN} SET CPM_TRAN_FLAG ='1' WHERE CPM_TRAN_JALAN_ID='{$id}'";
+            mysqli_query($this->Conn, $query);
+
+            $param['CPM_TRAN_JALAN_VERSION'] = $new_version;
+            $param['CPM_TRAN_STATUS'] = "1";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_READ'] = "";
+            $param['CPM_TRAN_INFO'] = "";
+
+            if ($this->update_tgl_lapor_ditolak($this->CPM_NO, $this->DITOLAK_TGL_LAPOR, $this->DITOLAK_TGL_INPUT)) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+
+            if ($res = $this->save_tranmain($param)) {
+                $_SESSION['_success'] = 'Data Pajak versi ' . $new_version . ' berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak ' . $new_version . ' gagal disimpan';
+            }
+        }
+    }
+
+    public function new_version_final()
+    {
+        $new_version = $this->last_version() + 1;
+        $this->CPM_VERSION = $new_version;
+        $id = $this->CPM_ID;
+
+
+
+        $this->notif = false;
+        if ($this->save_pajak($this->CPM_NO)) {
+
+            $query = "UPDATE {$this->PATDA_JALAN_DOC_TRANMAIN} SET CPM_TRAN_FLAG ='1' WHERE CPM_TRAN_JALAN_ID='{$id}'";
+            mysqli_query($this->Conn, $query);
+
+            $param['CPM_TRAN_JALAN_VERSION'] = $new_version;
+            $param['CPM_TRAN_STATUS'] = "2";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_READ'] = "";
+            $param['CPM_TRAN_INFO'] = "";
+            $this->save_tranmain($param);
+
+            if ($this->update_tgl_lapor_ditolak($this->CPM_NO, $this->DITOLAK_TGL_LAPOR, $this->DITOLAK_TGL_INPUT)) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+
+            $res = $this->save_berkas_masuk($this->id_pajak, "CPM_SPTPD");
+            if ($res) {
+                $_SESSION['_success'] = 'Data Pajak versi ' . $new_version . ' berhasil difinalkan';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak ' . $new_version . ' gagal difinalkan';
+            }
+        }
+    }
+
+    public function update_final()
+    {
+        $this->CPM_VERSION = $this->last_version();
+        if ($this->update()) {
+            $param['CPM_TRAN_JALAN_VERSION'] = $this->CPM_VERSION;
+            $param['CPM_TRAN_STATUS'] = "2";
+            $param['CPM_TRAN_FLAG'] = "0";
+            $param['CPM_TRAN_DATE'] = date("d-m-Y");
+            $param['CPM_TRAN_OPR'] = $this->CPM_AUTHOR;
+            $param['CPM_TRAN_OPR_DISPENDA'] = "";
+            $param['CPM_TRAN_READ'] = "";
+            $param['CPM_TRAN_INFO'] = "";
+            $this->save_tranmain($param);
+
+            if ($this->update_tgl_lapor()) {
+                //$_SESSION['_success'] = 'Data Pajak berhasil disimpan';
+            } else {
+                $_SESSION['_error'] = 'Tgl input gagal disimpan';
+            }
+
+            $res = $this->save_berkas_masuk($this->id_pajak, "CPM_SPTPD");
+            if ($res) {
+                $_SESSION['_success'] = 'Data Pajak berhasil difinalkan';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak gagal difinalkan';
+            }
+        }
+    }
+
+    public function updateAsli()
+    {
+        $validasi = $this->validasi_update();
+        if ($validasi['result'] == true) {
+
+            $this->CPM_PEMBANGKIT = str_replace(",", "", $this->CPM_PEMBANGKIT);
+            $this->CPM_FAKTOR_DAYA = str_replace(",", "", $this->CPM_FAKTOR_DAYA);
+            $this->CPM_SATUAN = str_replace(",", "", $this->CPM_SATUAN);
+            $this->CPM_TOTAL_KWH = str_replace(",", "", $this->CPM_TOTAL_KWH);
+            $this->CPM_HARGA_DASAR = str_replace(",", "", $this->CPM_HARGA_DASAR);
+            $this->CPM_TOTAL_OMZET = str_replace(",", "", $this->CPM_TOTAL_OMZET);
+            $this->CPM_TOTAL_PAJAK = str_replace(",", "", $this->CPM_TOTAL_PAJAK);
+            $this->CPM_TARIF_PAJAK = str_replace(",", "", $this->CPM_TARIF_PAJAK);
+
+            $this->CPM_BAYAR_LAINNYA = str_replace(",", "", $this->CPM_BAYAR_LAINNYA);
+            $this->CPM_DPP = str_replace(",", "", $this->CPM_DPP);
+            $this->CPM_BAYAR_TERUTANG = str_replace(",", "", $this->CPM_BAYAR_TERUTANG);
+            $this->CPM_DENDA_TERLAMBAT_LAP = str_replace(",", "", $this->CPM_DENDA_TERLAMBAT_LAP);
+            $this->CPM_PIUTANG =  isset($this->CPM_PIUTANG) ? $this->CPM_PIUTANG : 0;
+
+            $query = sprintf(
+                "UPDATE {$this->PATDA_JALAN_DOC} SET
+                    CPM_PEMBANGKIT = '%s',
+                    CPM_FAKTOR_DAYA = '%s',
+                    CPM_SATUAN = '%s',
+					CPM_TOTAL_KWH = '%s',
+					CPM_HARGA_DASAR = '%s',
+                    CPM_TOTAL_OMZET = '%s',
+                    CPM_TOTAL_PAJAK = '%s',
+                    CPM_TARIF_PAJAK = '%s',
+                    CPM_BAYAR_LAINNYA = '%s',
+                    CPM_DPP = '%s',
+                    CPM_BAYAR_TERUTANG = '%s',
+                    CPM_MASA_PAJAK1 = '%s',
+                    CPM_MASA_PAJAK2 = '%s',
+                    CPM_TIPE_PAJAK = '%s',
+                    CPM_TAHUN_PAJAK = '%s',
+                    CPM_MASA_PAJAK = '%s',
+                    CPM_DENDA_TERLAMBAT_LAP = '%s',
+					CPM_PIUTANG = '%s'
+                    WHERE
+                    CPM_ID ='{$this->CPM_ID}'",
+                $this->CPM_PEMBANGKIT,
+                $this->CPM_FAKTOR_DAYA,
+                $this->CPM_SATUAN,
+                $this->CPM_TOTAL_KWH,
+                $this->CPM_HARGA_DASAR,
+                $this->CPM_TOTAL_OMZET,
+                $this->CPM_TOTAL_PAJAK,
+                $this->CPM_TARIF_PAJAK,
+                $this->CPM_BAYAR_LAINNYA,
+                $this->CPM_DPP,
+                $this->CPM_BAYAR_TERUTANG,
+                $this->CPM_MASA_PAJAK1,
+                $this->CPM_MASA_PAJAK2,
+                $this->CPM_TIPE_PAJAK,
+                $this->CPM_TAHUN_PAJAK,
+                $this->CPM_MASA_PAJAK,
+                $this->CPM_DENDA_TERLAMBAT_LAP,
+                $this->CPM_PIUTANG
+            );
+            return mysqli_query($this->Conn, $query);
+        }
+        return false;
+    }
+    public function update()
+    {
+        $validasi = $this->validasi_update();
+        if ($validasi['result'] == true) {
+            $this->Message->clearMessage();
+
+            #Update pajak baru
+            $PAJAK_ATR = $_POST['PAJAK_ATR'];
+
+            $this->CPM_TOTAL_KWH = str_replace(",", "", $this->CPM_TOTAL_KWH);
+            $this->CPM_HARGA_DASAR = str_replace(",", "", $this->CPM_HARGA_DASAR);
+            $this->CPM_TOTAL_OMZET = str_replace(",", "", $this->CPM_TOTAL_OMZET);
+            $this->CPM_TOTAL_PAJAK = str_replace(",", "", $this->CPM_TOTAL_PAJAK);
+            $this->CPM_TARIF_PAJAK = str_replace(",", "", $this->CPM_TARIF_PAJAK);
+            $this->CPM_BAYAR_TERUTANG = str_replace(",", "", $this->CPM_BAYAR_TERUTANG);
+            $this->CPM_DENDA_TERLAMBAT_LAP = str_replace(",", "", $this->CPM_DENDA_TERLAMBAT_LAP);
+
+            $tglinput = date('Y-m-d H:s:i');
+            #$this->CPM_NO_SSPD = substr($this->CPM_NOP, 0, 11) . "" . substr($this->CPM_NO, 0, 9);
+            $this->CPM_NO_SSPD = $this->CPM_NO;
+
+            $PAJAK_ATR = $_POST['PAJAK_ATR'];
+            $query = sprintf(
+                "UPDATE {$this->PATDA_JALAN_DOC} SET
+					CPM_TOTAL_KWH = '%s',
+					CPM_HARGA_DASAR = '%s',
+                    CPM_TOTAL_OMZET = '%s',
+                    CPM_TOTAL_PAJAK = '%s',
+                    CPM_TARIF_PAJAK = '%s', 
+                    CPM_BAYAR_TERUTANG = '%s',
+                    CPM_MASA_PAJAK1 = '%s',
+                    CPM_MASA_PAJAK2 = '%s',
+                    CPM_TIPE_PAJAK = '%s',
+                    CPM_TAHUN_PAJAK = '%s',
+                    CPM_MASA_PAJAK = '%s',
+                    CPM_DENDA_TERLAMBAT_LAP = '%s'
+                    WHERE
+                    CPM_ID ='{$this->CPM_ID}'",
+                $this->CPM_TOTAL_KWH,
+                $this->CPM_HARGA_DASAR,
+                $this->CPM_TOTAL_OMZET,
+                $this->CPM_TOTAL_PAJAK,
+                $this->CPM_TARIF_PAJAK,
+                $this->CPM_BAYAR_TERUTANG,
+                $this->CPM_MASA_PAJAK1,
+                $this->CPM_MASA_PAJAK2,
+                $this->CPM_TIPE_PAJAK,
+                $this->CPM_TAHUN_PAJAK,
+                $this->CPM_MASA_PAJAK,
+                $this->CPM_DENDA_TERLAMBAT_LAP
+            );
+
+            $upd = mysqli_query($this->Conn, $query);
+
+            $ok = 0;
+            $j = count($PAJAK_ATR['CPM_ATR_TIPE_PAJAK']);
+            for ($x = 0; $x < $j; $x++) {
+                $atr_id = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_ID'][$x]);
+                $tipePajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_TIPE_PAJAK'][$x]);
+                $tahunPajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_TAHUN_PAJAK'][$x]);
+                $masaPajak = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK'][$x]);
+                $merk = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MERK_JENSET'][$x]);
+                $masaPajak1 = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK1'][$x]);
+                $masaPajak2 = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_MASA_PAJAK2'][$x]);
+                $atrKet = mysqli_escape_string($this->Conn, $PAJAK_ATR['CPM_ATR_KETERANGAN'][$x]);
+                $tglInput = date('Y-m-d');
+                $unit = $this->toNumber($PAJAK_ATR['CPM_ATR_UNIT'][$x]);
+                $pembangkit = $this->toNumber($PAJAK_ATR['CPM_ATR_PEMBANGKIT'][$x]);
+                $daya = $this->toNumber($PAJAK_ATR['CPM_ATR_FAKTOR_DAYA'][$x]);
+                $satuan = $this->toNumber($PAJAK_ATR['CPM_ATR_SATUAN'][$x]);
+                $pemakaian = $this->toNumber($PAJAK_ATR['CPM_ATR_TOTAL_KWH'][$x]);
+                $omset = $this->toNumber($PAJAK_ATR['CPM_ATR_TOTAL_OMZET'][$x]);
+                $dpp = $this->toNumber($PAJAK_ATR['CPM_ATR_DPP'][$x]);
+                $tarifPajak = $this->toNumber($PAJAK_ATR['CPM_ATR_TARIF_PAJAK'][$x]);
+                if ($atr_id == '') {
+                    $query = sprintf(
+                        "INSERT INTO {$this->PATDA_JALAN_DOC_ATR}
+                            (CPM_ATR_JALAN_ID,CPM_ATR_ID_PROFIL, CPM_ATR_TIPE_PAJAK, CPM_ATR_TAHUN_PAJAK, CPM_ATR_MASA_PAJAK,
+                            CPM_ATR_MERK_JENSET, CPM_ATR_UNIT, CPM_ATR_PEMBANGKIT, CPM_ATR_FAKTOR_DAYA, CPM_ATR_SATUAN, CPM_ATR_TOTAL_KWH,
+                            CPM_ATR_TOTAL_OMZET, CPM_ATR_DPP, CPM_ATR_TARIF_PAJAK,CPM_ATR_MASA_PAJAK1,CPM_ATR_MASA_PAJAK2,CPM_ATR_KETERANGAN
+                            ,CPM_ATR_TGL_INPUT)
+                        VALUES ('%s', '%s', '%s', '%s', '%s', '%s',
+                            '%s', '%s', '%s', '%s', '%s',
+                            '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                        $this->CPM_ID,
+                        $this->CPM_ID_PROFIL,
+                        $tipePajak,
+                        $tahunPajak,
+                        $masaPajak,
+                        $merk,
+                        $unit,
+                        $pembangkit,
+                        $daya,
+                        $satuan,
+                        $pemakaian,
+                        $omset,
+                        $dpp,
+                        $tarifPajak,
+                        $masaPajak1,
+                        $masaPajak2,
+                        $atrKet,
+                        $tglInput
+                    );
+                } else {
+                    $query = sprintf(
+                        "UPDATE  {$this->PATDA_JALAN_DOC_ATR} SET
+                            CPM_ATR_TIPE_PAJAK='%s',
+                             CPM_ATR_TAHUN_PAJAK='%s', CPM_ATR_MASA_PAJAK='%s',CPM_ATR_MERK_JENSET='%s',
+                              CPM_ATR_UNIT='%s', CPM_ATR_PEMBANGKIT='%s', CPM_ATR_FAKTOR_DAYA='%s', 
+                              CPM_ATR_SATUAN='%s', CPM_ATR_TOTAL_KWH='%s', CPM_ATR_TOTAL_OMZET='%s', CPM_ATR_DPP='%s', 
+                              CPM_ATR_TARIF_PAJAK='%s',CPM_ATR_MASA_PAJAK1='%s',CPM_ATR_MASA_PAJAK2='%s',
+                              CPM_ATR_KETERANGAN='%s',CPM_ATR_TGL_INPUT='%s'
+                  WHERE CPM_ATR_ID ='%s'",
+                        $tipePajak,
+                        $tahunPajak,
+                        $masaPajak,
+                        $merk,
+                        $unit,
+                        $pembangkit,
+                        $daya,
+                        $satuan,
+                        $pemakaian,
+                        $omset,
+                        $dpp,
+                        $tarifPajak,
+                        $masaPajak1,
+                        $masaPajak2,
+                        $atrKet,
+                        $tglInput,
+                        $atr_id
+                    );
+                }
+                // var_dump(mysqli_query($this->Conn, $query));
+                if ($res = mysqli_query($this->Conn, $query)) {
+                    $ok++;
+                    $_SESSION['_success'] = 'Data Pajak berhasil di Update';
+                } else {
+                    $_SESSION['_error'] = 'Data Pajak gagal di Update';
+                }
+                // if (mysqli_query($this->Conn, $query)) $ok++;
+            }
+
+            return ($upd || $ok > 0);
+        }
+
+        return false;
+    }
+
+    public function delete()
+    {
+        $query = "DELETE FROM {$this->PATDA_JALAN_DOC} WHERE CPM_ID ='{$this->CPM_ID}'";
+        $res = mysqli_query($this->Conn, $query);
+        if ($res) {
+            $query = "DELETE FROM {$this->PATDA_JALAN_DOC_TRANMAIN} WHERE CPM_TRAN_JALAN_ID ='{$this->CPM_ID}'";
+            mysqli_query($this->Conn, $query);
+        }
+    }
+
+    public function verifikasi()
+    {
+
+        if ($this->AUTHORITY == 1) {
+            $query = "SELECT * FROM {$this->PATDA_BERKAS} WHERE CPM_NO_SPTPD = '{$this->CPM_NO}' AND CPM_STATUS='1'";
+            // var_dump($query);
+            // die;
+            $res = mysqli_query($this->Conn, $query);
+            if (mysqli_num_rows($res) == 0) {
+                $msg = "Gagal disetujui, <b>berkas-berkas laporan pajak tidak lengkap</b>, silakan untuk dilengkapi dahulu di bagian Pelayanan!";
+                $this->Message->setMessage($msg);
+                $_SESSION['_error'] = $msg;
+                return false;
+            }
+        }
+
+        $this->persetujuan();
+
+        #validasi hanya satu tahap yaitu verifikasi saja
+        /* $status = ($this->AUTHORITY == 1) ? 3 : 4;
+          $param['CPM_TRAN_JALAN_VERSION'] = $this->CPM_VERSION;
+          $param['CPM_TRAN_STATUS'] = $status;
+          $param['CPM_TRAN_FLAG'] = "0";
+          $param['CPM_TRAN_DATE'] = date("d-m-Y");
+          $param['CPM_TRAN_OPR'] = "";
+          $param['CPM_TRAN_OPR_DISPENDA'] = $this->CPM_AUTHOR;
+          $param['CPM_TRAN_INFO'] = $this->CPM_TRAN_INFO;
+          $this->save_tranmain($param); */
+    }
+
+    public function persetujuan()
+    {
+        $new_operator = $_SESSION['uname'];
+
+        $status = ($this->AUTHORITY == 1) ? 5 : 4;
+        $this->CPM_ATR_MASA_PAJAK1 = $_POST['PAJAK_ATR']['CPM_ATR_MASA_PAJAK1'][0];
+        $this->CPM_ATR_MASA_PAJAK2 = $_POST['PAJAK_ATR']['CPM_ATR_MASA_PAJAK2'][0];
+
+        //    var_dump(  $this->CPM_ATR_MASA_PAJAK1,  $this->CPM_ATR_MASA_PAJAK2);die;
+        //    echo "<pre>";
+        //    var_dump($_POST['PAJAK_ATR']['CPM_ATR_MASA_PAJAK2'][0]);
+        //     die;
+
+        $param['CPM_TRAN_JALAN_VERSION'] = $this->CPM_VERSION;
+        $param['CPM_TRAN_STATUS'] = $status;
+        $param['CPM_TRAN_FLAG'] = "0";
+        $param['CPM_TRAN_DATE'] = date("d-m-Y");
+        $param['CPM_TRAN_OPR'] = "";
+        $param['CPM_TRAN_OPR_DISPENDA'] = $new_operator;
+        $param['CPM_TRAN_INFO'] = $this->CPM_TRAN_INFO;
+        $param['CPM_TRAN_READ'] = "";
+        $res = $this->save_tranmain($param);
+        if ($this->AUTHORITY == 1 && $res == true) {
+            $arr_config = $this->get_config_value($this->_a);
+            $res = $this->save_gateway($this->id_pajak, $arr_config);
+            if ($res) {
+                $this->update_jatuh_tempo($this->EXPIRED_DATE, $this->CPM_TGL_JATUH_TEMPO);
+                $this->update_validasi($this->CPM_ID);
+                $_SESSION['_success'] = 'Data Pajak berhasil disetujui';
+            } else {
+                $_SESSION['_error'] = 'Data Pajak gagal disetujui';
+            }
+        }
+    }
+
+    // private function update_jatuh_tempo($expired_date)
+    // {
+    //     $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_JATUH_TEMPO = {$expired_date}
+    //               WHERE CPM_ID ='{$this->CPM_ID}'";
+    //     return mysqli_query($this->Conn, $query);
+    // }
+
+    private function update_jatuh_tempo($expired_date, $tgl_jatuh_tempo = NULL)
+    {
+
+        if ($tgl_jatuh_tempo == NULL || $tgl_jatuh_tempo == '') {
+            $expired_date = $expired_date;
+        } else {
+            $expired_date = "'" . $tgl_jatuh_tempo . "'";
+        }
+        $query = "UPDATE {$this->PATDA_JALAN_DOC} SET CPM_TGL_JATUH_TEMPO = {$expired_date}
+                  WHERE CPM_ID ='{$this->CPM_ID}'";
+        return mysqli_query($this->Conn, $query);
+    }
+
+    public function print_sptpd_base()
+    {
+        global $sRootPath;
+        $this->_id = $this->CPM_ID;
+        $DATA = $this->get_pajak();
+
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+        $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $BAG_VERIFIKASI_NAMA = $config['BAG_VERIFIKASI_NAMA'];
+        $NIP = $config['BAG_VERIFIKASI_NIP'];
+
+        $config_terlambat_lap = $this->get_config_terlambat_lap($this->id_pajak);
+        $persen_terlambat_lap = $config_terlambat_lap->persen;
+        $editable_terlambat_lap = $config_terlambat_lap->editable;
+
+        $html_harga_dasar = "";
+        $harga_dasar = $config["HARGA_DASAR_ENABLE_{$this->id_pajak}"];
+        $x = "c";
+        if ($harga_dasar == 1) {
+            $html_harga_dasar = "<tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;{$x}. Harga Dasar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_HARGA_DASAR'], 2) . "</td>
+                                </tr>";
+            $x++;
+        }
+
+        $html = "<table width=\"710\" class=\"main\" cellpadding=\"5\" border=\"1\" cellspacing=\"0\">
+                    <tr>
+                        <td colspan=\"2\"><table width=\"700\" border=\"0\">
+                                <tr>
+                                    <th valign=\"top\" align=\"center\">
+                                        " . strtoupper($JENIS_PEMERINTAHAN) . " " . strtoupper($NAMA_PEMERINTAHAN) . "<br />
+                                        " . strtoupper($NAMA_PENGELOLA) . "<br /><br />
+                                        <font class=\"normal\">{$JALAN}<br/>{$KOTA} - {$PROVINSI} {$KODE_POS}</font>
+                                    </th>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"450\"><table width=\"440\" class=\"header\" border=\"0\">
+                                <tr class=\"first\">
+                                    <td width=\"440\" valign=\"top\" align=\"center\" colspan=\"2\">
+                                        <b>
+                                            SURAT PEMBERITAHUAN PAJAK DAERAH (SPTPD)<br />
+                                            PAJAK PENERANGAN JALAN
+                                        </b><br/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width=\"130\">No. SPTPD</td>
+                                    <td width=\"310\" class=\"first\">: {$DATA['pajak']['CPM_NO']}</td>
+                                </tr>
+                                <tr>
+                                    <td>Masa Pajak</td>
+                                    <td class=\"first\">: {$DATA['pajak']['CPM_MASA_PAJAK1']} - {$DATA['pajak']['CPM_MASA_PAJAK2']}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tahun Pajak</td>
+                                    <td class=\"first\">: {$DATA['pajak']['CPM_TAHUN_PAJAK']}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width=\"260\">Kepada : <br/>
+                            Yth. Kepala Dinas Pendapatan Daerah<br/>
+                            {$JENIS_PEMERINTAHAN} {$NAMA_PEMERINTAHAN}<br/>
+                            di - {$KOTA}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\">
+                                <tr>
+                                    <td>Perhatian : </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;1. Harap diisi dalam rangkap 3 (tiga) ditulis dengan huruf CETAK atau diketik. </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;2. Beri nomor pada kotak yang tersedia untuk jawaban yang diberikan.</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;3. Setelah diisi dan ditandatangani harap diserahkan kembali kepada Dinas Pendapatan Daerah.</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kota {$KOTA} paling lambat tanggal 30 bulan berikutnya.</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;4. Keterlambatan penyerahan SPTPD akan dikenakan sanksi sesuai ketentuan berlaku.</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\">
+                                <tr>
+                                    <th align=\"left\" colspan=\"2\"><strong>I. IDENTITAS WAJIB PAJAK</strong></th>
+                                </tr>
+                                <tr>
+                                    <td width=\"200\">&nbsp;&nbsp;&nbsp;Nama Wajib Pajak</td>
+                                    <td width=\"500\">: {$DATA['profil']['CPM_NAMA_WP']}</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;Alamat Wajib Pajak</td>
+                                    <td>: {$DATA['profil']['CPM_ALAMAT_WP']}</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;Nama Penerangan Jalan</td>
+                                    <td>: {$DATA['profil']['CPM_NAMA_OP']}</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;Alamat Penerangan Jalan</td>
+                                    <td>: {$DATA['profil']['CPM_ALAMAT_OP']}</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;NPWPD</td>
+                                    <td>: " . Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD']) . "</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"left\"><strong>II. DIISI OLEH PENGUSAHA PENERANGAN JALAN</strong></td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"1\" cellspacing=\"0\">
+                                <tr>
+                                    <td align=\"left\" colspan=\"2\">&nbsp;&nbsp;&nbsp;a. Klasifikasi Pajak : {$DATA['profil']['CPM_REKENING']} - {$DATA['pajak']['ARR_REKENING'][$DATA['profil']['CPM_REKENING']]['nmrek']}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;b. Pemakaian</td>
+                                    <td width=\"30\">Kwh</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+                                </tr>
+                                $html_harga_dasar
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Pembayaran Pemakaian Objek Pajak</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_TOTAL_OMZET'], 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Pembayaran lain-lain</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_BAYAR_LAINNYA'], 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Dasar Pengenaan Pajak (DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_DPP'], 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Pembayaran Terutang ({$DATA['pajak']['CPM_TARIF_PAJAK']}% x DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_BAYAR_TERUTANG'], 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Pajak Kurang atau Lebih Bayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> 0</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Sanksi Administrasi Telat Lapor ({$persen_terlambat_lap}%) x " . round($persen_sanksi / 2) . " Bulan</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> " . number_format($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'], 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Jumlah Pajak yang dibayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"400\"> <strong>" . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</strong></td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;" . ($x++) . ". Data Pendukung</td>
+                                    <td align=\"left\" width=\"430\"> </td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a). Surat Setoran Pajak Daerah (SSPD)</td>
+                                    <td align=\"left\" width=\"430\"> [_] 1. Ada / [_] 2. Tidak ada</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b). NPWP / NPWPD</td>
+                                    <td align=\"left\" width=\"430\"> [_] 1. Ada / [_] 2. Tidak ada</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"270\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c). Rekapitulasi Kwh Penerangan Jalan</td>
+                                    <td align=\"left\" width=\"430\"> [_] 1. Ada / [_] 2. Tidak ada</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\"><table width=\"100%\" border=\"0\">
+                                <tr>
+                                    <td align=\"left\" colspan=\"2\">&nbsp;&nbsp;&nbsp;Dengan menyadari sepenuhnya akan segala akibatnya termasuk sanksi-sanksi sesuai ketentuan perundang-undangan yang berlaku, saya memberitahukan bahwa apa yang telah saya beritahukan diatas beserta lampiran-lampirannya adalah benar, lengkap, jelas dan bersyarat
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan=\"2\">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\" width=\"350\">&nbsp;&nbsp;&nbsp;Diterima oleh Petugas,</td>
+                                    <td align=\"left\" width=\"350\">{$KOTA}, " . date("d") . " {$this->arr_bulan[(int) date("m")]} " . date("Y") . " </td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\">&nbsp;&nbsp;&nbsp;Tanggal : </td>
+                                    <td align=\"left\">WP/Penanggung Pajak/Kuasa</td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\"></td>
+                                    <td align=\"left\"></td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\"></td>
+                                    <td align=\"left\"></td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\"></td>
+                                    <td align=\"left\"></td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\">&nbsp;&nbsp;&nbsp;<u>{$BAG_VERIFIKASI_NAMA}</u></td>
+                                    <td align=\"left\"></td>
+                                </tr>
+                                <tr>
+                                    <td align=\"left\">&nbsp;&nbsp;&nbsp;NIP. {$NIP}</td>
+                                    <td align=\"left\">Nama jelas/Cap/Stempel</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>";
+
+        require_once("{$sRootPath}inc/payment/tcpdf/tcpdf.php");
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('-');
+        $pdf->SetSubject('-');
+        $pdf->SetKeywords('-');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 14, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('P', 'A4');
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 45, 18, 25, '', '', '', '', false, 300, '', false);
+        $pdf->SetAlpha(0.3);
+
+        $pdf->Output('sptpd-jalan.pdf', 'I');
+    }
+
+
+    function tgl_indo_full($tanggal)
+    {
+        $bulan = array(
+            1 =>   'Januari',
+            'Febuari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode('-', $tanggal);
+
+        // variabel pecahkan 0 = tahun
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tanggal
+
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
+
+    public function print_sptpd()
+    {
+        global $sRootPath;
+        $this->_id = $this->CPM_ID;
+        $DATA = $this->get_pajak();
+        $data_input = $this->check_status(2, $this->CPM_ID, $this->id_pajak);
+        $petugas_input = $data_input->operator_input;
+        $role = $this->check_role($petugas_input);
+        $data_verifikasi = $this->check_status(5, $this->CPM_ID, $this->id_pajak);
+        $petugas_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->operator_verifikasi : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        $tanggal_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->tanggal_verifikasi : '';
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+        $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $BAG_VERIFIKASI_NAMA = $config['BAG_VERIFIKASI_NAMA'];
+        $NIP = $config['BAG_VERIFIKASI_NIP'];
+        $TGL_PENGESAHAN = $_POST['PAJAK']['tgl_cetak'];
+        $TTD = $_POST['PAJAK']['CPM_PEJABAT_MENGETAHUI'];
+        $ttds = $this->get_pejabat($TTD);
+        $tgl_pengesahans = $this->tgl_indo_full($TGL_PENGESAHAN);
+
+        $persen_sanksi = 0;
+        if (($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'] + 0) > 0) {
+            $tes3 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'];
+            $tes4 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $tes3;
+            $persen_sanksi = round(($tes4 / $tes3) * 100);
+        }
+
+        $html_harga_dasar = "";
+        $harga_dasar = $config["HARGA_DASAR_ENABLE_{$this->id_pajak}"];
+        $x = "c";
+        if ($harga_dasar == 1) {
+            $html_harga_dasar = "<tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;{$x}.</td>
+                                    <td align=\"left\" width=\"270\">Harga Dasar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_HARGA_DASAR'], 2) . "</td>
+                                </tr>";
+            $x++;
+        }
+
+        $pemerintah = explode(' ', $JENIS_PEMERINTAHAN);
+        $pemerintah_label = strtoupper($pemerintah[0]);
+        $pemerintah_jenis = strtoupper($pemerintah[1]);
+        $masaPajakAwal = $DATA['pajak_atr'][0]['CPM_ATR_MASA_PAJAK1'];
+        $masaPajakAkhir = $DATA['pajak_atr'][0]['CPM_ATR_MASA_PAJAK2'];
+        // var_dump($masaPajakAkhir);
+        // die;
+        function tgl_indo($tglcetak)
+        {
+            $bulan = array(
+                1 =>   'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agu',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des'
+            );
+            $pecahkan = explode('-', $tglcetak);
+
+            return $pecahkan[2] . '/' . $bulan[(int)$pecahkan[1]] . '/' . $pecahkan[0];
+        }
+        $tglcetak = date('Y-m-d');
+        $tgl_cetak = tgl_indo($tglcetak);
+        // var_dump($DATA['pajak_atr']);
+        // die;
+        $page1 = "<table width=\"710\" class=\"main\" cellpadding=\"0\" border=\"1\" cellspacing=\"0\">
+                    <tr>
+                        <td colspan=\"2\"><table width=\"710\" border=\"1\" cellpadding=\"3\">
+                                <tr>
+                                    <td width=\"200\" valign=\"top\" align=\"center\">                                   
+    									<br/>
+    									<br/><br/>
+    									<br/>
+                                        <b>" . $pemerintah_label . "<br/>" . $pemerintah_jenis . ' ' . strtoupper($NAMA_PEMERINTAHAN) . "</b>
+                                    </td>
+                                    <td width=\"310\" valign=\"top\" align=\"center\">
+    									<b style=\"font-size:55px\">S P T P D</b><br/>
+                                        (SURAT PEMBERITAHUAN PAJAK DAERAH)
+                                        <b style=\"font-size:55px\">PAJAK PENERANGAN JALAN</b><br/>
+                                        <b>Tahun Pajak : {$DATA['pajak']['CPM_TAHUN_PAJAK']}</b>
+                                    </td>
+                                    <td width=\"200\" valign=\"top\" align=\"center\">                                   
+    									<br/>
+    									Nomor SPTPD : <br/>
+    									{$DATA['pajak']['CPM_NO']}<br/><br/>
+    									 Masa Pajak : <br/>
+    									{$masaPajakAwal} - {$masaPajakAkhir}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+    					<td width=\"710\">
+    						<table width=\"710\" border=\"0\" cellpadding=\"5\">
+    							<tr>
+    								<td width=\"400\">
+    									<br/><br/>&nbsp;
+    									<table width=\"380\" border=\"0\" cellpadding=\"0\">
+    										<tr>
+    											<td width=\"100\">NPWPD</td>
+    											<td width=\"280\">: " . Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD']) . "</td>
+    										</tr>
+    										<tr>
+    											<td>No. Telp.</td>
+    											<td>: {$DATA['profil']['CPM_TELEPON_WP']}</td>
+    										</tr>
+    									</table>
+    								</td>
+    								<td width=\"310\"><table width=\"310\" class=\"header\" border=\"0\">
+    									<tr class=\"first\">
+    										<td>
+    										    Kepada Yth. <br/>
+    											Kepala Badan Pengelola Pajak dan Retribusi Daerah<br/>
+    											Kabupaten " . ucfirst(strtolower($NAMA_PEMERINTAHAN)) . "<br/>
+    											di <b style=\"font-size:40px\">{$KOTA}</b>
+    										</td>
+    									</tr>
+    									</table>
+    								</td>
+    							</tr>
+    						</table>
+    					</td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\">
+    						<tr style=\"font-size:28px\">
+    							<td><table width=\"100%\" border=\"0\" align=\"left\">
+    									<tr>
+    										<td>PERHATIAN : </td>
+    									</tr>
+    									<tr>
+    										<td>&nbsp;&nbsp;&nbsp;1. Harap diisi dalam rangkap enam (6) ditulis dengan huruf <b>CETAK</b> </td>
+    									</tr>
+    									<tr>
+    										<td>&nbsp;&nbsp;&nbsp;2. Formulir ini diterima oleh petugas setelah ditandatangani oleh Wajib Pajak atau Kuasanya.</td>
+    									</tr>
+    									<tr>
+    										<td>&nbsp;&nbsp;&nbsp;3. Setelah diisi dan ditandatangani, harap diserahkan kembali kepada BPPRD Kab Lampung Selatan
+                                            paling lambat pada tanggal 10 bulan ...... ......</td>
+    									</tr>
+    									<tr>
+    										<td>&nbsp;&nbsp;&nbsp;4. Keterlambatan penyerahan dari tanggal tersebut diatas akan dilakukan penatapan secara jabatan
+                                            untuk WP yang berdasarkan official Assesmnet dan denda untuk Wajib pajakyang berdasarkan self Assesment.</td>
+    									</tr>
+    								</table>
+    								</td>
+    							</tr>
+    						</table>
+                        </td>
+                    </tr>
+
+                <tr>
+                        <td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+                            <b>A. IDENTITAS SUBJEK DAN OBJEK PAJAK</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" align=\"left\" cellpadding=\"7\">
+                            <tr>
+                                <td><table width=\"100%\" align=\"left\">
+                                        <tr>
+                                            <td width=\"200\">A. NAMA OBJEK PAJAK</td>
+                                            <td width=\"500\">: {$DATA['profil']['CPM_NAMA_OP']}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>B. ALAMAT OBJEK PAJAK</td>
+                                            <td>: {$DATA['profil']['CPM_ALAMAT_OP']}<br/>
+                                            &nbsp;&nbsp;Kecamatan : {$DATA['profil']['CPM_NAMA_KECAMATAN_OP']}<br/>
+                                            &nbsp;&nbsp;Kelurahan : {$DATA['profil']['CPM_NAMA_KELURAHAN_OP']}<br/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>C. NAMA WAJIB PAJAK</td>
+                                            <td>: {$DATA['profil']['CPM_NAMA_WP']}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>D. ALAMAT WAJIB PAJAK</td>
+                                            <td>: {$DATA['profil']['CPM_ALAMAT_WP']}<br/>
+                                            &nbsp;&nbsp;Kecamatan : {$DATA['profil']['CPM_KECAMATAN_WP']}<br/>
+                                            &nbsp;&nbsp;Kelurahan : {$DATA['profil']['CPM_KELURAHAN_WP']}<br/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>    
+                <tr>
+                    <td colspan=\"\" align=\"center\" style=\"background-color:#CCC\">
+                        <b>B. INFORMASI UMUM OBJEK PAJAK</b>
+                    </td>
+                </tr>
+                
+
+
+
+                <tr style=\"font-size:32px\">
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+                                <tr>
+                                    <td align=\"left\" width=\"20\">&nbsp;&nbsp;a.</td>
+                                    <td align=\"left\" width=\"100\">Merk/ Tipe Genset  </td>
+                                    <td width=\"170\" align=\"left\"></td>
+                                    <td width=\"420\" align=\"left\">";
+        $nom = 1;
+        $total = count($DATA['pajak_atr']);
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $page1 .= $nom++ . ". " . $atr['CPM_ATR_MERK_JENSET'];
+            if ($no != $total - 1) {
+                $page1 .= ",   ";
+            }
+        }
+        // JUMLAH    
+        // $total_unit = 0; // Variabel untuk menyimpan jumlah keseluruhan unit
+        // foreach ($DATA['pajak_atr'] as $atr) {
+        //     $unit = intval($atr['CPM_ATR_UNIT']);
+        //     $total_unit += $unit; // Menambahkan unit pada total_unit
+        // }
+        // $page1 .=  $total_unit . " GENSET";
+        // END
+        // $nom = 1;
+        // $total = count($DATA['pajak_atr']);
+        // foreach ($DATA['pajak_atr'] as $no => $atr) {
+        //     $page1 .= $nom++ . ". " . $atr['CPM_ATR_MERK_JENSET'];
+        //     if ($no != $total - 1) {
+        //         $page1 .= "<br>";
+        //     }
+        // }
+        // $page1 .=
+
+        $total_unit = 0; // Variabel untuk menyimpan jumlah keseluruhan unit
+        foreach ($DATA['pajak_atr'] as $atr) {
+            $unit = intval($atr['CPM_ATR_UNIT']);
+            $total_unit += $unit; // Menambahkan unit pada total_unit
+        }
+        $page1 .= "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JUMLAH = " . $total_unit . " Unit";
+        $page1 .= "</td>
+
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;b.</td>
+                                    <td align=\"left\" width=\"270\">Golongan Penerangan Jalan</td>
+                                    <td align=\"left\" width=\"420\" colspan=\"2\">{$DATA['pajak']['ARR_REKENING'][$DATA['profil']['CPM_REKENING']]['nmrek']}</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;c.</td>
+                                    <td align=\"left\" width=\"270\">Kapasitas Pembangkit</td>
+                                    <td width=\"30\" align=\"left\">Kva</td>
+                                    <td align=\"right\" width=\"150\"> ";
+        $total_kva = 0; // Variabel untuk menyimpan jumlah keseluruhan unit
+        foreach ($DATA['pajak_atr'] as $atr) {
+            $unit_kva = intval($atr['CPM_ATR_PEMBANGKIT']);
+            $total_kva += $unit_kva; // Menambahkan unit pada total_unit
+        }
+        $page1 .=  $total_kva . "";
+        //
+        $page1 .= "</td>
+                                </tr>
+
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;d.</td>
+                                    <td align=\"left\" width=\"270\">Faktor Daya</td>
+                                    <td width=\"30\" align=\"left\">A Pi</td>
+                                    <td align=\"right\" width=\"150\"> ";
+        $total = 0;
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $total += $atr['CPM_ATR_FAKTOR_DAYA'];
+        }
+        $page1 .= $total . ", ";
+
+        $page1 .= "</td>
+                                </tr>
+
+                                <tr>
+                                    <td align=\"left\" width=\"20\">&nbsp;&nbsp;e.</td>
+                                    <td align=\"left\" width=\"270\">Harga Satuan</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\">";
+        $total = 0;
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $total += $atr['CPM_ATR_SATUAN'];
+        }
+        $page1 .= $total . ", ";
+        //
+        $page1 .= "</td>
+                                </tr>
+
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;f.</td>
+                                    <td align=\"left\" width=\"270\">Beban Pemakaian</td>
+                                    <td width=\"30\" align=\"left\">Jam</td>
+                                    <td align=\"right\" width=\"150\">";
+        $total = 0;
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $total += $atr['CPM_ATR_TOTAL_KWH'];
+        }
+        $page1 .= $total . ", ";
+
+        $page1 .= "</td>
+                                </tr>
+
+                                {$html_harga_dasar}
+
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;g.</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran Pemakaian Objek Pajak</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_OMZET'], 2) . "</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;h.</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran lain-lain</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_LAINNYA'], 2) . "</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;i.</td>
+                                    <td align=\"left\" width=\"270\">Dasar Pengenaan Pajak (DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DPP'], 2) . "</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;j.</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran Terutang ({$DATA['pajak']['CPM_TARIF_PAJAK']}% x DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_TERUTANG'], 2) . "</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;k.</td>
+                                    <td align=\"left\" width=\"270\">Pajak Kurang atau Lebih Bayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> 0.00</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;&nbsp;l.</td>
+                                    <td align=\"left\" width=\"270\">Sanksi Administrasi Telat Lapor </td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'], 2) . "</td>
+                                </tr>
+                                <tr>
+    								<td align=\"left\" width=\"20\">&nbsp;m.</td>
+                                    <td align=\"left\" width=\"270\">Jumlah Pajak yang dibayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> <strong>" . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</strong></td>
+                                </tr>
+                            </table>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    						<b>C. PERNYATAAN</b>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td colspan=\"2\" align=\"center\">
+    						<table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5s\">
+                                <tr>
+                                    <td colspan=\"2\">Dengan menyadari sepenuhnya akan segala akibat termasuk sanksi-sanksi sesuai dengan ketentuan perundang-undangan yang berlaku, saya atau yang saya beri kuasa menyatakan bahwa apa yang telah kami beritahukan tersebut diatas berserta lampiran-lampirannya adalah benar, lengkap dan jelas.
+                                    </td>
+                                </tr>
+    							<tr>
+    								<td width=\"340\"></td>
+    								<td align=\"center\">
+    									{$KOTA}, {$tgl_pengesahans}<br/>
+    									Wajib Pajak<br/><br/><br/><br/><br/>
+    									<u>{$DATA['profil']['CPM_NAMA_WP']}</u>
+    								</td>
+    							</tr>
+    						</table>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    						<b>D. DIISI OLEH PETUGAS PENDATA</b>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td colspan=\"2\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"10\">
+    							<tr>
+    								<td><table width=\"700\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\">
+    										<tr>
+    											<td width=\"150\">Diterima Tanggal</td>
+    											<td width=\"260\" colspan=\"2\">:{$tanggal_verifikasi}</td>
+    										</tr>
+    										<tr>
+    											<td width=\"150\">Nama Petugas</td>
+    											<td width=\"260\" colspan=\"2\">: {$petugas_verifikasi}</td>
+    										</tr>
+    										<tr>
+    											<td width=\"150\">NIP.</td>
+    											<td width=\"260\" colspan=\"2\">: </td>
+    										</tr>
+    										<tr>
+    											<td colspan=\"3\"><br/></td>
+    										</tr>
+    										<tr>
+    											<td width=\"150\">Tanda Tangan</td>
+    											<td width=\"195\">:</td>
+    											<td width=\"345\" align=\"center\">
+    												<u>{$petugas_verifikasi}</u>
+    											</td>
+    										</tr>
+    									</table>
+    								</td>
+    							</tr>
+    						</table>
+    					</td>
+    				</tr>
+    				<span style=\"font-size:24px\"><i>BPPRD LAMSEL {$tgl_cetak}</i></span>
+                </table>";
+        // die;
+        // echo $page1;
+        require_once("{$sRootPath}inc/payment/tcpdf/sptpd_pdf.php");
+        $pdf = new SPTPD_PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('');
+        $pdf->SetSubject('');
+        $pdf->SetKeywords('');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(true);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 5, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('P', 'F4');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 27, 8, 8, '', '', '', '', false, 300, '', false);
+        $pdf->writeHTML($page1, true, false, false, false, '');
+
+
+        $pdf->Output('sptpd-penerangan-jalan.pdf', 'I');
+    }
+
+    // public function print_sptpd_FTF()
+    // {
+    //     global $sRootPath;
+    //     $this->_id = $this->CPM_ID;
+    //     // var_dump($DATA);
+    //     // die;
+    //     $DATA = $this->get_pajak();
+
+    //     $data_input = $this->check_status(2, $this->CPM_ID, $this->id_pajak);
+    //     $petugas_input = $data_input->operator_input;
+    //     $role = $this->check_role($petugas_input);
+    //     $data_verifikasi = $this->check_status(5, $this->CPM_ID, $this->id_pajak);
+    //     $petugas_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->operator_verifikasi : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+    //     $tanggal_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->tanggal_verifikasi : '';
+
+
+    //     $config = $this->get_config_value($this->_a);
+    //     $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+    //     $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+    //     $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+    //     $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+    //     $JALAN = $config['ALAMAT_JALAN'];
+    //     $KOTA = $config['ALAMAT_KOTA'];
+    //     $PROVINSI = $config['ALAMAT_PROVINSI'];
+    //     $KODE_POS = $config['ALAMAT_KODE_POS'];
+    //     $BAG_VERIFIKASI_NAMA = $config['BAG_VERIFIKASI_NAMA'];
+    //     $NIP = $config['BAG_VERIFIKASI_NIP'];
+
+    //     $TGL_PENGESAHAN = $_POST['PAJAK']['tgl_cetak'];
+    //     $TTD = $_POST['PAJAK']['CPM_PEJABAT_MENGETAHUI'];
+    //     $ttds = $this->get_pejabat($TTD);
+    //     // var_dump($ttds);
+    //     // die;
+    //     $tgl_pengesahans = $this->tgl_indo_full($TGL_PENGESAHAN);
+
+    //     // $config_terlambat_lap = $this->get_config_terlambat_lap($this->id_pajak);
+    //     // // var_dump($this->id_pajak);
+    //     // // die;
+    //     // $persen_terlambat_lap = $config_terlambat_lap->persen;
+    //     // $editable_terlambat_lap = $config_terlambat_lap->editable;
+
+    //     $persen_sanksi = 0;
+    //     if (($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'] + 0) > 0) {
+    //         //$persen_terlambat_lap = round($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK'], 1)*100;
+    //         // $persen_sanksi = round(($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK']*100)/2,0)*2;
+    //         //tamabahan
+    //         $tes3 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'];
+    //         $tes4 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $tes3;
+    //         $persen_sanksi = round(($tes4 / $tes3) * 100);
+    //     }
+
+    //     $html_harga_dasar = "";
+    //     $harga_dasar = $config["HARGA_DASAR_ENABLE_{$this->id_pajak}"];
+    //     // var_dump($harga_dasar);
+    //     // die;
+    //     $x = "c";
+    //     if ($harga_dasar == 1) {
+    //         $html_harga_dasar = "<tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;{$x}.</td>
+    //                                 <td align=\"left\" width=\"270\">Harga Dasar</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_HARGA_DASAR'], 2) . "</td>
+    //                             </tr>";
+    //         $x++;
+    //     }
+
+    //     $pemerintah = explode(' ', $JENIS_PEMERINTAHAN);
+    //     $pemerintah_label = strtoupper($pemerintah[0]);
+    //     $pemerintah_jenis = strtoupper($pemerintah[1]);
+
+
+    //     function tgl_indo($tglcetak)
+    //     {
+    //         $bulan = array(
+    //             1 =>   'Jan',
+    //             'Feb',
+    //             'Mar',
+    //             'Apr',
+    //             'Mei',
+    //             'Jun',
+    //             'Jul',
+    //             'Agu',
+    //             'Sep',
+    //             'Okt',
+    //             'Nov',
+    //             'Des'
+    //         );
+    //         $pecahkan = explode('-', $tglcetak);
+
+    //         // variabel pecahkan 0 = tahun
+    //         // variabel pecahkan 1 = bulan
+    //         // variabel pecahkan 2 = tanggal
+
+    //         return $pecahkan[2] . '/' . $bulan[(int)$pecahkan[1]] . '/' . $pecahkan[0];
+    //     }
+    //     $tglcetak = date('Y-m-d');
+    //     $tgl_cetak = tgl_indo($tglcetak);
+    //     // var_dump($DATA['pajak_atr']);
+    //     // die;
+    //     $page1 = "<table width=\"710\" class=\"main\" cellpadding=\"0\" border=\"1\" cellspacing=\"0\">
+    //                 <tr>
+    //                     <td colspan=\"2\"><table width=\"710\" border=\"1\" cellpadding=\"3\">
+    //                             <tr>
+    //                                 <td width=\"200\" valign=\"top\" align=\"center\">                                   
+    // 									<br/>
+    // 									<br/><br/>
+    // 									<br/>
+    //                                     <b>" . $pemerintah_label . "<br/>" . $pemerintah_jenis . ' ' . strtoupper($NAMA_PEMERINTAHAN) . "</b>
+    //                                 </td>
+    //                                 <td width=\"310\" valign=\"top\" align=\"center\">
+    // 									<b style=\"font-size:55px\">S P T P D</b><br/>
+    //                                     (SURAT PEMBERITAHUAN PAJAK DAERAH)
+    //                                     <b style=\"font-size:55px\">PAJAK PENERANGAN JALAN</b><br/>
+    //                                     <b>Tahun Pajak : {$DATA['pajak']['CPM_TAHUN_PAJAK']}</b>
+    //                                 </td>
+    //                                 <td width=\"200\" valign=\"top\" align=\"center\">                                   
+    // 									<br/>
+    // 									Nomor SPTPD : <br/>
+    // 									{$DATA['pajak']['CPM_NO']}<br/><br/>
+    // 									<!-- Masa Pajak : <br/>
+    // 									{$DATA['pajak']['CPM_MASA_PAJAK1']} --> {$DATA['pajak']['CPM_MASA_PAJAK2']}
+    //                                 </td>
+    //                             </tr>
+    //                         </table>
+    //                     </td>
+    //                 </tr>
+    //                 <tr>
+    // 					<td width=\"710\">
+    // 						<table width=\"710\" border=\"0\" cellpadding=\"5\">
+    // 							<tr>
+    // 								<td width=\"400\">
+    // 									<br/><br/>&nbsp;
+    // 									<table width=\"380\" border=\"0\" cellpadding=\"0\">
+
+
+    //                                     <tr>
+
+    //                                     <td width=\"100\">Nama</td>
+    //                                     <td width=\"280\" align=\"left\">: {$DATA['profil']['CPM_NAMA_WP']}</td>
+    //                                 </tr>
+    //                                 <tr>
+
+    //                                     <td  width=\"100\">Alamat</td>
+    //                                     <td width=\"280\" align=\"left\">: {$DATA['profil']['CPM_ALAMAT_WP']}<br/>
+    //                                     &nbsp;&nbsp;Desa/Kelurahan : {$DATA['profil']['CPM_KELURAHAN_WP']}<br/>
+    //                                     &nbsp;&nbsp;Kecamatan : {$DATA['profil']['CPM_KECAMATAN_WP']}</td>
+    //                                 </tr>
+
+    // 										<tr>
+    // 											<td width=\"100\">NPWPD</td>
+    // 											<td width=\"280\">: " . Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD']) . "</td>
+    // 										</tr>
+    // 										<tr>
+    // 											<td>No. Telp.</td>
+    // 											<td>: {$DATA['profil']['CPM_TELEPON_WP']}</td>
+    // 										</tr>
+    // 									</table>
+    // 								</td>
+    // 								<td width=\"310\"><table width=\"310\" class=\"header\" border=\"0\">
+    // 									<tr class=\"first\"><br/>
+    // 										<td>
+    // 											Kepada Yth. <br/>
+    // 											Kepala Badan Pengelola Pajak dan Retribusi Daerah<br/>
+    // 											Kabupaten " . ucfirst(strtolower($NAMA_PEMERINTAHAN)) . "<br/>
+    // 											di <b style=\"font-size:40px\">{$KOTA}</b>
+    // 										</td>
+    // 									</tr>
+    // 									</table>
+    // 								</td>
+    // 							</tr>
+    // 						</table>
+    // 					</td>
+    //                 </tr>
+    //                 <tr>
+    //                     <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\">
+    // 						<tr style=\"font-size:28px\">
+    // 							<td><table width=\"100%\" border=\"0\" align=\"left\">
+    // 									<tr>
+    // 										<td>PERHATIAN : </td>
+    // 									</tr>
+    // 									<tr>
+    // 										<td>&nbsp;&nbsp;&nbsp;1. Harap diisi dalam rangkap enam (2) ditulis dengan huruf <b>CETAK</b> </td>
+    // 									</tr>
+    // 									<tr>
+    // 										<td>&nbsp;&nbsp;&nbsp;2. Beri nomor pada kotak yang tersedia untuk jawaban yang diberikan.</td>
+    // 									</tr>
+    // 									<tr>
+    // 										<td>&nbsp;&nbsp;&nbsp;3. Formulir ini diterima oleh petugas setelah ditandatangani oleh Wajib Pajak atau Kuasanya.</td>
+    // 									</tr>
+    // 								</table>
+    // 								</td>
+    // 							</tr>
+    // 						</table>
+    //                     </td>
+    //                 </tr>
+
+    //                 <tr>
+    //                     <td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    //                         <b>A. DI ISI OLEH WAJIB PAJAK</b>
+    //                     </td>
+    //                 </tr>
+    //                 <tr style=\"font-size:32px\">
+    //                 <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+    //                         <tr>
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;a.</td>
+    //                             <td align=\"left\" width=\"270\">Merk/ Tipe Genset  </td>
+    //                             <td width=\"30\" align=\"left\">:</td>
+    //                             <td width=\"150\" align=\"left\">";
+    //     $nom = 1;
+    //     $total = count($DATA['pajak_atr']);
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_MERK_JENSET'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;</td>
+    //                             <td align=\"left\" width=\"50\">Jumlah  </td>
+    //                             <td align=\"left\" width=\"30\">:</td>
+    //                             <td width=\"50\" align=\"left\">";
+
+    //     // $total = count($DATA['pajak_atr']);
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .=  intval($atr['CPM_ATR_UNIT']) . " Unit";
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                         </tr>
+
+
+
+    //                         <tr>
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;c.</td>
+    //                             <td align=\"left\" width=\"270\">Kapasitas Pembangkit</td>
+    //                             <td width=\"30\" align=\"left\">Kva</td>
+    //                             <td align=\"right\" width=\"150\"> ";
+
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .=  $atr['CPM_ATR_PEMBANGKIT'] . ", ";
+    //         // if ($no != $total - 1) {
+    //         //     $page1 .= "<br>";
+    //         // }
+    //     }
+    //     $page1 .= "</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;d.</td>
+    //                             <td align=\"left\" width=\"270\">Faktor Daya</td>
+    //                             <td width=\"30\" align=\"left\">A Pi</td>
+    //                             <td align=\"right\" width=\"150\">";
+    //     $nom = 1;
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_FAKTOR_DAYA'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;e.</td>
+    //                             <td align=\"left\" width=\"270\">Harga Satuan</td>
+    //                             <td width=\"30\" align=\"left\">Rp.</td>
+    //                             <td align=\"right\" width=\"150\"> ";
+    //     $nom = 1;
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_SATUAN'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                         </tr>
+
+    //                         <tr>
+    //                             <td align=\"left\" width=\"20\">&nbsp;&nbsp;f.</td>
+    //                             <td align=\"left\" width=\"270\">Beban Pemakaian</td>
+    //                             <td width=\"30\" align=\"left\">Kwh</td>
+    //                             <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+    //                         </tr>
+    //                     </table>
+    //                 </td>
+    //             </tr>
+
+    //                 <tr>
+    //                 <td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    //                     <b>B. INFORMASI UMUM OBJEK PAJAK</b>
+    //                 </td>
+    //             </tr>
+
+    //             <tr style=\"font-size:32px\">
+    //                     <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;a.</td>
+    //                                 <td align=\"left\" width=\"270\">Golongan Penerangan Jalan</td>
+    //                                 <td align=\"left\" width=\"420\" colspan=\"2\">{$DATA['pajak']['ARR_REKENING'][$DATA['profil']['CPM_REKENING']]['nmrek']}</td>
+    //                             </tr>
+
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;b.</td>
+    //                                 <td align=\"left\" width=\"270\">Kapasitas Pembangkit</td>
+    //                                 <td width=\"30\" align=\"left\">Kva</td>
+    //                                 <td align=\"right\" width=\"150\"> ";
+
+    //     $total = count($DATA['pajak_atr']);
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $atr['CPM_ATR_PEMBANGKIT'] . ", ";
+    //     }
+    //     $page1 .= "</td>
+    //                             </tr>
+
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;c.</td>
+    //                                 <td align=\"left\" width=\"270\">Faktor Daya</td>
+    //                                 <td width=\"30\" align=\"left\">A Pi</td>
+    //                                 <td align=\"right\" width=\"150\"> ";
+    //     $nom = 1;
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_FAKTOR_DAYA'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                             </tr>
+
+    //                             <tr>
+    //                                 <td align=\"left\" width=\"20\">&nbsp;&nbsp;d.</td>
+    //                                 <td align=\"left\" width=\"270\">Harga Satuan</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\">";
+    //     $nom = 1;
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_SATUAN'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                             </tr>
+
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;e.</td>
+    //                                 <td align=\"left\" width=\"270\">Beban Pemakaian</td>
+    //                                 <td width=\"30\" align=\"left\">Kwh</td>
+    //                                 <td align=\"right\" width=\"150\">";
+    //     $nom = 1;
+    //     foreach ($DATA['pajak_atr'] as $no => $atr) {
+    //         $page1 .= $nom++ . ". " . $atr['CPM_ATR_TOTAL_KWH'];
+    //         if ($no != $total - 1) {
+    //             $page1 .= "<br>";
+    //         }
+    //     }
+    //     $page1 .= "</td>
+    //                             </tr>
+
+    //                             {$html_harga_dasar}
+
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Pembayaran Pemakaian Objek Pajak</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_OMZET'], 2) . "</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Pembayaran lain-lain</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_LAINNYA'], 2) . "</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Dasar Pengenaan Pajak (DPP)</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DPP'], 2) . "</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Pembayaran Terutang ({$DATA['pajak']['CPM_TARIF_PAJAK']}% x DPP)</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_TERUTANG'], 2) . "</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Pajak Kurang atau Lebih Bayar</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> 0.00</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Sanksi Administrasi Telat Lapor </td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'], 2) . "</td>
+    //                             </tr>
+    //                             <tr>
+    // 								<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+    //                                 <td align=\"left\" width=\"270\">Jumlah Pajak yang dibayar</td>
+    //                                 <td width=\"30\" align=\"left\">Rp.</td>
+    //                                 <td align=\"right\" width=\"150\"> <strong>" . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</strong></td>
+    //                             </tr>
+    //                         </table>
+    // 					</td>
+    // 				</tr>
+
+
+
+
+
+
+    // 				<tr>
+    // 					<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    // 						<b>C. PERNYATAAN</b>
+    // 					</td>
+    // 				</tr>
+    // 				<tr>
+    // 					<td colspan=\"2\" align=\"center\">
+    // 						<table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5s\">
+    //                             <tr>
+    //                                 <td colspan=\"2\">Dengan menyadari sepenuhnya akan segala akibat termasuk sanksi-sanksi sesuai dengan ketentuan perundang-undangan yang berlaku, saya atau yang saya beri kuasa menyatakan bahwa apa yang telah kami beritahukan tersebut diatas berserta lampiran-lampirannya adalah benar, lengkap dan jelas.
+    //                                 </td>
+    //                             </tr>
+    // 							<tr>
+    // 								<td width=\"355\"></td>
+    // 								<td align=\"center\">
+    // 									{$KOTA}, {$tgl_pengesahans}<br/>
+    // 									Wajib Pajak<br/><br/><br/><br/><br/>
+    // 									<u>{$DATA['profil']['CPM_NAMA_WP']}</u>
+    // 								</td>
+    // 							</tr>
+    // 						</table>
+    // 					</td>
+    // 				</tr>
+    // 				<tr>
+    // 					<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+    // 						<b>D. DIISI OLEH PETUGAS PENDATA</b>
+    // 					</td>
+    // 				</tr>
+    // 				<tr>
+    // 					<td colspan=\"2\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"10\">
+    // 							<tr>
+    // 								<td><table width=\"700\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\">
+    // 										<tr>
+    // 											<td width=\"150\">Diterima Tanggal</td>
+    // 											<td width=\"260\" colspan=\"2\">:{$tanggal_verifikasi}</td>
+    // 										</tr>
+    // 										<tr>
+    // 											<td width=\"150\">Nama Petugas</td>
+    // 											<td width=\"260\" colspan=\"2\">: {$petugas_verifikasi}</td>
+    // 										</tr>
+    // 										<tr>
+    // 											<td width=\"150\">NIP.</td>
+    // 											<td width=\"260\" colspan=\"2\">: </td>
+    // 										</tr>
+    // 										<tr>
+    // 											<td colspan=\"3\"><br/></td>
+    // 										</tr>
+    // 										<tr>
+    // 											<td width=\"150\">Tanda Tangan</td>
+    // 											<td width=\"195\">:</td>
+    // 											<td width=\"345\" align=\"center\">
+    // 												<u>{$petugas_verifikasi}</u>
+    // 											</td>
+    // 										</tr>
+    // 									</table>
+    // 								</td>
+    // 							</tr>
+    // 						</table>
+    // 					</td>
+    // 				</tr>
+
+    // 				<span style=\"font-size:24px\"><i>BPPRD LAMSEL {$tgl_cetak}</i></span>
+    //             </table>";
+
+    //     // die;
+
+
+    //     // echo $page1;
+    //     require_once("{$sRootPath}inc/payment/tcpdf/sptpd_pdf.php");
+    //     $pdf = new SPTPD_PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    //     $pdf->SetCreator(PDF_CREATOR);
+    //     $pdf->SetAuthor('vpost');
+    //     $pdf->SetTitle('');
+    //     $pdf->SetSubject('');
+    //     $pdf->SetKeywords('');
+    //     $pdf->setPrintHeader(false);
+    //     $pdf->setPrintFooter(true);
+    //     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    //     $pdf->SetMargins(5, 5, 5);
+    //     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    //     $pdf->SetFont('helvetica', '', 10);
+    //     $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+    //     $pdf->AddPage('P', 'A4');
+    //     $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 27, 8, 8, '', '', '', '', false, 300, '', false);
+    //     $pdf->writeHTML($page1, true, false, false, false, '');
+
+
+    //     $pdf->Output('sptpd-penerangan-jalan.pdf', 'I');
+    // }
+
+    public function print_sptpd_ASLI()
+    {
+        global $sRootPath;
+        $this->_id = $this->CPM_ID;
+        // var_dump($DATA);
+        // die;
+        $DATA = $this->get_pajak();
+
+        $data_input = $this->check_status(2, $this->CPM_ID, $this->id_pajak);
+        $petugas_input = $data_input->operator_input;
+        $role = $this->check_role($petugas_input);
+        $data_verifikasi = $this->check_status(5, $this->CPM_ID, $this->id_pajak);
+        $petugas_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->operator_verifikasi : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        $tanggal_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->tanggal_verifikasi : '';
+
+
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+        $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $BAG_VERIFIKASI_NAMA = $config['BAG_VERIFIKASI_NAMA'];
+        $NIP = $config['BAG_VERIFIKASI_NIP'];
+
+        $TGL_PENGESAHAN = $_POST['PAJAK']['tgl_cetak'];
+        $tgl_pengesahans = $this->tgl_indo_full($TGL_PENGESAHAN);
+
+        // $config_terlambat_lap = $this->get_config_terlambat_lap($this->id_pajak);
+        // // var_dump($this->id_pajak);
+        // // die;
+        // $persen_terlambat_lap = $config_terlambat_lap->persen;
+        // $editable_terlambat_lap = $config_terlambat_lap->editable;
+
+        $persen_sanksi = 0;
+        if (($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'] + 0) > 0) {
+            //$persen_terlambat_lap = round($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK'], 1)*100;
+            // $persen_sanksi = round(($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK']*100)/2,0)*2;
+            //tamabahan
+            $tes3 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'];
+            $tes4 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $tes3;
+            $persen_sanksi = round(($tes4 / $tes3) * 100);
+        }
+
+        $html_harga_dasar = "";
+        $harga_dasar = $config["HARGA_DASAR_ENABLE_{$this->id_pajak}"];
+        // var_dump($harga_dasar);
+        // die;
+        $x = "c";
+        if ($harga_dasar == 1) {
+            $html_harga_dasar = "<tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;{$x}.</td>
+                                    <td align=\"left\" width=\"270\">Harga Dasar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_HARGA_DASAR'], 2) . "</td>
+                                </tr>";
+            $x++;
+        }
+
+        $pemerintah = explode(' ', $JENIS_PEMERINTAHAN);
+        $pemerintah_label = strtoupper($pemerintah[0]);
+        $pemerintah_jenis = strtoupper($pemerintah[1]);
+
+
+        function tgl_indo($tglcetak)
+        {
+            $bulan = array(
+                1 =>   'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agu',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des'
+            );
+            $pecahkan = explode('-', $tglcetak);
+
+            // variabel pecahkan 0 = tahun
+            // variabel pecahkan 1 = bulan
+            // variabel pecahkan 2 = tanggal
+
+            return $pecahkan[2] . '/' . $bulan[(int)$pecahkan[1]] . '/' . $pecahkan[0];
+        }
+        $tglcetak = date('Y-m-d');
+        $tgl_cetak = tgl_indo($tglcetak);
+        // var_dump($DATA['pajak_atr']);
+        // die;
+        $page1 = "<table width=\"710\" class=\"main\" cellpadding=\"0\" border=\"1\" cellspacing=\"0\">
+                    <tr>
+                        <td colspan=\"2\"><table width=\"710\" border=\"1\" cellpadding=\"3\">
+                                <tr>
+                                    <td width=\"200\" valign=\"top\" align=\"center\">                                   
+										<br/>
+										<br/><br/>
+										<br/>
+                                        <b>" . $pemerintah_label . "<br/>" . $pemerintah_jenis . ' ' . strtoupper($NAMA_PEMERINTAHAN) . "</b>
+                                    </td>
+                                    <td width=\"310\" valign=\"top\" align=\"center\">
+										<b style=\"font-size:55px\">S P T P D</b><br/>
+                                        (SURAT PEMBERITAHUAN PAJAK DAERAH)
+                                        <b style=\"font-size:55px\">PAJAK PENERANGAN JALAN</b><br/>
+                                        <b>Tahun Pajak : {$DATA['pajak']['CPM_TAHUN_PAJAK']}</b>
+                                    </td>
+                                    <td width=\"200\" valign=\"top\" align=\"center\">                                   
+										<br/>
+										Nomor SPTPD : <br/>
+										{$DATA['pajak']['CPM_NO']}<br/><br/>
+										Masa Pajak : <br/>
+										{$DATA['pajak']['CPM_MASA_PAJAK1']} - {$DATA['pajak']['CPM_MASA_PAJAK2']}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+						<td width=\"710\">
+							<table width=\"710\" border=\"0\" cellpadding=\"5\">
+								<tr>
+									<td width=\"400\">
+										<br/><br/>&nbsp;
+										<table width=\"380\" border=\"0\" cellpadding=\"0\">
+                                            <tr>
+												<td width=\"100\">Nama</td>
+												<td width=\"280\">: {$DATA['profil']['CPM_NAMA_WP']}</td>
+											</tr>
+                                            <tr>
+                                                <td width=\"100\">Alamat</td>
+                                                <td width=\"280\">: {$DATA['profil']['CPM_ALAMAT_WP']}<br/>
+                                                &nbsp;&nbsp;Desa/Kelurahan : {$DATA['profil']['CPM_KELURAHAN_WP']}<br/>
+                                                &nbsp;&nbsp;Kecamatan : {$DATA['profil']['CPM_KECAMATAN_WP']}</td>
+                                            </tr>
+											<tr>
+												<td width=\"100\">NPWPD</td>
+												<td width=\"280\">: " . Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD']) . "</td>
+											</tr>
+											<tr>
+												<td>No. Telp.</td>
+												<td>: {$DATA['profil']['CPM_TELEPON_WP']}</td>
+											</tr>
+										</table>
+									</td>
+									<td width=\"310\"><table width=\"310\" class=\"header\" border=\"0\">
+										<tr class=\"first\"><br/>
+											<td>
+												Kepada Yth. <br/>
+												Kepala Badan Pengelola Pajak dan Retribusi Daerah<br/>
+												Kabupaten " . ucfirst(strtolower($NAMA_PEMERINTAHAN)) . "<br/>
+												di <b style=\"font-size:40px\">{$KOTA}</b>
+											</td>
+										</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\">
+							<tr style=\"font-size:28px\">
+								<td><table width=\"100%\" border=\"0\" align=\"left\">
+										<tr>
+											<td>PERHATIAN : </td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;1. Harap diisi dalam rangkap enam (2) ditulis dengan huruf <b>CETAK</b> </td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;2. Beri nomor pada kotak yang tersedia untuk jawaban yang diberikan.</td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;3. Formulir ini diterima oleh petugas setelah ditandatangani oleh Wajib Pajak atau Kuasanya.</td>
+										</tr>
+									</table>
+									</td>
+								</tr>
+							</table>
+                        </td>
+                    </tr>
+                  
+                    <tr>
+                        <td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+                            <b>A. DI ISI OLEH WAJIB PAJAK</b>
+                        </td>
+                    </tr>
+                    <tr style=\"font-size:32px\">
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+                        
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;a.</td>
+                                    <td align=\"left\" width=\"270\">Merk/ Tipe Genset  </td>
+                                    <td width=\"30\" align=\"left\">:</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td align=\"left\" width=\"20\">&nbsp;&nbsp;b.</td>
+                                    <td align=\"left\" width=\"270\">Jumlah  </td>
+                                    <td align=\"left\" width=\"30\">:</td>
+                                    <td width=\"150\" align=\"right\">Unit</td>
+                                </tr>
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;c.</td>
+                                    <td align=\"left\" width=\"270\">Kapasitas Pembangkit</td>
+                                    <td width=\"30\" align=\"left\">Kva</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;d.</td>
+                                    <td align=\"left\" width=\"270\">Faktor Daya</td>
+                                    <td width=\"30\" align=\"left\">A Pi</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_FAKTOR_DAYA'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+                                    <td align=\"left\" width=\"20\">&nbsp;&nbsp;e.</td>
+                                    <td align=\"left\" width=\"270\">Harga Satuan</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_SATUAN'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;f.</td>
+                                    <td align=\"left\" width=\"270\">Beban Pemakaian</td>
+                                    <td width=\"30\" align=\"left\">Kwh</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+                                </tr>
+                            </table>
+						</td>
+					</tr>
+                    <tr>
+						<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+							<b>B. INFORMASI UMUM OBJEK PAJAK</b>
+						</td>
+					</tr>
+					<tr style=\"font-size:32px\">
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;a.</td>
+                                    <td align=\"left\" width=\"270\">Golongan Penerangan Jalan</td>
+                                    <td align=\"left\" width=\"420\" colspan=\"2\">{$DATA['pajak']['ARR_REKENING'][$DATA['profil']['CPM_REKENING']]['nmrek']}</td>
+                                </tr>
+                                
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;b.</td>
+                                    <td align=\"left\" width=\"270\">Kapasitas Pembangkit</td>
+                                    <td width=\"30\" align=\"left\">Kva</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;c.</td>
+                                    <td align=\"left\" width=\"270\">Faktor Daya</td>
+                                    <td width=\"30\" align=\"left\">A Pi</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_FAKTOR_DAYA'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+                                    <td align=\"left\" width=\"20\">&nbsp;&nbsp;d.</td>
+                                    <td align=\"left\" width=\"270\">Harga Satuan</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_SATUAN'], 2) . "</td>
+                                </tr>
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;e.</td>
+                                    <td align=\"left\" width=\"270\">Beban Pemakaian</td>
+                                    <td width=\"30\" align=\"left\">Kwh</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_KWH'], 2) . "</td>
+                                </tr>
+
+                                {$html_harga_dasar}
+
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran Pemakaian Objek Pajak</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_TOTAL_OMZET'], 2) . "</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran lain-lain</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_LAINNYA'], 2) . "</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Dasar Pengenaan Pajak (DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DPP'], 2) . "</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Pembayaran Terutang ({$DATA['pajak']['CPM_TARIF_PAJAK']}% x DPP)</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_BAYAR_TERUTANG'], 2) . "</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Pajak Kurang atau Lebih Bayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> 0.00</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Sanksi Administrasi Telat Lapor (%) x " . round($persen_sanksi / 2) . " Bulan</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'], 2) . "</td>
+                                </tr>
+                                <tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;" . ($x++) . ".</td>
+                                    <td align=\"left\" width=\"270\">Jumlah Pajak yang dibayar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> <strong>" . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</strong></td>
+                                </tr>
+                            </table>
+						</td>
+					</tr>
+
+                    <tr>
+                    <td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+                        <b>B. INFORMASI UMUM OBJEK PAJAK</b>
+                    </td>
+                </tr>
+               
+
+                 <tr style=\"font-size:32px\">
+                    <td width=\"710\" colspan=\"2\" align=\"center\">
+                    <table width=\"700\" align=\"center\" cellpadding=\"1\" border=\"0\" cellspacing=\"0\">
+                    
+                        <tr>
+                            <td align=\"left\" width=\"20\">&nbsp;&nbsp;</td>
+                            <td align=\"left\" width=\"270\"></td>
+                            <td width=\"30\"></td>
+                            <td align=\"right\" width=\"390\"></td>
+                        </tr>
+                        <tr>
+                            
+                            <td align=\"left\" width=\"270\" colspan=\"3\">
+                                <table width=\"680\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\">
+                                <tr>
+                                    <td width=\"5%\" align=\"center\"><strong>NO</strong></td>
+                                    <td width=\"30%\" align=\"center\"><strong>Merk/ Tipe Genset</strong></td>
+                                    <td width=\"20%\" align=\"center\"><strong>Pembayaran <br> Terutang</strong></td>
+                                    <td width=\"15%\" align=\"center\"><strong>Denda</strong></td>
+                                    <td width=\"15%\" align=\"center\"><strong>Jumlah</strong></td>
+                                    <td width=\"15%\" align=\"center\"><strong>jumlah Pajak <br>yang dibayar</strong></td>
+                                </tr>
+                                ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            ++$no;
+            $jumlah1 = $atr['CPM_ATR_TOTAL_OMZET'] * $atr['CPM_ATR_TARIF_PAJAK'] / 100;
+            $page1 .= "<tr>
+                                                            <td align=\"right\">{$no}.</td>
+                                                            <td align=\"left\">
+                                                                {$atr['CPM_ATR_MERK_JENSET']}<br/>\n
+                                                                {$atr['CPM_ATR_UNIT']} Unit<br/>\n
+                                                                Kapasitas Pembangkit : " . strtoupper($atr['CPM_ATR_PEMBANGKIT']) . " .Kva\n
+                                                            </td>
+                                                            <td>{$atr['CPM_ATR_TOTAL_OMZET']} X {$atr['CPM_ATR_TARIF_PAJAK']} / 100 <br>={$jumlah1}
+                                                            </td>
+                                                            <td>
+                                                                Rp. 0  
+                                                            </td>
+                                                            <td>" . number_format($jumlah1, 0) . "</td>
+                                                            <td>
+                                                            " . number_format($jumlah1, 0) . "
+                                                            </td>
+                                                          </tr>";
+        }
+        $page1 .= "
+                                </table><br/></td>
+                         </tr>
+                    </table>
+                    </td>
+                </tr>
+
+
+
+					<tr>
+						<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+							<b>C. PERNYATAAN</b>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=\"2\" align=\"center\">
+							<table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5s\">
+                                <tr>
+                                    <td colspan=\"2\">Dengan menyadari sepenuhnya akan segala akibat termasuk sanksi-sanksi sesuai dengan ketentuan perundang-undangan yang berlaku, saya atau yang saya beri kuasa menyatakan bahwa apa yang telah kami beritahukan tersebut diatas berserta lampiran-lampirannya adalah benar, lengkap dan jelas.
+                                    </td>
+                                </tr>
+								<tr>
+									<td width=\"355\"></td>
+									<td align=\"center\">
+										{$KOTA}, {$tgl_pengesahans}<br/>
+										Wajib Pajak<br/><br/><br/><br/><br/>
+										<u>{$DATA['profil']['CPM_NAMA_WP']}</u>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=\"2\" align=\"center\" style=\"background-color:#CCC\">
+							<b>D. DIISI OLEH PETUGAS PENDATA</b>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=\"2\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"10\">
+								<tr>
+									<td><table width=\"700\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\">
+											<tr>
+												<td width=\"150\">Diterima Tanggal</td>
+												<td width=\"260\" colspan=\"2\">:{$tanggal_verifikasi}</td>
+											</tr>
+											<tr>
+												<td width=\"150\">Nama Petugas</td>
+												<td width=\"260\" colspan=\"2\">: {$petugas_verifikasi}</td>
+											</tr>
+											<tr>
+												<td width=\"150\">NIP.</td>
+												<td width=\"260\" colspan=\"2\">: </td>
+											</tr>
+											<tr>
+												<td colspan=\"3\"><br/></td>
+											</tr>
+											<tr>
+												<td width=\"150\">Tanda Tangan</td>
+												<td width=\"195\">:</td>
+												<td width=\"345\" align=\"center\">
+													<u>{$petugas_verifikasi}</u>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					
+					<span style=\"font-size:24px\"><i>BPPRD LAMSEL {$tgl_cetak}</i></span>
+                </table>";
+
+        // die;
+
+
+        // echo $page1;
+        require_once("{$sRootPath}inc/payment/tcpdf/sptpd_pdf.php");
+        $pdf = new SPTPD_PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('');
+        $pdf->SetSubject('');
+        $pdf->SetKeywords('');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(true);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 5, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('P', 'A4');
+        $pdf->writeHTML($page1, true, false, false, false, '');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 27, 8, 8, '', '', '', '', false, 300, '', false);
+
+
+        $pdf->Output('sptpd-penerangan-jalan.pdf', 'I');
+    }
+
+    public function print_notaHitung()
+    {
+        global $sRootPath;
+        $this->_id = $this->CPM_ID;
+        // var_dump($DATA);
+        // die;
+        $DATA = $this->get_pajak();
+
+        $data_input = $this->check_status(2, $this->CPM_ID, $this->id_pajak);
+        $petugas_input = $data_input->operator_input;
+        $role = $this->check_role($petugas_input);
+        $data_verifikasi = $this->check_status(5, $this->CPM_ID, $this->id_pajak);
+        $petugas_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->operator_verifikasi : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        $tanggal_verifikasi = $role == 'rmPatdaWp' ? $data_verifikasi->tanggal_verifikasi : '';
+
+
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+        $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $BAG_VERIFIKASI_NAMA = $config['BAG_VERIFIKASI_NAMA'];
+        $NIP = $config['BAG_VERIFIKASI_NIP'];
+        $KABID_NAMA = $config['KABID_PENDATAAN_NAMA'];
+        $KABID_NIP = $config['KABID_PENDATAAN_NIP'];
+        $KASIE_NAMA = $config['KASIE_PENETAPAN_NAMA'];
+        $KASIE_NIP = $config['KASIE_PENETAPAN_NIP'];
+
+
+        $TGL_PENGESAHAN = $_POST['PAJAK']['tgl_cetak'];
+        $TTD = $_POST['PAJAK']['CPM_PEJABAT_MENGETAHUI'];
+        $ttds = $this->get_pejabat($TTD);
+        // var_dump($ttds);
+        // die;
+        $tgl_pengesahans = $this->tgl_indo_full($TGL_PENGESAHAN);
+
+        // $config_terlambat_lap = $this->get_config_terlambat_lap($this->id_pajak);
+        // // var_dump($this->id_pajak);
+        // // die;
+        // $persen_terlambat_lap = $config_terlambat_lap->persen;
+        // $editable_terlambat_lap = $config_terlambat_lap->editable;
+
+        $persen_sanksi = 0;
+        if (($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'] + 0) > 0) {
+            //$persen_terlambat_lap = round($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK'], 1)*100;
+            // $persen_sanksi = round(($DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP']/$DATA['pajak']['CPM_TOTAL_PAJAK']*100)/2,0)*2;
+            //tamabahan
+            $tes3 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $DATA['pajak']['CPM_DENDA_TERLAMBAT_LAP'];
+            $tes4 = $DATA['pajak']['CPM_TOTAL_PAJAK'] - $tes3;
+            $persen_sanksi = round(($tes4 / $tes3) * 100);
+        }
+
+        $html_harga_dasar = "";
+        $harga_dasar = $config["HARGA_DASAR_ENABLE_{$this->id_pajak}"];
+        // var_dump($harga_dasar);
+        // die;
+        $x = "c";
+        if ($harga_dasar == 1) {
+            $html_harga_dasar = "<tr>
+									<td align=\"left\" width=\"20\">&nbsp;&nbsp;{$x}.</td>
+                                    <td align=\"left\" width=\"270\">Harga Dasar</td>
+                                    <td width=\"30\" align=\"left\">Rp.</td>
+                                    <td align=\"right\" width=\"150\"> " . number_format($DATA['pajak']['CPM_HARGA_DASAR'], 2) . "</td>
+                                </tr>";
+            $x++;
+        }
+
+        $pemerintah = explode(' ', $JENIS_PEMERINTAHAN);
+        $pemerintah_label = strtoupper($pemerintah[0]);
+        $pemerintah_jenis = strtoupper($pemerintah[1]);
+
+
+        function tgl_indo($tglcetak)
+        {
+            $bulan = array(
+                1 =>   'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agu',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des'
+            );
+            $pecahkan = explode('-', $tglcetak);
+
+            // variabel pecahkan 0 = tahun
+            // variabel pecahkan 1 = bulan
+            // variabel pecahkan 2 = tanggal
+
+            return $pecahkan[2] . '/' . $bulan[(int)$pecahkan[1]] . '/' . $pecahkan[0];
+        }
+        $tglcetak = date('Y-m-d');
+        $tgl_cetak = tgl_indo($tglcetak);
+        $masaPajakAwal = $DATA['pajak_atr'][0]['CPM_ATR_MASA_PAJAK1'];
+        $masaPajakAkhir = $DATA['pajak_atr'][0]['CPM_ATR_MASA_PAJAK2'];
+        // var_dump($DATA['pajak_atr']);
+        // die;
+        $html = "<table width=\"1015\" class=\"main\" border=\"1\">
+					<tr>
+						<td><table width=\"1015\" border=\"1\" cellpadding=\"10\">
+								<tr>
+									<th valign=\"top\" width=\"360\" align=\"center\">
+										<table cellpadding=\"0\" border=\"0\"><tr><td width=\"100\"></td>
+										<td width=\"250\"><b><font size=\"+1\">" . strtoupper($JENIS_PEMERINTAHAN) . " " . strtoupper($NAMA_PEMERINTAHAN) . "<br />
+										" . strtoupper($NAMA_PENGELOLA) . "</font></b><br /><br />
+										<font class=\"normal\">{$JALAN}</font></td>
+										</tr></table>
+									</th>
+									<th width=\"340\" align=\"center\">
+										<br><b>NOTA PERHITUNGAN PAJAK<br/>
+										Tahun : {$DATA['pajak_atr'][0]['CPM_ATR_TAHUN_PAJAK']}</b>
+										<!--Batas Penyetoran terakhir tanggal: 13 Maret 2021-->
+									</th>
+									<th width=\"315\"><table>
+										<tr><td>Nomor Nota Perhitungan</td><td>: {$DATA['pajak']['CPM_NO_SSPD']}</td></tr>
+										<tr><td>No. SPT yang dikirim</td><td>: ......................................</td></tr>
+
+                                        <tr><td>Masa Pajak  </td><td>:{$masaPajakAwal} - {$masaPajakAkhir}</td></tr>
+
+									</table></th>
+								 </tr>
+								<tr>
+									<td><table cellpadding=\"1\" border=\"0\">
+									<tr><td width=\"70\">Nama WP</td><td width=\"7\">:</td><td width=\"275\">{$DATA['profil']['CPM_NAMA_WP']}</td></tr>
+									<tr><td>Nama OP</td><td>:</td><td>{$DATA['profil']['CPM_NAMA_OP']}</td></tr>
+									</table></td>
+									<td><table cellpadding=\"1\" border=\"0\"><tr>
+										<td width=\"70\">Alamat</td><td width=\"7\">:</td><td width=\"250\">{$DATA['profil']['CPM_ALAMAT_WP']} - {$DATA['profil']['CPM_KELURAHAN_WP']}<br>KEC. {$DATA['profil']['CPM_KECAMATAN_WP']}</td>
+									</tr></table></td><td><table cellpadding=\"1\" border=\"0\"><tr>
+										<td width=\"80\">NPWPD</td><td width=\"180\">: " . Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD']) . "</td>
+									</tr></table></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+              <br><br>
+                <style>
+                table.respon{
+                    width: 100%;
+                    margin: 0 auto;
+                }
+                </style>
+                <br>
+				<table width=\"1015\" border=\"0\" class=\"child\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-size:28px\">
+                
+								<tr>
+									<td align='center'><table  class=\"respon\" width=\"1015\" border=\"1\" cellpadding=\"2\">
+											<tr>
+												<th width=\"30\" align=\"center\"><br><br><b>NO.</b></th>
+												<th  width=\"250\"align=\"center\"><br><br><b>JENIS PAJAK</b></th>";
+        // echo'<pre>';print_r($pajak_atr);exit;
+        //     $row_atr = '';   
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= "<th width=\"100\" align=\"center\"><br><br><b>TG" . ($no + 1) . "</b></th>";
+        }
+        $html .=                                "
+											</tr>
+                                                <tr>
+												<td align=\"center\">1</td>
+                                                <td align=\"center\">KAPASITAS  PEMBANGKIT </td>
+											
+												";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . number_format($atr['CPM_ATR_PEMBANGKIT'], 0, '.', '') . '</td>';
+        }
+        $html .= "		</tr>     <tr>
+        <td align=\"center\">2</td>
+        <td align=\"center\">INTENSITAS PEMAKAIAN </td>
+        ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . number_format($atr['CPM_ATR_TOTAL_KWH'], 0, '.', '') . '</td>';
+        }
+        $html .= "		</tr>     <tr>
+        <td align=\"center\">3</td>
+        <td align=\"center\">HARGA SATUAN LISTRIK</td>
+       
+        ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . number_format($atr['CPM_ATR_SATUAN'], 0, '.', '') . '</td>';
+        }
+        $html .= "		</tr>     <tr>
+            <td align=\"center\">4</td>
+            <td align=\"center\">NJTL (KVA X FD X INTENS X HARGA SATUAN)</td>
+            ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . number_format($atr['CPM_ATR_TOTAL_OMZET']) . '</td>';
+        }
+        $html .= "		</tr> <tr>
+        <td align=\"center\">5</td>
+        <td align=\"center\">TARIF PAJAK (%)</td>
+        ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . $atr['CPM_ATR_TARIF_PAJAK'] . '</td>';
+        }
+        $html .= "		</tr> <tr>
+        <td align=\"center\">6</td>
+        <td align=\"center\">PAJAK TERHUTANG (1,5% X NJTL)</td>
+        ";
+        foreach ($DATA['pajak_atr'] as $no => $atr) {
+            $html .= '<td align="center">' . number_format($atr['CPM_ATR_TOTAL_OMZET'] * 1.50 / 100) . '</td>';
+        }
+        $html .= "		</tr>
+                                                <tr>
+												<td colspan=\"2 \" align=\"right\" style=\"border:none\"><b>DENDA</b></td>
+												<td colspan=\"" . count($DATA['pajak_atr'])  . "\" align=\"right\"><b>0</b></td>
+											</tr>
+											<tr>
+												<td colspan=\"2\" align=\"right\" style=\"border:none\"><b>Pajak terhutang yang harus di bayar</b></td>
+												<td colspan=\"" . count($DATA['pajak_atr'])  . "\" align=\"right\"><b>" . number_format($DATA['pajak']['CPM_BAYAR_TERUTANG']) . "</b></td>
+											</tr>
+                                            <tr>
+                                                <td colspan=\"2\" align=\"right\" style=\"border:none\"><b>Jumlah dengan huruf</b></td>
+												<td colspan=\"" . count($DATA['pajak_atr'])  . "\" align=\"right\"><b>(" . ucwords($this->SayInIndonesian($DATA['pajak']['CPM_TOTAL_PAJAK'])) . " Rupiah)</b></td>
+                                            </tr>
+										</table>
+                                        <br><br>
+										
+										<br/>
+
+										<table width=\"1015\" border=\"0\" cellpadding=\"3\">
+											<tr>
+												<td>
+													<table width=\"299\" border=\"1\">
+														<tr>
+														  <td colspan=\"5\" width=\"289\" align=\"center\">Harga Tabel Satuan Listrik
+															</td>
+														</tr>
+														<tr align=\"center\" >
+														  <td width=\"20\">No</td>
+                                                          <td width=\"64\">Golongan <br> Penggunaan</td>
+                                                          <td width=\"65\">Gol. Daya <br>(kVA)</td>
+                                                          <td width=\"70\">Biaya Beban <br>(Rp/kVA/Bln)</td>
+                                                          <td width=\"70\">Harga Satuan <br>(Rp/kWh)</td>
+														</tr>
+														<tr align=\"center\">
+                                                            <td>I</td>
+                                                            <td>BISNIS<br>- B1<br>- B2<br>- B3<br>- B3</td>
+                                                            <td>&nbsp;<br> 1,3<br>2,2 - 5,3<br>>5,5 - 200<br>>200</td>
+                                                            <td>&nbsp;<br> *)<br> *)<br> *)<br> *)</td>
+                                                            <td>&nbsp;<br>966<br> 1.100<br> 1.352<br> 1.020</td>
+														</tr>
+                                                        <tr align=\"center\">
+                                                            <td>II</td>
+                                                            <td>INDUSTRI<br>- I1<br>- I2<br>- I3<br>- I4</td>
+                                                            <td>&nbsp;<br> 3,5-14<br>>14 - 200<br>>200<br>>30.000</td>
+                                                            <td>&nbsp;<br> *)<br> *)<br> *)<br> *)</td>
+                                                            <td>&nbsp;<br>1.112<br> 972<br> 1.115<br> 1.191</td>
+														</tr>
+													</table>
+												</td>
+												<td>
+													<table width=\"299\" border=\"0\">
+														<tr>
+															<td width=\"289\" align=\"center\">
+																KABUPATEN LAMPUNG SELATAN, {$tgl_cetak} <br>
+                                                                A.n Kepala Badan Pengelola Pajak dan Retribusi Daerah <br>
+                                                                Kabupaten Lampung Selatan,<br>
+                                                                Kepala Bidang Pengembangan dan Penetapan<br>
+                                                                ";
+        if ($ttds['CPM_KEY'] == 'KABID_PPP') {
+            $html .= '';
+        } else {
+            $html .= 'Ub. Kasubbid Perhitungan dan Penetapan';
+        }
+
+        $html .= "</td>
+                                                           
+														</tr>
+														<tr>
+															<td><p>&nbsp;</p>
+																<p>&nbsp;</p>
+															</td>
+														</tr>
+														<tr>
+															<td align=\"center\">
+															<strong><u>{$ttds['CPM_NAMA']}</u></strong><br/>
+															NIP. {$ttds['CPM_NIP']}</td>
+														</tr>
+													</table>
+												</td>
+												<td>
+													<table width=\"470\" border=\"0\">
+														<tr>
+														  <td width=\"100\">Dibuat Tanggal </td>
+														  <td>: {$DATA['pajak']['CPM_TGL_LAPOR']}</td>
+														</tr>
+														<tr>
+														  <td>Oleh</td>
+														  <td>: </td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								
+								<span style=\"font-size:24px\"><i>BPPRD LAMSEL {$tgl_cetak}</i></span>
+							</table> ";
+        // echo $html;
+        // die;
+        require_once("{$sRootPath}inc/payment/tcpdf/tcpdf.php");
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('');
+        $pdf->SetSubject('');
+        $pdf->SetKeywords('');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 10, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('L', 'A4');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 12, 17, 17, '', '', '', '', false, 300, '', false);
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $pdf->SetAlpha(0.3);
+
+        $pdf->Output('sspd-nota-hitung.pdf', 'I');
+    }
+
+
+    public function print_skpd($type = "")
+    {
+        ob_start();
+        global $sRootPath;
+
+        // tambahan qr
+        require_once($sRootPath . "qrcode.php");
+
+        $this->_id = $this->CPM_ID;
+        $DATA = $this->get_pajak();
+        $data = $DATA['pajak'];
+        $profil = $DATA['profil'];
+        $pajak_atr = $DATA['pajak_atr'];
+        // var_dump($DATA['pajak_atr']);
+        // die;
+
+        $get_npwpd = $profil['CPM_NPWPD'];
+        $querys = "select * from patda_wp where CPM_NPWPD = '{$get_npwpd}'";
+        $res = mysqli_query($this->Conn, $querys);
+        while ($rows = mysqli_fetch_assoc($res)) {
+            $kota_wp = $rows['CPM_KOTA_WP'];
+            $kecamatan_wp = $rows['CPM_KECAMATAN_WP'];
+            $kelurahan_wp = $rows['CPM_KELURAHAN_WP'];
+            $alamat_wp = $rows['CPM_ALAMAT_WP'];
+        }
+
+
+        //var_dump($DATA['profil']['CPM_REKENING']);die;
+
+        $DATA = array_merge($data, $profil);
+        $DATA['pajak_atr'] = $pajak_atr;
+        $arr_rekening = $this->getRekening();
+
+        $arr_config = $this->get_config_value($this->_a);
+        $dbName = $arr_config['PATDA_DBNAME'];
+        $dbHost = $arr_config['PATDA_HOSTPORT'];
+        $dbPwd = $arr_config['PATDA_PASSWORD'];
+        $dbTable = $arr_config['PATDA_TABLE'];
+        $dbUser = $arr_config['PATDA_USERNAME'];
+        $Conn_gw = mysqli_connect($dbHost, $dbUser, $dbPwd, $dbName);
+        //mysqli_select_db($dbName, $Conn_gw);
+        $query = sprintf("select * from SIMPATDA_GW WHERE id_switching = '%s'", $this->CPM_ID);
+        $res = mysqli_query($Conn_gw, $query);
+
+
+        $check_approve = mysqli_num_rows($res);
+        if ($check_approve == 0) {
+            $DATA['CPM_TGL_JATUH_TEMPO'] = '';
+            $DATA['A_QR'] = '';
+            $DATA['A_STATUS'] = '';
+        } else {
+            if ($d = mysqli_fetch_assoc($res)) {
+                $DATA['CPM_TGL_JATUH_TEMPO'] = $d['expired_date'];
+                $DATA['A_QR'] = $d['approval_qr_text'];
+                $DATA['A_STATUS'] = $d['approval_status'];
+            }
+        }
+        //var_dump($DATA['CPM_TGL_JATUH_TEMPO'], $DATA['A_QR']);
+        mysqli_close($Conn_gw);
+
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+        $NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $KEPALA_NAMA = $config['KEPALA_DINAS_NAMA'];
+        $KEPALA_NIP = $config['KEPALA_DINAS_NIP'];
+
+
+        $TGL_PENGESAHAN = $_POST['PAJAK']['tgl_cetak'];
+        $tgl_pengesahans = $this->tgl_indo_full($TGL_PENGESAHAN);
+        $PEJABAT = $this->get_pejabat();
+        $PEJABAT_MENGETAHUI = $PEJABAT[$_POST['PAJAK']['CPM_PEJABAT_MENGETAHUI']];
+
+        // $DATA['pajak_atr'] = $DATA['pajak_atr'][0];
+        // unset($DATA['pajak_atr'][0]);
+
+        $d = explode('/REK/', $DATA['CPM_NO']);
+        $NO_URUT = $d[0]; //.'<br/>/REK/'.$d[1];
+
+        $DENDA = 0;
+        $TOTAL = $DATA['CPM_TOTAL_PAJAK'];
+
+        // hitung denda
+        if (isset($gw) && !empty($gw)) {
+            if ($gw->payment_flag == '1') {
+                $TOTAL = $gw->patda_total_bayar;
+                $DENDA = $gw->patda_denda;
+            } elseif (strtotime(date('Y-m-d')) > strtotime($gw->expired_date)) {
+                $persen_denda = $this->get_persen_denda($gw->expired_date);
+                $DENDA = ($persen_denda / 100) * $TOTAL;
+                $TOTAL = $TOTAL + $DENDA;
+            }
+        }
+
+        $bulan_awal = $this->arr_bulan[intval(substr($DATA['CPM_MASA_PAJAK1'], 3, 2))];
+        $tahun_awal = substr($DATA['CPM_MASA_PAJAK1'], -4, 4);
+        $bulan_akhir = $this->arr_bulan[intval(substr($DATA['CPM_MASA_PAJAK2'], 3, 2))];
+        $tahun_akhir = substr($DATA['CPM_MASA_PAJAK2'], -4, 4);
+
+        if ($tahun_awal == $tahun_akhir) {
+            if ($bulan_awal == $bulan_akhir) {
+                $masa_pajak = $bulan_awal . ' ' . $tahun_awal;
+            } else {
+                $masa_pajak = $bulan_awal . ' s/d. ' . $bulan_akhir . ' ' . $tahun_awal;
+            }
+        } else {
+            $masa_pajak = $bulan_awal . ' ' . $tahun_awal . ' s/d. ' . $bulan_akhir . ' ' . $tahun_akhir;
+        }
+
+        $bulanss = str_replace('/', '-', $DATA['CPM_MASA_PAJAK2']);
+        // $bulanss = date('d/m/Y', strtotime("+1 month",strtotime($bulanss)));
+        $bulanss = date('t/m/Y', strtotime("+1 month", strtotime($bulanss)));
+        $arr_tgl = explode('/', $bulanss); //preg_replace("/(\d+)\/(\d+)\/(\d+)/","$3-$2-$1", $DATA['pajak']['CPM_MASA_PAJAK2']);
+        $arr_tgl = array_map(function ($v) {
+            return (int) $v;
+        }, $arr_tgl);
+        $batas_setor = $arr_tgl[0] . ' ' . $this->arr_bulan[$arr_tgl[1]] . ' ' . $arr_tgl[2];
+
+        $bulanx = str_replace('/', '-', $DATA['CPM_MASA_PAJAK1']);
+        $bulanx = date('d/m/Y', strtotime($bulanx));
+        $arr_tglx = explode('/', $bulanx);
+        $arr_tglx = array_map(function ($v) {
+            return (int) $v;
+        }, $arr_tglx);
+        $masa_pajaks1 = $arr_tglx[0] . ' ' . $this->arr_bulan[$arr_tglx[1]] . ' ' . $arr_tglx[2];
+
+        $bulanxx = str_replace('/', '-', $DATA['CPM_MASA_PAJAK2']);
+        $bulanxx = date('d/m/Y', strtotime($bulanxx));
+        $arr_tglxx = explode('/', $bulanxx);
+        $arr_tglxx = array_map(function ($v) {
+            return (int) $v;
+        }, $arr_tglxx);
+        $masa_pajaks2 = $arr_tglxx[0] . ' ' . $this->arr_bulan[$arr_tglxx[1]] . ' ' . $arr_tglxx[2];
+        //tamabahan
+        //var_dump($masa_pajaks1, $masa_pajaks2);
+
+        $get_npwpd = $DATA['CPM_NPWPD'];
+        $query_atr = "SELECT CPM_NOP FROM PATDA_AIRBAWAHTANAH_PROFIL WHERE CPM_NPWPD = '$get_npwpd'";
+        $res = mysqli_query($this->Conn, $query_atr);
+        $rows = mysqli_fetch_assoc($res);
+
+        $nop_nop = '';
+        //$total_total_nop = $rowss['total_nop'];
+        if ($rows['CPM_NOP'] == '') {
+            $nop_nop = '';
+        } else {
+            $nop_nop = $rows['CPM_NOP'];
+        }
+        function tgl_indo($tglcetak)
+        {
+            $bulan = array(
+                1 =>   'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agu',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des'
+            );
+            $pecahkan = explode('-', $tglcetak);
+
+            // variabel pecahkan 0 = tahun
+            // variabel pecahkan 1 = bulan
+            // variabel pecahkan 2 = tanggal
+
+            return $pecahkan[2] . '/' . $bulan[(int)$pecahkan[1]] . '/' . $pecahkan[0];
+        }
+        $tglcetak = date('Y-m-d');
+        $tgl_cetak = tgl_indo($tglcetak);
+
+        //var_dump($profil['CPM_REKENING']);
+        //die;
+
+        $page1 = "<table width=\"710\" class=\"main\" cellpadding=\"0\" border=\"1\" cellspacing=\"0\">
+                    <tr>
+                        <td colspan=\"2\"><table width=\"710\" border=\"1\">
+                                <tr>
+                                    <td width=\"340\" valign=\"top\" align=\"center\" colspan=\"3\">
+										<table border=\"0\" width=\"310\">
+											<tr>
+												<td width=\"70\"></td>
+												<td width=\"250\">
+													<b style=\"font-size:26px\"><br/>
+													" . strtoupper($JENIS_PEMERINTAHAN) . " " . strtoupper($NAMA_PEMERINTAHAN) . "<br/>
+													{$NAMA_PENGELOLA}<br/>
+													
+													<br/>
+													{$JALAN}<br/>
+													{$KOTA}
+													</b>
+												</td>
+											</tr>
+										</table>
+										<br/>
+                                    </td>
+                                    <td width=\"260\" valign=\"top\" align=\"center\">
+										<b style=\"font-size:35px\"><br/>
+										SKPD<br/>
+										SURAT KETETAPAN PAJAK DAERAH<br/>
+										</b>&nbsp;&nbsp;
+										<table border=\"0\" width=\"200\" cellpadding=\"0\">
+											<tr>
+												<td align=\"left\" width=\"80\"></td>
+												<td width=\"10\"></td>
+												<td width=\"195\"  align=\"left\" ></td>
+											</tr>
+											<tr>
+												<td align=\"left\">Masa Pajak</td>
+												<td>:</td>
+												<td align=\"left\">{$pajak_atr[0]['CPM_ATR_MASA_PAJAK1']} s.d {$pajak_atr[0]['CPM_ATR_MASA_PAJAK1']}</td>
+											</tr>
+											<tr>
+												<td align=\"left\" >Tahun</td>
+												<td>:</td>
+												<td align=\"left\" >{$pajak_atr[0]['CPM_ATR_TAHUN_PAJAK']}</td>
+											</tr>
+										</table>
+                                    </td>
+                                    
+                                    <td width=\"110\" valign=\"top\" align=\"center\">                                   
+										<br/><br/>
+										<b>No. SKPD :</b><br/>
+										{$NO_URUT}<br/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+
+					<tr style=\"font-size:32px\">
+						<td width=\"710\">
+							<table width=\"710\" border=\"0\" cellpadding=\"5\">
+								<tr>
+									<td width=\"400\">
+										<table width=\"380\" border=\"0\" cellpadding=\"0\">
+											<tr>
+												<td width=\"150\">NAMA</td>
+												<td width=\"550\">: {$DATA['CPM_NAMA_OP']}</td>
+											</tr>
+											<tr>
+												<td>ALAMAT</td>
+												<td>: {$DATA['CPM_ALAMAT_WP']}</td>
+											</tr>
+											<tr>
+												<td>KECAMATAN</td>
+												<td>: {$DATA['CPM_KECAMATAN_WP']}</td>
+											</tr>
+											<tr>
+												<td>KELURAHAN</td>
+												<td>: {$DATA['CPM_KELURAHAN_WP']}</td>
+											</tr>
+											<tr>
+												<td>N.P.W.P.D</td>
+												<td>: " . Pajak::formatNPWPD($DATA['CPM_NPWPD']) . "</td>
+											</tr>
+											<tr>
+												<td>TGL. JATUH TEMPO</td>
+												<td>: {$DATA['CPM_TGL_JATUH_TEMPO']}</td>
+											</tr>
+										</table>
+									</td>
+									<td width=\"310\">
+									</td>
+								</tr>
+							</table>
+						</td>
+                    </tr>
+
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\" style=\"font-size:30px;\">
+							<tr>
+								<td colspan=\"2\">
+									<table width=\"500\" cellpadding=\"3\" border=\"1\" cellspacing=\"0\">
+										<tr style=\"background-color:#CCC\">
+											<td width=\"30\" align=\"center\"><b>No</b></td>
+											<td width=\"170\" align=\"center\"><b>Kode Rekening</b></td>
+											<td width=\"300\" align=\"center\"><b>Jenis Pajak Daerah</b></td>
+											<td width=\"200\" align=\"center\"><b>Jumlah (Rp.)</b></td>
+										</tr>
+										<tr>
+											<td align=\"center\">1.</td>
+											<td align=\"center\">" . $profil['CPM_REKENING'] . ".001</td>
+											<td>Pajak Penerangan Jalan</td>
+											<td align=\"right\">" . number_format($DATA['CPM_DPP'], 0) . "</td>
+										</tr>";
+
+        $html = '';
+        $list_op = '';
+        $html .= "<tr>
+											<td align=\"left\" colspan=\"2\" rowspan=\"3\"></td>
+											<td align=\"left\">
+												Jumlah Ketetapan Pokok Pajak
+											</td>
+											<td align=\"right\">
+												" . number_format($DATA['CPM_BAYAR_TERUTANG'], 0) . "
+											</td>
+										</tr>
+										<tr>
+											<td align=\"left\">
+												Jumlah Denda
+											</td>
+											<td align=\"right\">
+												" . number_format($DATA['CPM_DENDA_TERLAMBAT_LAP'], 0) . "
+											</td>
+										</tr>
+										<tr>
+											<td align=\"left\">
+												<b>Jumlah yang harus dibayar</b>
+											</td>
+											<td align=\"right\">
+												<b>" . number_format($TOTAL, 0) . "</b>
+											</td>
+										</tr>
+										<tr>
+											<td align=\"left\" colspan=\"4\">
+											Dengan huruf :<br/>
+											<b><i>" . ucfirst($DATA['CPM_TERBILANG']) . " rupiah</i></b>
+											</td>
+
+										</tr>";
+
+        $page1 .= $html;
+        $page1 .= "
+									</table><br/>
+								</td>
+							</tr>
+							</table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=\"710\" colspan=\"2\" align=\"center\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\">
+							<tr>
+								<td><table width=\"100%\" border=\"0\" align=\"left\" style=\"font-size:28px;\">
+										<tr>
+											<td><b>PERHATIAN : </b></td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;1. Harap Penyetoran dilakukan melalui Bank yang ditunjuk dengan menggunakan Surat Setoran Pajak Daerah (SSPD)</td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;2. Wajib Pajak dilarang melakukan pembayaran Pajak Terutang kepada petugas penagih yang tidak menunjukkan / memberikan<br>
+											&nbsp;&nbsp; &nbsp; &nbsp;
+											Surat Ketetapan Pajak Daerah (SKPD)</td>
+										</tr>
+										<tr>
+											<td>&nbsp;&nbsp;&nbsp;3. Apabila SKPD ini tidak atau kurang dibayar setelah tanggal jatuh tempo dikenakan Sanksi Administrasi Bunga sebesar <br>
+											&nbsp;&nbsp; &nbsp; &nbsp;
+											2% perbulan dan ditagih dengan menggunakan Surat Tagihan Pajak</td>
+										</tr>
+									</table>
+									</td>
+								</tr>
+							</table>
+                        </td>
+                    </tr>
+					<tr>
+						<td colspan=\"2\" align=\"center\" style=\"font-size:26px;\">
+							<table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"10\">
+								<tr>
+									<td width=\"355\"></td>
+									<td align=\"center\"><b>
+										{$KOTA}, {$tgl_pengesahans}<br/>
+                                        <td>
+										</td>
+										a.n. Kepala Badan Pengelola Pajak dan Retribusi Daerah <br/>
+										Kabupaten " . ucwords(strtolower($NAMA_PEMERINTAHAN)) . ",<br/>
+										Kepala Bidang Pengembangan dan Penetapan <br/>
+										";
+        if ($PEJABAT_MENGETAHUI['CPM_KEY'] ===  'KABAN_DIPENDA') {
+            $page1 .=  $PEJABAT_MENGETAHUI['CPM_JABATAN'] . '<br/>';
+        }
+        if ((int)$DATA['A_STATUS'] == 1) {
+            $imageGenerator = new QRCode(urldecode($DATA['A_QR']), ['s' => 'qr']);
+            $imageQr = $imageGenerator->render_image();
+            imagepng($imageQr, 'qrcode.png', 9);
+            $page1 .= '<table><tr>';
+            $page1 .= '<td align="right" width="62%"><img src="qrcode.png" style="width:90px;height:90px;display:block"></td>';
+            $page1 .= '<td align="left" style="font-size:24px"><br><br><br><br>Dokumen ini sah dan<br>telah di tanda tangani</td></tr></table>';
+        } else {
+            $page1 .= '<br><br><br><br><br>';
+        }
+        $page1 .= "<br>
+										<u>{$PEJABAT_MENGETAHUI['CPM_NAMA']}</u><br/>
+										NIP. {$PEJABAT_MENGETAHUI['CPM_NIP']}
+									</b></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=\"2\"><table width=\"100%\" border=\"0\" align=\"left\" cellpadding=\"5\" style=\"font-size:26px;\">
+								<tr>
+									<td align=\"center\">......................................potong di sini......................................<br><br><br><br></td>
+								</tr>
+								<tr>
+									<td>&nbsp;&nbsp;&nbsp;<table width=\"700\" cellpadding=\"0\" border=\"0\" cellspacing=\"0\" style=\"font-size:26px;\">
+											<tr>
+												<td width=\"430\" colspan=\"2\"><b style=\"font-size:28px\"><u>Tanda Terima</u></b></td>
+												<td width=\"270\" align=\"center\">No. SKPD : {$DATA['CPM_NO']}</td>
+											</tr>
+											<tr>
+												<td colspan=\"3\" align=\"center\"><br/></td>
+											</tr>
+											<tr>
+												<td width=\"100\">Nama</td>
+												<td width=\"330\">: {$DATA['CPM_NAMA_WP']}</td>
+												<!-- <td width=\"270\" rowspan=\"6\" align=\"center\">{$KOTA}, " . date("d") . " {$this->arr_bulan[(int) date("m")]} " . date("Y") . "<br/> -->
+                                                <td width=\"270\" rowspan=\"6\" align=\"center\">{$KOTA}, " . $tgl_pengesahans . "<br/>
+												Yang Menerima,<br/><br/><br/><br/><br/><br/><br/>
+
+												<b><u>{$DATA['CPM_NAMA_WP']}</u></b>
+												</td>
+											</tr>
+											<tr>
+												<td>Alamat</td>
+												<td>: {$DATA['CPM_ALAMAT_WP']} - {$DATA['CPM_KELURAHAN_WP']}</td>
+											</tr>
+											<tr>
+												<td></td>
+												<td>&nbsp; KEC. {$DATA['CPM_KECAMATAN_WP']}</td>
+											</tr>
+											<tr>
+												<td></td>
+												<td>&nbsp; KOTA/KAB. </td>
+											</tr>
+											<tr>
+												<td>NPWPD</td>
+												<td>: " . Pajak::formatNPWPD($DATA['CPM_NPWPD']) . "</td>
+											</tr>
+											<tr>
+												<td colspan=\"2\">{$list_op}</td>
+											</tr>
+										</table>
+									</td>
+									<td>
+
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					
+					<span style=\"font-size:24px\"><i>BPPRD LAMSEL {$tgl_cetak}</i></span>
+                </table>";
+        // echo $page1; exit;
+        require_once("{$sRootPath}inc/payment/tcpdf/sptpd_pdf.php");
+        $pdf = new SPTPD_PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('');
+        $pdf->SetSubject('');
+        $pdf->SetKeywords('');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(true);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 8, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('P', 'F4');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 7, 12, 17, '', '', '', '', false, 300, '', false);
+        $pdf->writeHTML($page1, true, false, false, false, '');
+        ob_end_clean();
+        $pdf->Output('skpd-reklame.pdf', 'I');
+        ob_end_flush();
+    }
+
+    /*public function print_sspd() {
+        global $sRootPath;
+        $this->_id = $this->CPM_ID;
+        $DATA = $this->get_pajak();
+
+        $config = $this->get_config_value($this->_a);
+        $LOGO_CETAK_PDF = $config['LOGO_CETAK_PDF'];
+        $JENIS_PEMERINTAHAN = $config['PEMERINTAHAN_JENIS'];
+        $NAMA_PEMERINTAHAN = $config['PEMERINTAHAN_NAMA'];
+		$NAMA_PENGELOLA = $config['NAMA_BADAN_PENGELOLA'];
+        $JALAN = $config['ALAMAT_JALAN'];
+        $KOTA = $config['ALAMAT_KOTA'];
+        $PROVINSI = $config['ALAMAT_PROVINSI'];
+        $KODE_POS = $config['ALAMAT_KODE_POS'];
+        $KODE_AREA = $config['KODE_AREA'];
+		$TGL_PENETAPAN = $this->getTanggalPenetapan($this->id_pajak, $this->CPM_ID);
+        $bulan_pajak = str_pad($this->CPM_MASA_PAJAK, 2, "0", STR_PAD_LEFT);
+        $PERIODE = "000000{$this->CPM_TAHUN_PAJAK}{$bulan_pajak}";
+
+        $KODE_PAJAK = $this->idpajak_sw_to_gw[$this->id_pajak];
+        if ($DATA['pajak']['CPM_TIPE_PAJAK'] == 2) {
+            $KODE_PAJAK = $this->non_reguler[$this->id_pajak];
+            #$PERIODE = "000" . substr($this->CPM_NO, 0, 9);
+            $PERIODE = substr($this->CPM_NO, 14, 2)."0" . substr($this->CPM_NO, 0, 9);
+        }
+        $KODE_PAJAK = str_pad($KODE_PAJAK, 4, "0", STR_PAD_LEFT);
+
+        $html = "<table width=\"710\" class=\"main\" border=\"1\">
+                    <tr>
+                        <td><table width=\"710\" border=\"1\" cellpadding=\"10\">
+                                <tr>
+                                    <th valign=\"top\" width=\"450\" align=\"center\">
+                                        ".strtoupper($JENIS_PEMERINTAHAN)." " . strtoupper($NAMA_PEMERINTAHAN) . "<br />
+                                        ".strtoupper($NAMA_PENGELOLA)."<br /><br />
+                                        <font class=\"normal\">{$JALAN}<br>
+                                        {$KOTA} - {$PROVINSI} {$KODE_POS}</font>
+                                    </th>
+                                    <th width=\"260\" align=\"center\">
+                                        SURAT SETORAN<br/>
+                                        PAJAK DAERAH
+                                        (SSPD)<br/><br/>
+                                        Tahun : {$DATA['pajak']['CPM_TAHUN_PAJAK']}
+                                    </th>
+                                 </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><table width=\"960\" border=\"0\" cellpadding=\"5\">
+                                <tr>
+                                    <td width=\"230\">Nama Wajib Pajak</td>
+                                    <td>: {$DATA['profil']['CPM_NAMA_WP']}</td>
+                                </tr>
+                                <tr style=\"vertical-align: top\">
+                                    <td>Alamat Wajib Pajak</td>
+                                    <td>: {$DATA['profil']['CPM_ALAMAT_WP']}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Nama Objek Pajak</td>
+                                    <td>: {$DATA['profil']['CPM_NAMA_OP']}</td>
+                                </tr>
+                                <tr style=\"vertical-align: top\">
+                                    <td>Alamat Objek Pajak</td>
+                                    <td>: {$DATA['profil']['CPM_ALAMAT_OP']}</td>
+                                </tr>
+                                <tr>
+                                    <td>Jenis Pajak</td>
+                                    <td>: Pajak Penerangan Jalan</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">NPWPD</td>
+                                    <td>: ".Pajak::formatNPWPD($DATA['profil']['CPM_NPWPD'])."</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Kode Area</td>
+                                    <td>: {$KODE_AREA}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Tipe Pajak</td>
+                                    <td>: {$KODE_PAJAK}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Periode / Kode Bayar</td>
+                                    <td>: {$PERIODE}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">NO SSPD</td>
+                                    <td>: {$DATA['pajak']['CPM_NO_SSPD']}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Masa Pajak</td>
+                                    <td>: {$DATA['pajak']['CPM_MASA_PAJAK1']} - {$DATA['pajak']['CPM_MASA_PAJAK2']}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Tanggal Lapor</td>
+                                    <td>: {$DATA['pajak']['CPM_TGL_LAPOR']}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Tanggal Penetapan</td>
+                                    <td>: {$TGL_PENETAPAN}</td>
+                                </tr>
+                                <tr>
+                                    <td width=\"230\">Tanggal Jatuh Tempo</td>
+                                    <td>: {$DATA['pajak']['CPM_TGL_JATUH_TEMPO']}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><table width=\"900\" border=\"0\" class=\"child\" cellpadding=\"0\" cellspacing=\"0\">
+                                <tr>
+                                    <td><table width=\"900\" border=\"1\" cellpadding=\"3\">
+                                            <tr>
+                                                <th width=\"50\" align=\"center\">No.</th>
+                                                <th width=\"400\" align=\"center\">RINCIAN</th>
+                                                <th width=\"260\" align=\"center\">JUMLAH</th>
+                                            </tr>
+                                            <tr>
+                                                <td>1.</td>
+                                                <td align=\"left\">Pembayaran pajak Penerangan Jalan {$DATA['profil']['CPM_NAMA_OP']}
+                                                    <br/>Keterangan : {$DATA['pajak']['CPM_KETERANGAN']}</td>
+                                                <td align=\"right\">" . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.</td>
+                                                <td align=\"left\">Biaya lain</td>
+                                                <td align=\"right\">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.</td>
+                                                <td align=\"left\">Biaya admin</td>
+                                                <td align=\"right\">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.</td>
+                                                <td align=\"left\"></td>
+                                                <td align=\"right\"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.</td>
+                                                <td align=\"left\"></td>
+                                                <td align=\"right\"></td>
+                                            </tr>
+                                            <tr>
+                                                <td align=\"center\" colspan=\"2\"><i>JUMLAH</i></td>
+                                                <td align=\"right\">Rp. " . number_format($DATA['pajak']['CPM_TOTAL_PAJAK'], 2) . "</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=\"3\">
+                                                    Dengan Huruf : {$this->SayInIndonesian($DATA['pajak']['CPM_TOTAL_PAJAK'])}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=\"right\"><table width=\"300\" border=\"0\" align=\"left\" class=\"header\" cellpadding=\"5\">
+                                <tr>
+                                    <td width=\"430\"></td>
+                                    <td width=\"280\" align=\"center\">
+                                    {$KOTA}, " . date("d") . " {$this->arr_bulan[(int) date("m")]} " . date("Y") . "<br/>
+                                    Penyetor<br/><br/>
+                                    <br/>
+                                    (" . str_pad("", 50, "..", STR_PAD_RIGHT) . ")<br/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=\"right\"><table width=\"300\" border=\"1\" align=\"left\" class=\"header\" cellpadding=\"5\">
+                                <tr>
+                                    <td width=\"355\">SSPD ini berlaku setelah dilampiri dengan bukti pembayaran yang sah dari Bank</td>
+                                    <td width=\"355\" align=\"left\">Pembayaran dapat dilakukan melalui teller dan ATM Bank Sumselbabel terdekat</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+						<td>
+							<font size='2' color=red>
+							Jatuh tempo : {$DATA['pajak']['CPM_TGL_JATUH_TEMPO']}
+							Denda 2% per bulan maksimal 24 bulan
+							</font>
+						</td>
+					</tr>
+                </table>";
+
+        require_once("{$sRootPath}inc/payment/tcpdf/tcpdf.php");
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('vpost');
+        $pdf->SetTitle('-');
+        $pdf->SetSubject('-');
+        $pdf->SetKeywords('-');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        $pdf->SetMargins(5, 14, 5);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetProtection($permissions = array('modify'), $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
+
+        $pdf->AddPage('P', 'A4');
+        $pdf->writeHTML($html, true, false, false, false, '');
+        $pdf->Image("{$sRootPath}view/Registrasi/configure/logo/{$LOGO_CETAK_PDF}", 6, 18, 25, '', '', '', '', false, 300, '', false);
+        $pdf->SetAlpha(0.3);
+
+        $pdf->Output('sspd-jalan.pdf', 'I');
+    }*/
+
+    public function read_dokumen()
+    {
+        if (isset($_REQUEST['read']) && $_REQUEST['read'] == 0) {
+            $idtran = $_REQUEST['idtran'];
+            $select = "SELECT CPM_TRAN_READ FROM {$this->PATDA_JALAN_DOC_TRANMAIN} WHERE CPM_TRAN_ID='{$idtran}'";
+            $result = mysqli_query($this->Conn, $select);
+            $data = mysqli_fetch_assoc($result);
+
+            $read = $data['CPM_TRAN_READ'];
+            $read = (trim($read) == "") ? ";{$_SESSION['uname']};" : "{$read};{$_SESSION['uname']};";
+            $query = "UPDATE {$this->PATDA_JALAN_DOC_TRANMAIN} SET CPM_TRAN_READ = '{$read}' WHERE CPM_TRAN_ID='{$idtran}'";
+            mysqli_query($this->Conn, $query);
+        }
+    }
+
+    public function read_dokumen_notif()
+    {
+        $arr_tab = explode(";", $_POST['tab']);
+
+        $notif = array();
+        $notif['draf'] = 0;
+        $notif['proses'] = 0;
+        $notif['ditolak'] = 0;
+        $notif['disetujui'] = 0;
+
+        $notif['draf_ply'] = 0;
+        $notif['proses_ply'] = 0;
+        $notif['ditolak_ply'] = 0;
+        $notif['disetujui_ply'] = 0;
+
+        $notif['tertunda'] = 0;
+        $notif['ditolak_ver'] = 0;
+        $notif['disetujui_ver'] = 0;
+
+        $where = " (tr.CPM_TRAN_READ not like '%;{$_SESSION['uname']};%' OR tr.CPM_TRAN_READ is null) AND ";
+        $query = "SELECT count(pj.CPM_ID) as total
+                    FROM {$this->PATDA_JALAN_DOC} pj INNER JOIN {$this->PATDA_JALAN_PROFIL} pr ON pj.CPM_ID_PROFIL = pr.CPM_ID
+                    INNER JOIN {$this->PATDA_JALAN_DOC_TRANMAIN} tr ON pj.CPM_ID = tr.CPM_TRAN_JALAN_ID
+                    WHERE ";
+
+        if (in_array("draf", $arr_tab)) {
+            $w = $where . " pr.CPM_NPWPD = '{$_SESSION['npwpd']}' AND tr.CPM_TRAN_STATUS = '1' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['draf'] = (int) $data['total'];
+        }
+        if (in_array("proses", $arr_tab)) {
+            $w = $where . " pr.CPM_NPWPD = '{$_SESSION['npwpd']}' AND tr.CPM_TRAN_STATUS = '2' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['proses'] = (int) $data['total'];
+        }
+        if (in_array("ditolak", $arr_tab)) {
+            $w = $where . " pr.CPM_NPWPD = '{$_SESSION['npwpd']}' AND tr.CPM_TRAN_STATUS = '4'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['ditolak'] = (int) $data['total'];
+        }
+        if (in_array("disetujui", $arr_tab)) {
+            $w = $where . " pr.CPM_NPWPD = '{$_SESSION['npwpd']}' AND tr.CPM_TRAN_STATUS = '5' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['disetujui'] = (int) $data['total'];
+        }
+
+        if (in_array("draf_ply", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '1' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['draf_ply'] = (int) $data['total'];
+        }
+        if (in_array("proses_ply", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '2' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['proses_ply'] = (int) $data['total'];
+        }
+        if (in_array("ditolak_ply", $arr_tab) || in_array("ditolak_ver", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '4'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result)) {
+                $notif['ditolak_ply'] = (int) $data['total'];
+                $notif['ditolak_ver'] = (int) $data['total'];
+            }
+        }
+        if (in_array("disetujui_ply", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '5' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['disetujui_ply'] = (int) $data['total'];
+        }
+
+        if (in_array("tertunda", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '2' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['tertunda'] = $data['total'];
+        }
+        if (in_array("disetujui_ver", $arr_tab)) {
+            $w = $where . " tr.CPM_TRAN_STATUS = '5' AND tr.CPM_TRAN_FLAG='0'";
+            $q = $query . $w;
+            $result = mysqli_query($this->Conn, $q);
+            if ($data = mysqli_fetch_assoc($result))
+                $notif['disetujui_ver'] = (int) $data['total'];
+        }
+        echo $this->Json->encode($notif);
+    }
+
+    public function get_previous_pajak($npwpd, $nop)
+    {
+        $Op = new ObjekPajak();
+        $arr_rekening = $this->getRekening("4.1.01.10");
+        $pajak_atr = array();
+        $list_nop = array();
+        // var_dump($pajak_atr);
+        // die;
+        $query = "
+			SELECT DOC.*, DATE_FORMAT(DOC.CPM_TGL_JATUH_TEMPO,'%d-%m-%Y') as CPM_TGL_JATUH_TEMPO
+			FROM PATDA_JALAN_DOC AS DOC
+			INNER JOIN PATDA_JALAN_PROFIL PR ON DOC.CPM_ID_PROFIL = PR.CPM_ID
+			WHERE PR.CPM_NPWPD = '{$npwpd}' AND PR.CPM_NOP = '{$nop}' AND
+			str_to_date(DOC.CPM_TGL_LAPOR,'%d-%m-%Y') = (
+				SELECT MAX(str_to_date(DOC.CPM_TGL_LAPOR,'%d-%m-%Y'))
+				FROM PATDA_JALAN_DOC AS DOC
+				INNER JOIN PATDA_JALAN_PROFIL PR ON DOC.CPM_ID_PROFIL = PR.CPM_ID
+				WHERE PR.CPM_NPWPD = '{$npwpd}' AND PR.CPM_NOP = '{$nop}'
+			)";
+        // echo $query;
+        $result = mysqli_query($this->Conn, $query);
+        $pajak = $this->get_field_array($result);
+
+        $ms = $this->inisialisasi_masa_pajak();
+
+        if (empty($pajak['CPM_ID'])) {
+
+            $pajak['CPM_TAHUN_PAJAK'] = $ms['tahun_pajak'];
+            $pajak['CPM_MASA_PAJAK'] = $ms['masa_pajak'];
+            $pajak['CPM_MASA_PAJAK1'] = $ms['masa_pajak1'];
+            $pajak['CPM_MASA_PAJAK2'] = $ms['masa_pajak2'];
+            $pajak['CPM_HARGA'] = 0;
+
+            $profil = $Op->get_last_profil($npwpd, $nop);
+
+            $tarif = ($profil['CPM_REKENING'] == '') ? 0 : $arr_rekening['ARR_REKENING'][$profil['CPM_REKENING']]['tarif'];
+            $list_nop = $Op->get_list_nop($npwpd);
+        } else { //if data available
+            $profil = $Op->get_profil_byid($pajak['CPM_ID_PROFIL']);
+            $tarif = $pajak['CPM_TARIF_PAJAK'];
+            $list_nop = $Op->get_list_nop($npwpd);
+        }
+
+        $harga_dasar = $this->get_config_value($this->_a, "HARGA_DASAR_ENABLE_{$this->id_pajak}");
+        $pajak['HARGA_DASAR_ENABLE'] = $harga_dasar;
+        $pajak['CPM_HARGA_DASAR'] = (empty($pajak['CPM_HARGA_DASAR'])) ? $arr_rekening['ARR_REKENING'][$profil['CPM_REKENING']]['harga'] : $pajak['CPM_HARGA_DASAR'];
+
+        $pajak['CPM_ID'] = '';
+        $pajak['CPM_NO'] = '';
+        $pajak['CPM_ID_PROFIL'] = '';
+        $pajak['CPM_HARGA'] = 0;
+
+        $pajak['CPM_TERBILANG'] = $this->SayInIndonesian($pajak['CPM_TOTAL_PAJAK']);
+        $pajak['CPM_JENIS_PAJAK'] = $this->id_pajak;
+        $pajak['ARR_TIPE_PAJAK'] = $this->arr_tipe_pajak;
+
+        $pajak = array_merge($pajak, $arr_rekening);
+
+        //echo '<pre>',print_r($pajak,true),'</pre>';exit;
+        return array(
+            'pajak' => $pajak,
+            'tarif' => $tarif,
+            'profil' => $profil,
+            'list_nop' => $list_nop
+        );
+    }
+
+    function addRow()
+    {
+
+        include __DIR__ . '/../op/class-op.php';
+        $Op = new ObjekPajak();
+        $no = $_REQUEST['no'] + 1;
+        $idx = ($no * 10) + 4;
+        $npwpd = str_replace('.', '', $_REQUEST['npwpd']);
+        $nop = str_replace('.', '', $_REQUEST['nop']);
+        // $nop = str_replace('.', '', $_REQUEST['nop']);
+        $rek2 =  $_REQUEST['rek2'];
+        //$list_nop = $Op->get_list_nop($npwpd);
+        $list_rekening = $this->get_list_rekening();
+
+        $list_type_masa = array(1 => 'Tahun', 4 => 'Bulan'); //$lapor->get_type_masa();
+        //utama
+        $DATA = $this->get_previous_pajak($npwpd, $nop);
+        $tipePajak = $DATA['pajak']['ARR_TIPE_PAJAK'];
+        for ($th = date("Y") - 5; $th <= date("Y"); $th++) {
+            $tahun[] = $th;
+        }
+        $bulan =  $this->arr_bulan;
+
+
+        //     var_dump($DATA['pajak']['ARR_REKENING'][$rek2]["tarif"]);
+        //    die;
+
+        $opt_nop = '<option selected value="" disabled>Pilih NOP</option>';
+        $opt_rekening = '<option selected value="" disabled>Pilih Rekening</option>';
+        $opt_sudut_pandang = '';
+        $opt_type_masa = '';
+        $opt_kawasan = '';
+        $opt_kawasan_1 = '';
+        $opt_jalan = '';
+        //dipakai
+        $optTipePajak = '';
+        $optTahun = '';
+        $optBulan = '';
+
+        //digunakan di perulangan 
+        foreach ($tipePajak as $tipe => $bu) {
+            $optTipePajak .= "<option value='{$tipe}'>$bu</option>";
+        }
+        foreach ($tahun as $th) {
+            $optTahun .= "<option value='{$th}'>$th</option>";
+        }
+        foreach ($bulan as $bln => $nm) {
+            $optBulan .= "<option value='{$bln}'>$nm</option>";
+        }
+
+
+
+        foreach ($list_nop as $list) {
+            $alamat = !empty($list['CPM_ALAMAT_OP']) ? $list['CPM_ALAMAT_OP'] . ', ' : '';
+            $kel = !empty($list['CPM_KELURAHAN']) ? $list['CPM_KELURAHAN'] . ', ' : '';
+            $opt_nop .= "<option value='{$list['CPM_ID']}'>{$list['CPM_NOP']} - {$list['CPM_NAMA_OP']} | {$alamat}{$kel}Kec. {$list['CPM_KECAMATAN']}</option>";
+        }
+
+
+
+
+
+
+        // var_dump($ah);
+        // die;
+
+        foreach ($list_rekening as $rek) {
+            $opt_rekening .= "<option value='{$rek->kdrek}' data-nmrek='{$rek->nmrek}' data-tarif='{$rek->tarif1}' data-harga='{$rek->tarif2}'
+			data-tinggi='{$rek->tarif3}'>{$rek->kdrek} - {$rek->nmrek}</option>";
+        }
+
+        foreach ($list_sudut_pandang as $sp) {
+            $opt_sudut_pandang .= "<option value='{$sp}'>$sp</option>";
+        }
+
+        foreach ($list_type_masa as $key => $val) {
+            $sel = $key == $_REQUEST['type_masa'] ? ' selected' : '';
+            $opt_type_masa .= "<option value='{$key}'{$sel}>$val</option>";
+        }
+
+        // foreach ($list_kawasan as $kws) {
+        // 	$list_kawasan_1 .= "<option value='{$kws}'>$kws</option>";
+        // }
+
+        foreach ($list_kawasan_1 as $kwss) {
+            $opt_kawasan_1 .= "<option value='{$kwss}'>$kwss</option>";
+        }
+        foreach ($list_jalan as $jln) {
+            $opt_jalan .= "<option value='{$jln}'>$jln</option>";
+        }
+
+
+        foreach ($this->arr_tipe_pajak_reklame as $x => $y) {
+            $tipe_pajak .= "<option value='{$x}' selected>$y</option>";
+            // $tipe_pajak .= "<option value='{$x}' selected>{$y}</option>" : "<option value='{$x}'>{$y}</option>";
+        }
+
+
+        // var_dump($rek2);
+        // die;
+
+        echo '<table width="100%" class="child" id="atr_rek-' . $no . '" border="0" style="margin-top:8px">
+            <tr>
+                 <th colspan="3">Data Pajak ' . $no . '</th>
+            </tr>
+	
+
+        <tr valign="top">
+        
+            <td width="200">No Pelaporan Pajak <b class="isi">*</b></td>
+            <td> : ...</td>
+            <td width="200" rowspan="9"> Keterangan : 
+            <textarea class="form-control" name="PAJAK_ATR[CPM_ATR_KETERANGAN][]" id="CPM_KETERANGAN" rows="10"></textarea>
+            </td>
+        <tr>
+		<tr>
+            <td>Tipe Pajak <b class="isi">*</b></td>
+            <td> :
+                <select class="form-control" onchange="rumusPerhitungan(' . $no . ')" style="width:150px;height:30px;display:inline-block;font-size:small;" name="PAJAK_ATR[CPM_ATR_TIPE_PAJAK][]" tabindex="' . ($idx) . '" id="CPM_TIPE_PAJAK-' . $no . '">
+                ' . $optTipePajak . '
+                </select>
+            </td>	
+		</tr>
+        <tr>
+            <td>Tahun Pajak <b class="isi">*</b></td>
+            <td> :
+                <select class="form-control" onchange="rumusPerhitungan(' . $no . ')" style="width:150px;height:30px;display:inline-block;font-size:small;" name="PAJAK_ATR[CPM_ATR_TAHUN_PAJAK][]" tabindex="' . ($idx) . '" id="CPM_TAHUN_PAJAK-' . $no . '"  >
+                ' . $optTahun . '
+                </select>
+            </td>	
+		</tr>
+		<tr>
+        <td>Bulan Pajak <b class="isi">*</b></td>
+        <td> :
+                <select class="form-control" onchange="rumusPerhitungan(' . $no . ')" style="width:150px;height:30px;display:inline-block;font-size:small;" name="PAJAK_ATR[CPM_ATR_MASA_PAJAK][]" tabindex="' . ($idx) . '" id="CPM_MASA_PAJAK-' . $no . '">
+                ' . $optBulan . '
+                </select>
+            </td>	
+        </tr>
+        <tr>
+        <td>Masa Pajak <b class="isi">*</b></td>
+        <td> :
+            <input type="text" name="PAJAK_ATR[CPM_ATR_MASA_PAJAK1][]" id="CPM_MASA_PAJAK1-' . $no . '" style="width: 120px;" readonly placeholder="Masa Awal">s.d
+            <input type="text" name="PAJAK_ATR[CPM_ATR_MASA_PAJAK2][]" id="CPM_MASA_PAJAK2-' . $no . '" style="width: 120px;" readonly placeholder="Masa Akhir">
+        </td>	
+        </tr>';
+        if ($rek2 == '4.1.01.10.03' || $rek2 == '4.1.01.10.04' || $rek2 == "4.1.01.10.05" || $rek2 == "4.1.01.10.06") {
+            echo '<tr>
+            <td width="250">Pemakaian <b class="isi">*</b></td>
+            <td> : <input type="text" name="PAJAK_ATR[CPM_ATR_MERK_JENSET][]" id="merkJenset"  placeholder="Merk Jenset"> </td>
+        </tr>
+        <tr>
+                            <td width="250">Unit <b class="isi">*</b></td>
+                            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_UNIT][]" id="unit-' . $no . '" class="number" maxlength="19"  value="" placeholder="Unit"></td>
+                        </tr>
+                        <tr>
+                            <td width="250">Kapasitas Pembangkit <b class="isi">*</b></td>
+                            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_PEMBANGKIT][]" id="CPM_PEMBANGKIT-' . $no . '" class="number" maxlength="19"  value="" placeholder="Kapasitas Pembangkit"></td>
+                        </tr>
+                        <tr>
+                            <td width="250">Faktor Daya <b class="isi">*</b></td>
+                            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_FAKTOR_DAYA][]" id="CPM_FAKTOR_DAYA-' . $no . '" class="number" maxlength="19"  value="" placeholder="Faktor Daya"></td>
+                        </tr>
+                        <tr>
+                            <td width="250">Harga Satuan <b class="isi">*</b></td>
+                            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_SATUAN][]" id="CPM_SATUAN-' . $no . '" class="number" maxlength="19"  value="" placeholder="Harga Satuan"> </td>
+                        </tr>
+                        <tr>
+                            <td width="250">Pemakaian <b class="isi">*</b></td>
+                            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_TOTAL_KWH][]" id="CPM_TOTAL_KWH-' . $no . '" class="number" maxlength="19"  value="" placeholder="Total Jam"> Satuan Jam</td>
+                        </tr>';
+        } else {
+            echo '<tr>
+            <td width="250">Pemakaian <b class="isi">*</b></td>
+            <td> : <input type="text" onkeyup="rumusPerhitungan(' . $no . ')" name="PAJAK_ATR[CPM_ATR_TOTAL_KWH][]" id="CPM_TOTAL_KWH2-' . $no . '" class="number" maxlength="19" placeholder="Total Kwh"> Satuan Kwh</td>
+        </tr>';
+        }
+
+
+        echo ' <tr>
+            <td width="250">Pembayaran Pemakaian Objek Pajak <b class="isi">*</b></td>
+            <td> : <input type="text" onkeyup="hitungDetail(' . $no . ')" name="PAJAK_ATR[CPM_ATR_TOTAL_OMZET][]" id="CPM_TOTAL_OMZET-' . $no . '" class="number SUM" maxlength="19"  placeholder="Pembayaran Pemakaian"></td>
+        </tr>
+        <tr>
+        <tr style="display:none">
+        <td>Pembayaran Lain-lain</td>
+        <td> : <input type="text" name="PAJAK_ATR[CPM_ATR_BAYAR_LAINNYA][]" id="CPM_BAYAR_LAINNYA-' . $no . '" class="number SUM" maxlength="19" value="' . $DATA['pajak']['CPM_BAYAR_LAINNYA'] . '" placeholder="Pembayaran Lain-lain"></td>
+        </tr>
+            <td width="250">Dasar Pengenaan Pajak (DPP)</td>
+            <td> : <input type="text"  name="PAJAK_ATR[CPM_ATR_DPP][]" id="CPM_DPP-' . $no . '" class="number SUM" maxlength="19"  placeholder="Pembayaran Pemakaian" readonly></td>
+        </tr>
+        <tr>
+            <td>Tarif Pajak <b class="isi">*</b></td>
+            <td> : <input type="text" name="PAJAK_ATR[CPM_ATR_TARIF_PAJAK][]" id="CPM_TARIF_PAJAK-' . $no . '" style="width: 50px;" readonly value="' . $DATA['pajak']['ARR_REKENING'][$rek2]["tarif"] . '" placeholder="Tarif Pajak"> %
+            </td>
+        </tr>
+        
+            <tr>
+                <td colspan="6" align="right" valign="top">
+                    <input type="hidden" name="PAJAK_ATR[CPM_ATR_ID][]" id="CPM_ATR_ID-' . $no . '" value="" />
+                    <input type="hidden" name="PAJAK_ATR[CPM_ATR_TOTAL][]" id="CPM_ATR_TOTAL-' . $no . '" value="0" />
+                    <input type="hidden" name="PAJAK_ATR[CPM_ATR_TARIF][]" id="CPM_ATR_TARIF-' . $no . '" value="" />
+                    <button type="button" >Hapus</button>
+                </td>
+            </tr>
+        </table>';
+    }
+}

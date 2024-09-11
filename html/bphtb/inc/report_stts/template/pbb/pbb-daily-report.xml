@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="cp437"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="85" docname="struk" lmargin="2" rmargin="83" draftmode="true" pagerow="39" firstpagerow="33">
+<header>
+	<line/>
+	<line/>
+	<line>
+		<item repeat="0" center="0" rpad="45" lpad="0" text="PAJAK ONLINE" italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="45" text="PAYMENT POINT" 				 italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="45" lpad="0" text=" " 		 italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="45" text="#OPERATOR#" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="90" text="#PP_NAME# (#PP_ID#)" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+		<line>
+		<item repeat="0" center="0" rpad="0" lpad="90" text="#PP_ADDRESS#" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="90" text="#PP_REGION#" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="45" lpad="0" text="TANGGAL : #TGL#" 				italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="45" text="TANGGAL CETAK : #TGL_PRINT#" 	italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line/>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="90" rpad="0" lpad="0" text="REKAPITULASI TRANSAKSI HARIAN" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="65" lpad="66" text="KETERANGAN" 	italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="24" lpad="23" text="JUMLAH" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="65" lpad="66" text="Lembar Rekening" 	italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="24" lpad="23" text="#LEMBAR_REK#" 	italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+  	<line />
+	<line>
+		<item repeat="0" center="90" rpad="0" lpad="0" text="RINCIAN TRANSAKSI" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line />
+	<line>
+		<item repeat="0" center="0" rpad="4"  lpad="4" text="NO." 			italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="14" lpad="15" text="JENIS PAJAK"	italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="7" text="POKOK" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="9" text="PIUTANG" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="9" text="BUNGA" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="5"  lpad="8" text="TAHUN" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="10" lpad="8" text="TAHUN" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="9" text="TOTAL" 		italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="69" text="TUNGGAK" 	italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="38" lpad="40" text="LUNAS" 	italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+</header>
+
+<body>
+	<line>
+		<item repeat="0" center="0" rpad="3"  lpad="3" 	text="#RECNO#" 				italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="16" 	text="#TAX_NAME#"			italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="11" 	text="#POKOK#,-" 			italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="14" 	text="#PIUTANG#,-" 			italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="14" 	text="#BUNGA#,-" 			italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="9" text="#TAHUN_TUNGGAKAN#" 	italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="8" 	text="#TAHUN_PELUNASAN#"	italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="15" 	text="#TOTAL#,-" 			italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+</body>
+
+<footer>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line />
+	<line>
+	
+		<item repeat="0" center="0" rpad="18" lpad="9"  text="TOTAL" 		italic="false" size="12" bold="true"  font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="12" text="#TOT_POKOK#,-" italic="false" size="12" bold="true"  font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="14" text="#BILL_TAG#,-" italic="false" size="12" bold="true"  font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="14" text="#TOT_BUNGA#,-" 	italic="false" size="12" bold="true"  font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="32" text="#TOTAL_ALL#,-" 	italic="false" size="12" bold="true"  font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="12" lpad="13" text="CATATAN: " italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="76" text="#CUSTOM_NOTES#" italic="true" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="65" lpad="66" text="Rupiah Tagihan" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="24" lpad="23" text="#BILL_TAG#,-" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="65" lpad="66" text="Rupiah Admin" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="24" lpad="23" text="#RP_ADM#,-" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="64" lpad="65" text="JUMLAH YANG HARUS DISETORKAN" italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="5" rpad="4"  lpad="0" text="Rp." italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="21" lpad="20" text="#RP_REK#,-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="12" lpad="13" text="TERBILANG: " italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="76" text="#RP_TERBILANG#" italic="true" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+</footer>
+
+</tns:report>

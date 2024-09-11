@@ -1,0 +1,38 @@
+.title-header {
+	border-bottom	:solid 2px #777777;
+	padding-bottom	: 1px;
+	font-family		: georgia;
+	font-weight		: bold;
+}
+
+.spacer {
+	float: left;
+	width: 200px;
+}
+
+.tbl-rekomen{
+	background-color:#A0ACF2;
+}
+
+.pdftable {
+	border: black solid 1px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.pdfrow {
+	background-color: black;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	padding: 5px;
+}
+
+.bottom-line{
+	border-bottom: black solid 1px;
+}
+.frame{
+	padding: 30px;
+	background-color:#FFF;
+	width: 643px;
+}

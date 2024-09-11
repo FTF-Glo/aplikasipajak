@@ -1,0 +1,122 @@
+function hideMask(){
+	hideDialog();
+}
+
+function showMask(){
+	showDialog('Load','<img src="image/large-loading.gif" width="32" height="32" style="margin-right:8px;" align="absmiddle"/>Tunggu','prompt',false,true);
+}
+function sendFindSuccess(params){
+	hideMask();
+	if(params.responseText){
+		var objResultPayment=Ext.decode(Base64.decode(params.responseText));
+		if (objResultPayment.result) {
+			//alert(objResultPayment.message);
+			//print64(objResultPayment.printStruk);
+			document.getElementById('elpost-reprint-main-result').innerHTML = objResultPayment.message;
+		} else {
+			document.getElementById('elpost-reprint-main-result').innerHTML ='<label style="font-weight:bold;color:red">Data Tidak ditemukan !</label>';
+		}
+	}
+}
+function sendFindException(param){
+	hideMask();
+}
+function findVoucher() {
+	var msisdn = document.getElementById('filtermsisdn').value;
+	var dateTrs = document.getElementById('filtertgl').value;
+	var prodid = document.getElementById('filterprodid').value;
+	if ((msisdn != '') && (dateTrs != '')) {
+		var params = "{'req':'getList','msisdn' : '"+msisdn+"','dateTrs' :'"+dateTrs+"','prodid':'"+prodid+"'}";
+		params = Base64.encode(params);
+		  Ext.Ajax.request({
+			   url: 'svr/voucher/svc-voucher-reprint.php',
+			   success: sendFindSuccess,
+			   failure: sendFindException,
+			   params: { req:params}
+			});
+		showMask();
+	} else {
+		alert ("Pencarian tidak bisa dilakukan !, silahkan isi no hp, kode voucher, dan harga jual.");
+	}
+}
+
+function sendReprintSuccess(params){
+	hideMask();
+	if(params.responseText){
+		var objResultPayment=Ext.decode(Base64.decode(params.responseText));
+		if (objResultPayment.result) {
+			//alert(objResultPayment.message);
+			print64(objResultPayment.printStruk);
+			//document.getElementById('elpost-reprint-main-result').innerHTML = objResultPayment.message;
+		} else {
+			document.getElementById('elpost-reprint-main-result').innerHTML ='<label style="font-weight:bold;color:red">'+objResultPayment.message+'</label>';
+		}
+	}
+}
+
+function sendReprint(refnum) {
+if (refnum != '') {
+		var params = "{'req':'getDataToPrint','refnum' : '"+refnum+"'}";
+		params = Base64.encode(params);
+		  Ext.Ajax.request({
+			   url: 'svr/voucher/svc-voucher-reprint.php',
+			   success: sendReprintSuccess,
+			   failure: sendFindException,
+			   params: { req:params}
+			});
+		showMask();
+	} else {
+		alert ("Pencetakan tidak bisa dilakukan !");
+	}
+}
+
+function sendReportSuccess(params){
+	hideMask();
+	if(params.responseText){
+		var objResultPayment=Ext.decode(Base64.decode(params.responseText));
+		if (objResultPayment.result) {
+			var strBtn = "<input name='btnSend' type='button' value='Cetak Ke Printer' onclick='printReport(\""+objResultPayment.printcode+"\");'><br>";
+			document.getElementById('voucher-report-result').innerHTML = strBtn+objResultPayment.message;
+		} else {
+			document.getElementById('voucher-report-result').innerHTML ='<label style="font-weight:bold;color:red">'+objResultPayment.message+'</label>';
+		}
+	}
+}
+function printReport(param) {
+	print64(param);
+}
+function print64(base64Print) {
+    var applet = document.jZebra;
+    if (applet != null) {
+		applet.append64(base64Print);
+		// applet.append64(\"". "IEJBU0U2NCBNRVNTQUdFIFNFTlQgRlJPTSBKWkVCUkEu" ."\");\n";
+	    applet.print();
+		while (!applet.isDonePrinting()) {
+			// Wait\n";
+		}
+		var e = applet.getException();
+		//alert(e == null ? 'Printed Successfully' : 'Exception occured: ' + e.getLocalizedMessage());
+    }
+    else {
+   		alert('Applet not loaded!');
+    }
+}
+
+function sendReport() {
+	var report = document.getElementById('jenis-laporan');
+	var rpt = report.options[report.selectedIndex].value;
+	var dateTrs = document.getElementById('filtertgl').value;
+	if ((rpt != '') && (dateTrs != '')){
+		var params = "{'req':'getReport','dateTrs' : '"+dateTrs+"','report':'"+rpt+"'}";
+		params = Base64.encode(params);
+		  Ext.Ajax.request({
+			   url: 'svr/voucher/svc-voucher-report.php',
+			   success: sendReportSuccess,
+			   failure: sendFindException,
+			   params: { req:params}
+			});
+		showMask();
+	} else {
+		alert ("Pencetakan laporan tidak bisa dilakukan !");
+	}
+}

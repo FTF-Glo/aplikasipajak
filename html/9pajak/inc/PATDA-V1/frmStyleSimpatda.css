@@ -1,0 +1,258 @@
+.auth_area{
+    border-radius: 5px;
+}
+.auth_area *:not(textarea):not(input){
+    background-color: #9ab3c8;    
+}
+
+.frm_informasi td{
+    background-color: #f1dab5;
+    padding: 5px;
+    border-radius: 2px;
+    border:1px #f28874 solid;
+}
+table.main,
+.message-box{  
+    margin: 0 auto;
+    border-radius: 2px;    
+    border: 1px #999 solid;
+    box-shadow: 0px 1px 5px #FFF;        
+    background-color: #FFF;
+    margin-bottom: 20px;
+    z-index: 999;
+}
+form.cmxform h3{
+    border:none;
+    margin-bottom: -15px;
+    font-size: 28px;
+}
+form.cmxform label.error {
+    margin-left: 10px;
+    width: auto;
+    display: inline;
+}
+form.cmxform table.header{
+    border: 1px #CCC solid;
+
+}
+form.cmxform table.header,
+form.cmxform table.header td{
+    background-color: #f5f5ee
+}
+form.cmxform tr.first td:first-child{
+    border-right: 1px #CCC solid;
+}
+
+form.cmxform table td{
+    padding:5px; 
+    padding-bottom: 2px;
+}
+form.cmxform table.child{
+    border:1px #CCC solid;
+}
+form.cmxform table.child th{
+    background-color: #e3e3de;
+    border: 1px #CCC solid;
+}
+form.cmxform table.child,
+form.cmxform table.child td{    
+    background-color: #f5f5ee
+}
+
+form.cmxform .button-area {
+    margin: 0;
+}
+
+form.cmxform .button-area .col-md-12 {
+    text-align: center;
+	background: rgb(230, 223, 255);
+	background: linear-gradient(22deg, rgba(30, 120, 150, 1) 0%, rgba(30, 120, 150, 0.5) 100%) !important;
+    padding: 10px;
+    border-radius: 10px;
+	/* border: 1px solid #3e1b08; */
+}
+
+form.cmxform .button-area .col-md-12 input,
+.button{
+    height: 32px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    color: #333;
+    text-decoration: none;
+    line-height: 100%;
+    white-space: nowrap;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    margin: 0 2px 5px 0;
+    cursor: pointer;
+    padding: 2px 10px 2px 10px;
+
+    /* default button color */
+    background-color: #ececec;
+    border: solid 1px #b8b8b9;
+
+    /* default box shadow */
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+
+    /* default border radius */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+form.cmxform .button-area .col-md-12 input:hover,
+.button:hover{    
+    opacity: .8;
+}
+form.cmxform .button-area .col-md-12 input:active,
+.button:active{
+    background-color: #FFF;
+}
+
+
+form.cmxform .button-area td {
+    background-color: #7d91a7;
+    padding: 10px;
+    border-radius: 2px;
+    border:1px #9ab479 solid;    
+}
+
+form.cmxform .button-area td,
+.button{
+    height: 32px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    color: #333;
+    text-decoration: none;
+    line-height: 100%;
+    white-space: nowrap;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    margin: 0 2px 5px 0;
+    cursor: pointer;
+    padding: 2px 10px 2px 10px;
+
+    /* default button color */
+    background-color: #ececec;
+    border: solid 1px #b8b8b9;
+
+    /* default box shadow */
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+
+    /* default border radius */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+form.cmxform .button-area td:hover,
+.button:hover{    
+    opacity: .8;
+}
+form.cmxform .button-area td:active,
+.button:active{
+    background-color: #FFF;
+}
+
+.number{
+    text-align: right;
+    width: 150px;
+}
+.subtitle{
+    background-color: #7d91a7;
+    color: #FFF;
+    margin-top: 20px;
+    border: none;
+    padding: 5px;
+    font-family: 'calibri'
+}
+.warning{
+    background-color: #faefdd;
+    color: #a12203;
+    margin-top: 20px;
+    border: none;
+    padding: 5px;
+    font-family: 'calibri';
+    font-size: 14px;
+        
+}
+input,textarea{
+    padding: 5px;
+    border:1px #999 solid;
+    font-family: 'calibri'
+}
+textarea{
+    max-width: 600px;
+}
+[readonly=''],
+[readonly='readonly']{
+    background-color: #f9ffd4;
+    border:1px #999 solid;
+}
+.isi{
+    color:#FF0000;
+}
+.message-box{
+    width: 182px;
+    position: fixed;
+    padding: 5px;
+    margin-right: 10px;
+    border-top: 5px #7d91a7 solid;
+    z-index: 999;
+}
+font#tapbox{
+    padding: 2px;
+    background-color: #e3efd7;
+    border:1px #597a3b solid;
+}
+.ui-datepicker-trigger{
+    margin-left: 2px;
+}
+.ui-autocomplete {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 10;
+	float: left;
+	display: none;
+	min-width: 160px;
+	_width: 160px;
+	padding: 5px;
+	margin: 2px 0 0 0;
+	list-style: none;
+	background-color: #ffffff;
+	border-color: #ccc;
+	border-color: rgba(0, 0, 0, 0.2);
+	border-style: solid;
+	border-width: 1px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	-webkit-background-clip: padding-box;
+	-moz-background-clip: padding;
+	background-clip: padding-box;
+	*border-right-width: 2px;
+	*border-bottom-width: 2px;
+}
+
+.warning {
+	border: 1px solid;
+	margin: 4px 0px;
+	padding:4px 4px 4px 24px;
+	background-repeat: no-repeat;
+	background-position: 4px center;
+	color: #9F6000;
+	background-color: #FEEFB3;
+	background-image: url('image/icon/warning.gif');
+}
+
+.l{text-align:left!important}
+.r{text-align:right!important}
+.c{text-align:center!important}

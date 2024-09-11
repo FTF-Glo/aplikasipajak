@@ -1,0 +1,24 @@
+#msg-claim {
+	border:#F90 thin solid;
+	display:block;
+	padding:8 8 8 18;
+	width:400px;
+	background:url(../../../image/icon/warning.gif) no-repeat #FC9;
+	background-position:center left ;
+}
+#main-content {
+	background-color:#ffc975;
+	width:1000px;
+}
+.msg-info{
+	border:#F90 thin solid;
+	display:block;
+	padding:8 8 8 18;
+	width:754px;
+	background:url(../../../image/icon/warning.gif) no-repeat #FC9;
+	background-position:center left ;
+}
+
+.tbl-rekomen{
+	background-color:#A0ACF2;
+}

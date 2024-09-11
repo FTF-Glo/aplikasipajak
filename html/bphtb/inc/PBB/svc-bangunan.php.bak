@@ -1,0 +1,205 @@
+<?
+class SvcBangunan {
+	private $dbSpec = null;
+	
+	public function __construct($dbSpec) {
+		$this->dbSpec = $dbSpec;
+	}
+	
+	//DATABASE FUNCTION
+	private function getBangunanKode($tipe, $jpb, $lantai) {
+		$tipe = mysqli_real_escape_string(trim($tipe));
+		$jpb = mysqli_real_escape_string(trim($jpb));
+		$lantai = mysqli_real_escape_string(trim($lantai));
+		
+		$query = "SELECT CPM_KODE FROM cppmod_pbb_bangunan WHERE CPM_TIPE='$tipe' AND CPM_JPB='$jpb' AND $lantai BETWEEN CPM_LANTAI_MIN AND CPM_LANTAI_MAX";
+		// echo $query;
+		if ($this->dbSpec->sqlQueryRow($query, $res)) {
+			return $res[0]['CPM_KODE'];
+		}
+	}
+	
+	private function getKegiatanVol($kode) {
+		$kode = mysqli_real_escape_string(trim($kode));
+		
+		$query = "SELECT * FROM cppmod_pbb_bangunan_kegiatan_volume WHERE CPM_KODE_BANGUNAN='$kode'";
+		// echo $query;
+		$aVol = array();
+		if ($this->dbSpec->sqlQueryRow($query, $res)) {
+			foreach ($res as $key => $value) {				
+				$aVol[$value['CPM_KODE_PEKERJAAN']][$value['CPM_KODE_KEGIATAN']] = (float)$value['CPM_VOLUME'];
+			}			
+		}
+		return $aVol;
+	}
+	
+	private function getKegiatanHarga($kode, $lokasi, $tahun) {
+		$kode = mysqli_real_escape_string(trim($kode));
+		$lokasi = mysqli_real_escape_string(trim($lokasi));
+		$tahun = mysqli_real_escape_string(trim($tahun));
+		
+		$query = "SELECT * FROM cppmod_pbb_bangunan_kegiatan_harga WHERE CPM_KODE_LOKASI='$lokasi' AND CPM_TAHUN='$tahun' AND CPM_KODE_BANGUNAN='$kode'";
+		
+		$aPrice = array();
+		if ($this->dbSpec->sqlQueryRow($query, $res)) {
+			foreach ($res as $key => $value) {
+				
+				$aPrice[$value['CPM_KODE_PEKERJAAN']][$value['CPM_KODE_KEGIATAN']] = $value['CPM_HARGA'];
+			}			
+		}
+		return $aPrice;
+	}
+	
+	private function getNilaiKegiatan($aVols, $aPrice) {		
+		$nilai = 0;		
+		
+		foreach ($aVols as $pekerjaan => $row){
+			// echo "<pre>";
+			// print_r($row);
+			// echo "</pre>";
+			foreach ($row as $kegiatan => $volum) {
+				// echo "<pre>[$kode][$pekerjaan][$kegiatan] = [$volum] * ".$aPrice[$pekerjaan][$kegiatan]." = ".$volum * $aPrice[$pekerjaan][$kegiatan]."</pre>";
+				$nilai += $volum * $aPrice[$pekerjaan][$kegiatan];
+				// echo "nilai = $nilai";
+				// echo "<pre>";
+				// print_r($volum);
+				// echo "</pre>";
+			}
+		}		
+		return $nilai;
+	}
+	
+	private function getKelasBangunan($nilai) {
+		$nilai = mysqli_real_escape_string(trim($nilai));
+		
+		$query = "SELECT * FROM cppmod_pbb_kelas_bangunan WHERE CPM_NILAI_BAWAH<'$nilai' AND '$nilai'<=CPM_NILAI_ATAS";
+		
+		// echo $query;
+		
+		if ($this->dbSpec->sqlQueryRow($query, $res)) {
+			return $res;
+		}
+	}
+	
+	public function getKelasNjop($nilai, &$kelas, &$njop) {
+		$res = $this->getKelasBangunan($nilai);
+		
+		$kelas = $res[0]['CPM_KELAS'];
+		$njop = $res[0]['CPM_NJOP_M2'];
+	}
+	
+	/* ternyata bagian ini tidak dibutuhkan
+	private function getResourceVol($kode) {
+		$kode = mysqli_real_escape_string(trim($kode));
+		
+		$query = "
+			SELECT R.CPM_KODE_PEKERJAAN, R.CPM_KODE_KEGIATAN, R.CPM_KODE_RESOURCE_GROUP, R.CPM_KODE_RESOURCE_ITEM, R.CPM_VOLUME
+			FROM cppmod_pbb_kegiatan_resource_volume as R, cppmod_pbb_bangunan_kegiatan_volume as K
+			WHERE K.CPM_KODE_BANGUNAN='$kode'
+			  AND K.CPM_KODE_PEKERJAAN=R.CPM_KODE_PEKERJAAN
+			  AND K.CPM_KODE_KEGIATAN=R.CPM_KODE_KEGIATAN
+		";
+		
+		$aVol = array();
+		if ($this->dbSpec->sqlQueryRow($query, $res)) {
+			foreach ($res as $key => $value) {
+				
+				$aVol[$value['CPM_KODE_RESOURCE_GROUP']][$value['CPM_KODE_RESOURCE_ITEM']] = (float)$value['CPM_VOLUME'];
+			}			
+		}
+		echo "<pre>";
+		print_r($aVol);
+		echo "</pre>";	
+		return $aVol;
+	}
+	*/
+	
+	public function getNilaiBangunan($tipe, $jpb, $lokasi, $lantai, $tahun) {
+		$kode = $this->getBangunanKode($tipe, $jpb, $lantai);
+		// echo "Kode bangunan: $kode<br>";
+		
+		$vols = $this->getKegiatanVol($kode);	
+		// echo "Volumes:";
+		// echo "<pre>";
+		// print_r($vols);
+		// echo "</pre>";	
+		
+		$price = $this->getKegiatanHarga($kode, $lokasi, $tahun);		
+		// echo "Harga:";
+		// echo "<pre>";
+		// print_r($price);
+		// echo "</pre>";	
+				
+		$nilaiKegiatan = $this->getNilaiKegiatan($vols, $price);
+		// echo "Nilai Kegiatan: $nilaiKegiatan";
+		return $nilaiKegiatan;
+		// $rVols = $this->getResourceVol($kode);
+		// echo "Volumes:";
+		// echo "<pre>";
+		// print_r($vols);
+		// echo "</pre>";	
+		
+	}
+}
+require_once("../payment/db-payment.php");
+require_once("../payment/inc-payment-db-c.php");
+require_once("../central/dbspec-central.php");
+require_once("../payment/json.php");
+
+$DBLink = NULL;
+$DBConn = NULL;
+
+SCANPayment_ConnectToDB($DBLink, $DBConn, ONPAYS_DBHOST, ONPAYS_DBUSER, ONPAYS_DBPWD, ONPAYS_DBNAME,true);
+if ($iErrCode != 0) {
+	$sErrMsg = 'FATAL ERROR: '.$sErrMsg;
+	if (CTOOLS_IsInFlag(DEBUG, DEBUG_ERROR))
+		error_log ("[".strftime("%Y%m%d%H%M%S", time())."][".(basename(__FILE__)).":".__LINE__."] [ERROR] [$iErrCode] $sErrMsg\n", 3, LOG_DMS_FILENAME);
+	exit(1);
+}
+
+$dbSpec = new SCANCentralDbSpecific(DEBUG, LOG_DMS_FILENAME, $DBLink);
+$SvcBangunan = new SvcBangunan($dbSpec);
+
+//variable for input program:
+$getSvcRequest = (@isset($_REQUEST['req']) ? $_REQUEST['req'] : '');
+$getSvcRequest  = base64_decode($getSvcRequest);
+$json = new Services_JSON();
+$prm = $json->decode($getSvcRequest);
+$tipe = $prm->tipe;
+$jpb = str_pad($prm->jpb,2,"0",STR_PAD_LEFT);
+$lantai = $prm->lantai;
+$nop = $prm->nop;
+$tahun = $prm->tahun;
+$lokasi = substr($nop,0,4);
+
+/////////////////////////////////////////////////
+// dummy data. To be deleted after development //
+// choose one data							   //
+/////////////////////////////////////////////////
+$tipe='045';
+$jpb='01';
+$lantai='3';
+$lokasi='1111';
+
+// echo "Tipe: $tipe<br>";
+// echo "JPB: $jpb<br>";
+// echo "Lantai: $lantai<br>";
+// echo "Lokas: $lokasi<br>";
+// echo "Tahun: $tahun<br><br>";
+
+$nilaiBangunan = $SvcBangunan->getNilaiBangunan($tipe, $jpb, $lokasi, $lantai, $tahun);
+$SvcBangunan->getKelasNjop($nilaiBangunan, $kelas, $njop);
+
+// echo "Nilai bangunan: $nilaiBangunan<br>";
+// echo "kelas = $kelas<br>";
+// echo "njop = $njop<br>";
+
+$response = array();
+$response['r'] = true;
+$response['d']['nb'] = $nilaiBangunan;
+$response['d']['kelas'] = $kelas;
+$response['d']['njop'] = $njop;
+
+$val = $json->encode($response);
+echo $val;
+?>

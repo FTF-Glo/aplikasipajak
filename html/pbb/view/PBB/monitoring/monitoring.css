@@ -1,0 +1,152 @@
+#div-search td {
+	background: transparent;
+}
+
+.monitoring-content {
+	margin: auto;
+	width: 100%;
+	border: thin solid #CCC;
+	/*-moz-box-shadow: 0 0 2px #888;
+	-webkit-box-shadow: 0 0 2px#888;
+	box-shadow: 0 0 2px #888;*/
+	text-align: center;
+	overflow: scroll;
+	height: 380px;
+	min-height: 200px;
+}
+
+#next-page {
+	background: url(../../../image/icon/navigation-000-button.png) no-repeat;
+	background-position: center left;
+	padding-left: 20px;
+	cursor: pointer;
+}
+
+#prev-page {
+	background: url(../../../image/icon/navigation-180-button.png) no-repeat;
+	background-position: center left;
+	padding-left: 20px;
+	cursor: pointer;
+}
+
+#frame-tbl-monitoring {
+	overflow: scroll;
+	height: 320px;
+}
+
+#frame-tbl-monitoring td {
+	background-color: #fff;
+	font-size: 0.7em;
+}
+
+.paging-tbl-class {
+	padding: 8px;
+	float: right;
+}
+
+
+
+.table th {
+	color: #fff;
+	font-weight: bold;
+	padding: 5px !important;
+	text-align: center;
+	vertical-align: middle !important;
+	border: solid 1px #CCCCCC;
+	background: rgb(230, 223, 255);
+	background: linear-gradient(22deg, rgba(30, 120, 150, 1) 0%, rgba(30, 120, 150, 0.5) 100%) !important;
+}
+
+.table td {
+	padding: 4px !important;
+	border: solid 1px #CCCCCC
+}
+
+.kec {
+	background: #def2ed !important
+}
+
+.kec td {
+	text-align: center !important
+}
+
+.kel {
+	text-align: left !important
+}
+
+.tright {
+	text-align: right !important
+}
+
+.tleft {
+	text-align: left !important
+}
+
+.tcenter {
+	text-align: center !important
+}
+
+.tbold {
+	font-weight: bold !important
+}
+
+.rvs6 {
+	background: #48475108 !important
+}
+
+.rvs5 {
+	background: #48475110 !important
+}
+
+.rvs4 {
+	background: #48475118 !important
+}
+
+.rvs3 {
+	background: #48475120 !important
+}
+
+.rvs2 {
+	background: #48475128 !important
+}
+
+.rvs1 {
+	background: #48475130 !important
+}
+
+.svr1 {
+	background: #ff000008 !important
+}
+
+.svr2 {
+	background: #ff000010 !important
+}
+
+.svr3 {
+	background: #ff000018 !important
+}
+
+.svr4 {
+	background: #ff000020 !important
+}
+
+.svr5 {
+	background: #ff000028 !important
+}
+
+.svr6 {
+	background: #ff000030 !important
+}
+
+.rvsh1 {
+	background: #468075 !important
+}
+
+.svrh1 {
+	background: #53a293 !important
+}
+
+.scroll {
+	overflow: auto;
+	white-space: nowrap
+}

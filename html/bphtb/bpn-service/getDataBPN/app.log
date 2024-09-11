@@ -1,0 +1,174 @@
+
+INFO : --------- Start Get Data 2019-09-19 03:27:03
+INFO : --------- Start Get Data 2019-09-19 03:28:04
+INFO : --------- Start Get Data 2019-09-19 03:29:23
+INFO : --------- Start Get Data 2019-09-19 03:34:10
+INFO : --------- Start Get Data 2019-09-19 03:59:04
+INFO : --------- Start Get Data 2019-09-19 04:04:29
+INFO : --------- Start Get Data 2019-09-19 04:17:03
+INFO : --------- Start Get Data 2019-09-19 04:43:54
+INFO : --------- Start Get Data 2019-09-19 04:53:31
+INFO : --------- Start Get Data 2019-09-19 04:56:27
+INFO : --------- Start Get Data 2019-09-19 04:58:50
+INFO : --------- Start Get Data 2019-09-19 05:05:30
+INFO : --------- Start Get Data 2019-09-19 05:12:19
+INFO : --------- Start Get Data 2019-09-19 05:24:03
+INFO : Data BPN inserted! AKTA_ID : 92BC6A08E9B1EC8EE0530C1D140ACC6E
+INFO : Data BPN inserted! AKTA_ID : 92BB9020E3990AC1E0530C1D140AC883
+INFO : Data BPN inserted! AKTA_ID : 92BC611B6EF74747E0530B1D140ADB12
+INFO : Data BPN inserted! AKTA_ID : 92B862D71C68A673E0530C1D140AC402
+INFO : Data BPN inserted! AKTA_ID : 92BC6734F462E956E0530C1D140A528C
+INFO : Data BPN inserted! AKTA_ID : 92BBDE26697581C8E0530B1D140A9EE1
+INFO : Data BPN inserted! AKTA_ID : 92DE36E9B99F057AE0530B1D140A913C
+INFO : Data BPN inserted! AKTA_ID : 92BB903EC6B10535E0530C1D140AA499
+INFO : Data BPN inserted! AKTA_ID : 92BC6788A1FDE95DE0530C1D140AB26B
+INFO : Data BPN inserted! AKTA_ID : 92BC65B4E8A8E7B6E0530C1D140AE36A
+INFO : Data BPN inserted! AKTA_ID : 92BBDE266A1581C8E0530B1D140A9EE1
+INFO : Data BPN inserted! AKTA_ID : 92BD6103314AC75DE0530B1D140A32F1
+INFO : Data BPN inserted! AKTA_ID : 92CA8B97014853B0E0530C1D140A0919
+INFO : Data BPN inserted! AKTA_ID : 92581EB0A1D4DAF9E0530C1D140A7DF0
+INFO : Data BPN inserted! AKTA_ID : 92BB8806F91B5E31E0530B1D140AC203
+INFO : Data BPN inserted! AKTA_ID : 92BADF4B82EC8360E0530C1D140A3A63
+INFO : Data BPN inserted! AKTA_ID : 92CE2BB84C204618E0530B1D140ACE7C
+INFO : Data BPN inserted! AKTA_ID : 92BBDE266A2781C8E0530B1D140A9EE1
+INFO : Data BPN inserted! AKTA_ID : 92BCA5D20D07927BE0530C1D140AC9C4
+INFO : Data BPN inserted! AKTA_ID : 92BB9C43B4C0AA01E0530B1D140A3439
+INFO : Data BPN inserted! AKTA_ID : 92B81680F30C0FADE0530B1D140ACFC8
+INFO : Data BPN inserted! AKTA_ID : 92BD148651433927E0530C1D140AE9E5
+INFO : Data BPN inserted! AKTA_ID : 92CB83177B0E9F6CE0530C1D140AD65B
+INFO : Data BPN inserted! AKTA_ID : 92BC665A4C129CD9E0530C1D140A2E93
+INFO : Data BPN inserted! AKTA_ID : 92BBD93E148881C5E0530B1D140AB401
+INFO : Data BPN inserted! AKTA_ID : 92CBEAF24B2505D1E0530C1D140A8C73
+INFO : Data BPN inserted! AKTA_ID : 92DEACE2BE4F90DAE0530B1D140AF3D2
+INFO : Data BPN inserted! AKTA_ID : 92BBBEAF86B823D2E0530B1D140A799E
+INFO : Data BPN inserted! AKTA_ID : 92BC6A9F5BF3EC9EE0530C1D140A2E0F
+INFO : Data BPN inserted! AKTA_ID : 92B9EA1E196B139BE0530C1D140A448B
+INFO : Data BPN inserted! AKTA_ID : 92BBDE2669F181C8E0530B1D140A9EE1
+INFO : Data BPN inserted! AKTA_ID : 92CB7E46320CB7BFE0530B1D140A6505
+INFO : Data BPN inserted! AKTA_ID : 92B902B8520B8878E0530B1D140A032B
+INFO : --------- Start Get Data 2019-09-19 08:00:02
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC6A08E9B1EC8EE0530C1D140ACC6E-320421000700700740-143/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BB9020E3990AC1E0530C1D140AC883-320421000700700740-142/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC611B6EF74747E0530B1D140ADB12-320421000700700740-157/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92B862D71C68A673E0530C1D140AC402-320410001601700590-136/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC6734F462E956E0530C1D140A528C-320421000700700740-124/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBDE26697581C8E0530B1D140A9EE1-320421000700700740-140/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92DE36E9B99F057AE0530B1D140A913C-320423200701000950-35/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BB903EC6B10535E0530C1D140AA499-320421000700700740-138/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC6788A1FDE95DE0530C1D140AB26B-320421000700700740-149/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC65B4E8A8E7B6E0530C1D140AE36A-320421000700700740-153/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBDE266A1581C8E0530B1D140A9EE1-320421000700700740-156/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BD6103314AC75DE0530B1D140A32F1-320421000700700740-154/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92CA8B97014853B0E0530C1D140A0919-320427001001101480-624/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92581EB0A1D4DAF9E0530C1D140A7DF0-320419000201702110-415/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BB8806F91B5E31E0530B1D140AC203-320421000700700740-121/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BADF4B82EC8360E0530C1D140A3A63-320421000700700740-135/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92CE2BB84C204618E0530B1D140ACE7C-320414000701300340-363/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBDE266A2781C8E0530B1D140A9EE1-320421000700700740-155/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BCA5D20D07927BE0530C1D140AC9C4-320421000700700740-146/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BB9C43B4C0AA01E0530B1D140A3439-320421000700700740-145/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92B81680F30C0FADE0530B1D140ACFC8-320406000400011107-55/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BD148651433927E0530C1D140AE9E5-320421000700700740-151/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92CB83177B0E9F6CE0530C1D140AD65B-320423001100103140-16/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC665A4C129CD9E0530C1D140A2E93-320421000700700740-144/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBD93E148881C5E0530B1D140AB401-320421000700700740-139/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92CBEAF24B2505D1E0530C1D140A8C73-320415001102602490-179/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92DEACE2BE4F90DAE0530B1D140AF3D2-320415001200301800-747/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBBEAF86B823D2E0530B1D140A799E-320421000700700740-141/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BC6A9F5BF3EC9EE0530C1D140A2E0F-320421000700700740-152/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92B9EA1E196B139BE0530C1D140A448B-320410001601700590-134/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92BBDE2669F181C8E0530B1D140A9EE1-320421000700700740-147/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92CB7E46320CB7BFE0530B1D140A6505-320402000600600970-84/2019' for key 'PRIMARY'
+ERROR : com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '92B902B8520B8878E0530B1D140A032B-320410001601700590-135/2019' for key 'PRIMARY'
+INFO : --------- Start Get Data 2021-01-22 06:55:37
+INFO : --------- Start Get Data 2021-01-22 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-23 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-24 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-25 08:30:01
+INFO : --------- Start Get Data 2021-01-26 08:30:02
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-27 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-28 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-29 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-01-30 08:30:01
+WARNING : RESPONSE-API - ORA-03113: end-of-file on communication channel
+Process ID: 123716
+Session ID: 3646 Serial number: 41694
+INFO : --------- Start Get Data 2021-01-31 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-01 08:30:02
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-02 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-03 08:30:01
+INFO : --------- Start Get Data 2021-02-04 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-05 08:30:01
+WARNING : RESPONSE-API - ORA-03113: end-of-file on communication channel
+Process ID: 246177
+Session ID: 12000 Serial number: 45732
+INFO : --------- Start Get Data 2021-02-06 08:30:02
+WARNING : RESPONSE-API - ORA-03113: end-of-file on communication channel
+Process ID: 185497
+Session ID: 5499 Serial number: 52831
+INFO : --------- Start Get Data 2021-02-07 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-08 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-09 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-10 08:30:02
+INFO : --------- Start Get Data 2021-02-11 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-12 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-13 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-14 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-15 08:30:01
+WARNING : Data BPN Kosong!
+INFO : --------- Start Get Data 2021-02-16 08:30:01
+INFO : --------- Start Get Data 2021-02-17 08:30:01
+INFO : --------- Start Get Data 2021-02-18 08:30:01
+INFO : --------- Start Get Data 2021-02-19 08:30:01
+INFO : --------- Start Get Data 2021-02-20 08:30:02
+INFO : --------- Start Get Data 2021-02-21 08:30:01
+INFO : --------- Start Get Data 2021-02-22 08:30:01
+INFO : --------- Start Get Data 2021-02-23 08:30:01
+INFO : --------- Start Get Data 2021-02-24 08:30:01
+INFO : --------- Start Get Data 2021-02-25 08:30:01
+INFO : --------- Start Get Data 2021-02-26 08:30:01
+INFO : --------- Start Get Data 2021-02-27 08:30:01
+INFO : --------- Start Get Data 2021-02-28 08:30:01
+INFO : --------- Start Get Data 2021-03-01 08:30:01
+INFO : --------- Start Get Data 2021-03-02 08:30:01
+INFO : --------- Start Get Data 2021-03-03 08:30:01
+INFO : --------- Start Get Data 2021-03-04 08:30:01
+INFO : --------- Start Get Data 2021-03-05 08:30:01
+INFO : --------- Start Get Data 2021-03-06 08:30:01
+INFO : --------- Start Get Data 2021-03-07 08:30:01
+INFO : --------- Start Get Data 2021-03-08 08:30:02
+INFO : --------- Start Get Data 2021-03-09 08:30:01
+INFO : --------- Start Get Data 2021-03-10 08:30:01
+INFO : --------- Start Get Data 2021-03-11 08:30:01
+INFO : --------- Start Get Data 2021-03-12 08:30:02
+INFO : --------- Start Get Data 2021-03-13 08:30:01
+INFO : --------- Start Get Data 2021-03-14 08:30:01
+INFO : --------- Start Get Data 2021-03-15 08:30:02
+INFO : --------- Start Get Data 2021-03-16 08:30:01
+INFO : --------- Start Get Data 2021-03-17 08:30:01
+INFO : --------- Start Get Data 2021-03-18 08:30:01
+INFO : --------- Start Get Data 2021-03-19 08:30:01
+INFO : --------- Start Get Data 2021-03-20 08:30:01
+INFO : --------- Start Get Data 2021-03-21 08:30:01
+INFO : --------- Start Get Data 2021-03-22 08:30:01
+INFO : --------- Start Get Data 2021-03-23 08:30:02
+INFO : --------- Start Get Data 2021-03-24 08:30:01
+INFO : --------- Start Get Data 2021-03-25 08:30:02

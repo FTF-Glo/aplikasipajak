@@ -1,0 +1,443 @@
+<?php
+if(session_id() == '') {
+    session_start();
+}
+
+/**
+Modified :
+1. Penambahan konfigurasi nama badan pengelola :
+	- modified by : RDN
+	- date : 2016/01/03
+	- function : print_skpd
+*/
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set("log_errors", 1);
+//ini_set("error_log", "/tmp/patda-base-v2-error.log");
+
+//DEFINE('BASE_URL', 'http://192.168.26.112/9pajak/kabkupang/');
+$bURL = explode("?", isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "");
+DEFINE('BASE_URL',$bURL[0]);
+class Pajak {
+
+    public $base_url = BASE_URL;
+
+    #grid
+    protected $pageSize = 30;
+    #request
+    public $_id; #id data
+    public $_idp; #id profil
+    public $_s; #status
+    public $_mod; #modul
+    public $_flg; #flag
+    public $_info; #info
+    public $_a; #app
+    public $_m; #modul_id
+    public $_f; #function
+    public $_i; #id tab
+    public $_type; #tipe pajak
+    public $_sts; #status berkas
+
+    #field
+    protected $CPM_ID;
+    protected $CPM_ID_PROFIL;
+    protected $CPM_NO;
+    protected $CPM_NPWPD;
+    protected $CPM_NAMA_WP;
+    protected $CPM_ALAMAT_WP;
+    protected $CPM_KELURAHAN_WP;
+    protected $CPM_KECAMATAN_WP;
+	protected $CPM_KECAMATAN_WP1; //new by v
+	protected $CPM_KELURAHAN_WP1; //new by v
+    protected $CPM_TRUCK_ID; //new by v - minerba tracking
+    protected $CPM_KAPASITAS_ANGKUT; //new by v - minerba tracking
+    protected $CPM_NOPOL; //new by v - minerba tracking
+	protected $CPM_LUAR_DAERAH;
+    protected $CPM_NOP;
+    protected $CPM_NAMA_OP;
+    protected $CPM_ALAMAT_OP;
+    protected $CPM_JENIS_PAJAK;
+    protected $CPM_MASA_PAJAK;
+    protected $CPM_MASA_PAJAK1;
+    protected $CPM_MASA_PAJAK2;
+    protected $CPM_TAHUN_PAJAK;
+    protected $CPM_TOTAL_KWH;
+    protected $CPM_HARGA_DASAR;
+    protected $CPM_TOTAL_OMZET;
+    protected $CPM_TIPE_MASA;
+    protected $CPM_TOTAL_PAJAK;
+    protected $CPM_TARIF_PAJAK;
+    protected $CPM_TGL_LAPOR;
+    protected $CPM_TGL_JATUH_TEMPO;
+    protected $CPM_TERBILANG;
+    protected $CPM_TRAN_INFO;
+    protected $CPM_VERSION;
+    protected $CPM_AUTHOR;
+    protected $CPM_KETERANGAN;
+    protected $CPM_TIPE_PAJAK;
+    protected $CPM_NO_SSPD;
+    protected $CPM_PERPANJANG;
+    protected $AUTHORITY;
+    protected $CPM_SANKSI = 0;
+    protected $CPM_TRAN_READ = "";
+    protected $CPM_DISCOUNT;
+    protected $EXPIRED_DATE;
+
+    #table
+    protected $SUFIKS = "";
+    protected $MODULE_ID = "";
+    protected $PATDA_AIRBAWAHTANAH_DOC;
+    protected $PATDA_AIRBAWAHTANAH_DOC_TRANMAIN;
+    protected $PATDA_AIRBAWAHTANAH_PROFIL;
+    protected $PATDA_HIBURAN_DOC;
+    protected $PATDA_HIBURAN_DOC_TRANMAIN;
+    protected $PATDA_HIBURAN_PROFIL;
+    protected $PATDA_HOTEL_DOC;
+    protected $PATDA_HOTEL_DOC_TRANMAIN;
+    protected $PATDA_HOTEL_PROFIL;
+    protected $PATDA_MINERAL_DOC;
+    protected $PATDA_MINERAL_DOC_ATR;
+    protected $PATDA_MINERAL_DOC_TRANMAIN;
+    protected $PATDA_MINERAL_PROFIL;
+    protected $PATDA_PARKIR_DOC;
+    protected $PATDA_PARKIR_DOC_TRANMAIN;
+    protected $PATDA_PARKIR_PROFIL;
+    protected $PATDA_JALAN_DOC;
+    protected $PATDA_JALAN_DOC_TRANMAIN;
+    protected $PATDA_JALAN_PROFIL;
+    protected $PATDA_REKLAME_DOC;
+    protected $PATDA_REKLAME_DOC_ATR;
+    protected $PATDA_REKLAME_DOC_TRANMAIN;
+    protected $PATDA_REKLAME_PROFIL;
+    protected $PATDA_RESTORAN_DOC;
+    protected $PATDA_RESTORAN_DOC_TRANMAIN;
+    protected $PATDA_RESTORAN_PROFIL;
+    protected $PATDA_WALET_DOC;
+    protected $PATDA_WALET_DOC_ATR;
+    protected $PATDA_WALET_DOC_TRANMAIN;
+    protected $PATDA_WALET_PROFIL;
+    protected $PATDA_SKPDKB;
+    protected $PATDA_SKPDKB_TRANMAIN;
+    protected $PATDA_STPD;
+    protected $PATDA_STPD_TRANMAIN;
+    protected $PATDA_BERKAS;
+    protected $PATDA_PETUGAS;
+    protected $PATDA_TARIF;
+    protected $PATDA_WP;
+    protected $PATDA_REK_PERMEN13;
+    protected $PATDA_JENIS_PAJAK;
+
+    #object
+    protected $Conn;
+    protected $Data;
+    protected $Message;
+    protected $Json;
+
+    #var
+    public $arr_kdpajak = array(1 => "AIR", 2 => "HIB", 3 => "HTL", 4 => "GAL", 5 => "PKR", 6 => "LIS", 7 => "REK", 8 => "RES", 9 => "WLT");
+    public $arr_pajak = array(1 => "Air Bawah Tanah", 2 => "Hiburan", 3 => "Hotel", 4 => "Mineral Non Logam dan Batuan", 5 => "Parkir",
+        6 => "Penerangan Jalan", 7 => "Reklame", 8 => "Restoran", 9 => "Sarang Walet");
+    public $arr_idpajak = array(1 => "airbawahtanah", 2 => "hiburan", 3 => "hotel", 4 => "mineral", 5 => "parkir",
+        6 => "jalan", 7 => "reklame", 8 => "restoran", 9 => "walet");
+    public $arr_bulan = array(1 => "Januari", 2 => "Februari", 3 => "Maret", 4 => "April", 5 => "Mei", 6 => "Juni", 7 => "Juli", 8 => "Agustus", 9 => "September", 10 => "Oktober", 11 => "November", 12 => "Desember");
+    public $arr_status = array(1 => "Draft", 2 => "Menunggu Verifikasi", 3 => "Menunggu Persetujuan", 4 => "Ditolak", 5 => "Disetujui", 6 => "Dibayar");
+    public $arr_kurangbayar = array(0 => "SKPDKB", 1 => "SKPDKBT");
+    public $arr_role = array("rmPatdaAdmin" => "Admin",
+        "rmPatdaPelayanan" => "Pelayanan",
+        "rmPatdaVerifikasi" => "Verifikasi SubBid I",
+        "rm2Verifikasi2" => "Verifikasi SubBid II",
+	"rmPatdaPenetapan" => "Penetapan",
+        "rmPatdaPenagihan" => "Penagihan",
+        "rmPatdaMonitoring" => "Monitoring");
+    public $arr_tambahan = array(0 => "SKPDKB", 1 => "SKPDKBT");
+    public $idpajak_sw_to_gw = array(1 => 11, 2 => 6, 3 => 4, 4 => 9, 5 => 10, 6 => 8, 7 => 7, 8 => 5, 9 => 12);
+    public $idpajak_gw_to_sw = array(11 => 1, 6 => 2, 4 => 3, 9 => 4, 10 => 5, 8 => 6, 7 => 7, 5 => 8, 12 => 9);
+    public $arr_tipe_pajak = array(1 => "Reguler", 2 => "Non Reguler");
+    public $non_reguler = array(1 => 31, 2 => 26, 3 => 24, 4 => 29, 5 => 30, 6 => 28, 7 => 27, 8 => 25, 9 => 32);
+    protected $notif = true;
+    public $arr_pajak_tapbox = array("HIBURAN" => "Hiburan", "HOTEL" => "Hotel", "PARKIR" => "Parkir", "RESTORAN" => "Restoran");
+
+    function __construct() {
+        global $DBLink, $data, $id, $json;
+
+        $this->base_url = BASE_URL;
+        $this->Conn = $DBLink;
+        $this->Data = $data;
+        $this->Json = $json;
+        $this->Message = class_exists("Message") ? new Message() : "";
+
+        $this->_a = isset($_REQUEST['a']) ? $_REQUEST['a'] : "";
+        $this->_m = isset($_REQUEST['m']) ? $_REQUEST['m'] : "";
+        $this->_f = isset($_REQUEST['f']) ? $_REQUEST['f'] : "";
+
+        $this->_id = isset($id) ? $id : "";
+        $this->_idp = isset($_REQUEST['idp']) ? $_REQUEST['idp'] : "";
+        $this->_s = isset($_REQUEST['s']) ? $_REQUEST['s'] : "";
+        $this->_mod = isset($_REQUEST['mod']) ? $_REQUEST['mod'] : "";
+        $this->_flg = isset($_REQUEST['flg']) ? $_REQUEST['flg'] : "";
+        $this->_info = isset($_REQUEST['info']) ? $_REQUEST['info'] : "";
+        $this->_i = isset($_REQUEST['i']) ? $_REQUEST['i'] : "";
+        $this->_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : "";
+        $this->_sts = isset($_REQUEST['sts']) ? $_REQUEST['sts'] : "";
+
+       #table
+        $this->PATDA_AIRBAWAHTANAH_DOC = "PATDA_AIRBAWAHTANAH_DOC{$this->SUFIKS}";
+        $this->PATDA_AIRBAWAHTANAH_DOC_TRANMAIN = "PATDA_AIRBAWAHTANAH_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_AIRBAWAHTANAH_PROFIL = "PATDA_AIRBAWAHTANAH_PROFIL{$this->SUFIKS}";
+        $this->PATDA_HIBURAN_DOC = "PATDA_HIBURAN_DOC{$this->SUFIKS}";
+        $this->PATDA_HIBURAN_DOC_TRANMAIN = "PATDA_HIBURAN_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_HIBURAN_PROFIL = "PATDA_HIBURAN_PROFIL{$this->SUFIKS}";
+        $this->PATDA_HOTEL_DOC = "PATDA_HOTEL_DOC{$this->SUFIKS}";
+        $this->PATDA_HOTEL_DOC_TRANMAIN = "PATDA_HOTEL_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_HOTEL_PROFIL = "PATDA_HOTEL_PROFIL{$this->SUFIKS}";
+        $this->PATDA_MINERAL_DOC = "PATDA_MINERAL_DOC{$this->SUFIKS}";
+        $this->PATDA_MINERAL_DOC_ATR = "PATDA_MINERAL_DOC_ATR{$this->SUFIKS}";
+        $this->PATDA_MINERAL_DOC_TRANMAIN = "PATDA_MINERAL_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_MINERAL_PROFIL = "PATDA_MINERAL_PROFIL{$this->SUFIKS}";
+        $this->PATDA_PARKIR_DOC = "PATDA_PARKIR_DOC{$this->SUFIKS}";
+        $this->PATDA_PARKIR_DOC_TRANMAIN = "PATDA_PARKIR_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_PARKIR_PROFIL = "PATDA_PARKIR_PROFIL{$this->SUFIKS}";
+        $this->PATDA_JALAN_DOC = "PATDA_JALAN_DOC{$this->SUFIKS}";
+        $this->PATDA_JALAN_DOC_TRANMAIN = "PATDA_JALAN_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_JALAN_PROFIL = "PATDA_JALAN_PROFIL{$this->SUFIKS}";
+        $this->PATDA_REKLAME_DOC = "PATDA_REKLAME_DOC{$this->SUFIKS}";
+        $this->PATDA_REKLAME_DOC_ATR = "PATDA_REKLAME_DOC_ATR{$this->SUFIKS}";
+        $this->PATDA_REKLAME_DOC_TRANMAIN = "PATDA_REKLAME_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_REKLAME_PROFIL = "PATDA_REKLAME_PROFIL{$this->SUFIKS}";
+        $this->PATDA_RESTORAN_DOC = "PATDA_RESTORAN_DOC{$this->SUFIKS}";
+        $this->PATDA_RESTORAN_DOC_TRANMAIN = "PATDA_RESTORAN_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_RESTORAN_PROFIL = "PATDA_RESTORAN_PROFIL{$this->SUFIKS}";
+        $this->PATDA_WALET_DOC = "PATDA_WALET_DOC{$this->SUFIKS}";
+        $this->PATDA_WALET_DOC_ATR = "PATDA_WALET_DOC_ATR{$this->SUFIKS}";
+        $this->PATDA_WALET_DOC_TRANMAIN = "PATDA_WALET_DOC_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_WALET_PROFIL = "PATDA_WALET_PROFIL{$this->SUFIKS}";
+        $this->PATDA_SKPDKB = "PATDA_SKPDKB{$this->SUFIKS}";
+        $this->PATDA_SKPDKB_TRANMAIN = "PATDA_SKPDKB_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_STPD = "PATDA_STPD{$this->SUFIKS}";
+        $this->PATDA_STPD_TRANMAIN = "PATDA_STPD_TRANMAIN{$this->SUFIKS}";
+        $this->PATDA_BERKAS = "PATDA_BERKAS{$this->SUFIKS}";
+        $this->PATDA_PETUGAS = "PATDA_PETUGAS{$this->SUFIKS}";
+        $this->PATDA_TARIF = "PATDA_TARIF{$this->SUFIKS}";
+        $this->PATDA_WP = "PATDA_WP{$this->SUFIKS}";
+        $this->PATDA_REK_PERMEN13 = "PATDA_REK_PERMEN13{$this->SUFIKS}";
+        $this->PATDA_JENIS_PAJAK = "PATDA_JENIS_PAJAK{$this->SUFIKS}";
+
+        if($this->Conn) $this->set_jenis_pajak();
+        $this->CPM_NPWPD = preg_replace("/[^A-Za-z0-9 ]/", '', $this->CPM_NPWPD);
+    }
+
+	protected function inisialisasi_masa_pajak(){
+		/*PALEMBANG
+		 * menampilkan bulan kemarin,
+		 * misal sekarang adalah februari 2016, maka yang tampil adalah januari 2016
+		 * misal sekarang adalah januari 2016, maka yang tampil adalah desember 2015
+
+		$masa_pajak = date("m")==1? 12 : date("m")-1;
+        $tahun_pajak = date("m")==1? date("Y")-1 : date("Y");
+        $bln = str_pad($masa_pajak, 2, 0, STR_PAD_LEFT);
+        */
+
+        $masa_pajak = date("m");
+        $tahun_pajak = date("Y");
+        $bln = str_pad($masa_pajak, 2, 0, STR_PAD_LEFT);
+
+        $res['masa_pajak'] = $masa_pajak;
+        $res['tahun_pajak'] = $tahun_pajak;
+        $res['masa_pajak1'] = "01/{$bln}/{$tahun_pajak}";
+        $res['masa_pajak2'] = date("t",strtotime("{$tahun_pajak}-{$bln}"))."/{$bln}/{$tahun_pajak}";
+
+        return $res;
+	}
+
+	public function set_jenis_pajak() {
+        $query = "SELECT * FROM PATDA_JENIS_PAJAK ORDER BY CPM_NO";
+        $res = mysqli_query($this->Conn, $query) or die(mysqli_error($this->Conn));
+        while($d = mysqli_fetch_assoc($res)){
+            if($d['CPM_TIPE']<=12){
+				$this->arr_pajak[$d['CPM_NO']] = $d['CPM_JENIS'];
+				$this->arr_pajak_table[$d['CPM_NO']] = $d['CPM_TABLE'];
+			}
+
+            $this->arr_pajak_gw[$d['CPM_TIPE']] = $d['CPM_JENIS'];
+			$this->arr_pajak_gw_table[$d['CPM_TIPE']] = $d['CPM_TABLE'];
+			$this->arr_pajak_gw_no[$d['CPM_TIPE']] = $d['CPM_NO'];
+
+        }
+    }
+
+    public function redirect($url = "") {
+        $this->base_url = str_replace('main.php','',$this->base_url);
+        $url = empty($url) ?
+        $this->base_url. 'main.php?param=' . base64_encode("a={$this->_a}&m={$this->_m}") :
+        $this->base_url. $url;
+
+        header("location:{$url}");
+    }
+
+   	private function get_norek_on_save_gateway(){
+		$pajak = isset($_REQUEST['PAJAK'])? $_REQUEST['PAJAK'] : null;
+		$atr = isset($_REQUEST['PAJAK_ATR'])? $_REQUEST['PAJAK_ATR'] : null;
+
+		$rek = '';
+		$rek = isset($pajak['CPM_REKENING'])? $pajak['CPM_REKENING'] : $rek;
+
+		if($atr){
+			if(isset($atr['CPM_ATR_NAMA'])){
+				$_list_rek = array();
+				foreach($atr['CPM_ATR_NAMA'] as $val){
+					$_list_rek[] = $val;
+				}
+				if(count($_list_rek)> 0) $rek = implode(';',$_list_rek);
+			}
+
+			$rek = isset($atr['CPM_ATR_REKENING'])? $atr['CPM_ATR_REKENING'] : $rek;
+		}
+		$rek = isset($_REQUEST['TAGIHAN[CPM_AYAT_PAJAK]'])? $_REQUEST['TAGIHAN[CPM_AYAT_PAJAK]'] : $rek;
+		$rek = isset($_REQUEST['SKPDKB[CPM_JENIS_PAJAK]'])? $_REQUEST['SKPDKB[CPM_JENIS_PAJAK]'] : $rek;
+
+		return $rek;
+    }
+
+    protected function getNamaRekeningPermen() {
+        $query = "SELECT * FROM PATDA_REK_PERMEN13 ORDER BY nmrek DESC";
+        $result = mysqli_query($this->Conn, $query);
+        //$data['CPM_REKENING'] = array();
+        $data['ARR_REKENING'] = array();
+        while ($d = mysqli_fetch_assoc($result)) {
+            //$data['CPM_REKENING'][$d['kdrek']] = array('kdrek' => $d['kdrek'], 'nmrek' => $d['nmrek'], 'tarif' => $d['tarif1'], 'harga' => $d['tarif2']);
+            $data['ARR_REKENING'][$d['kdrek']] = array('kdrek' => $d['kdrek'], 'nmrek' => $d['nmrek'], 'tarif' => $d['tarif1'], 'harga' => $d['tarif2']);
+        }
+        return $data;
+    }
+
+
+	public function get_config_terlambat_lap($jns){
+		$query = sprintf("SELECT CPM_PERSENTASE as persen, CPM_EDITABLE as editable FROM PATDA_DENDA_TERLAMBAT_LAPOR WHERE CPM_JENIS_PAJAK = '%s' AND CPM_TAHUN = '%s'", $jns, date('Y'));
+		$res = mysqli_query($this->Conn, $query);
+
+        $data = (object) array('persen'=>0,'editable'=>0);
+		if($data = mysqli_fetch_object($res)){
+			$data->editable = $data->editable;
+			$data->persen = $data->persen;
+		}/* else{
+			$data = (object) array('persen'=>0,'editable'=>0);
+		} */
+		return $data;
+	}
+
+	public function get_gw_byid($conn, $id){
+		$query = sprintf("SELECT * FROM SIMPATDA_GW WHERE id_switching = '%s'", $id);
+		$res = mysqli_query($conn, $query);
+		$data = array();
+		if($data = mysqli_fetch_object($res)){
+
+		}
+
+		return $data;
+	}
+
+	public function get_payment_code($conn, $id = '', $config, $jns){
+		$payment_code = '';
+		
+        if($jns == 1){
+            $jns = '02';
+        }else if($jns == 2){
+            $jns = '06';
+        }else if($jns == 3){
+            $jns = '04';
+        }else if($jns == 4){
+            $jns = '08';
+        }else if($jns == 5){
+            $jns = '09';
+        }else if($jns == 6){
+            $jns = '07';
+        }else if($jns == 7){
+            $jns = '01';
+        }else if($jns == 8){
+            $jns = '05';
+        }else{
+            $jns = '10';
+        }
+
+		if(!empty($id)){
+			$query = sprintf("SELECT payment_code FROM SIMPATDA_GW WHERE id_switching = '%s'", $id);
+			$res = mysqli_query($conn, $query);
+			if($data = mysqli_fetch_assoc($res)){
+				$payment_code = $data['payment_code'];
+			}
+		}else{
+            $year = date('y');
+            $garis = '-';
+            $kode_prefix = '0';
+            $search_code = $garis.$jns;
+			// $length = isset($config['PATDA_PAYMENT_CODE_LENGTH'])? $config['PATDA_PAYMENT_CODE_LENGTH'] : 2;
+			$length = 6;
+			$query = "SELECT MAX(SUBSTRING(payment_code,1, {$length} )) nomor FROM SIMPATDA_GW WHERE DATE_FORMAT(saved_date, '%y') = '{$year}' AND PAYMENT_CODE LIKE '%{$search_code}%'";
+			$res = mysqli_query($conn, $query);
+
+			$nomor = 1;
+			if($data = mysqli_fetch_assoc($res)){
+				$nomor = $data['nomor'] + 1;
+            }
+            
+            
+
+			$payment_code = str_pad($nomor, $length, '0', STR_PAD_LEFT).$garis.$jns;
+        }
+        
+
+		return $payment_code;
+    }
+
+    private function get_op_reklame($id){
+        $res = mysqli_query($this->Conn, "SELECT * from PATDA_REKLAME_PROFIL WHERE CPM_ID='{$id}'");
+        if($data = mysqli_fetch_assoc($res)){
+            return $data;
+        }
+        return;
+    }
+
+    protected function save_gateway($jns, $arr_config) {
+
+		$simpatda_rek = $this->get_norek_on_save_gateway();
+		$dbName = $arr_config['PATDA_DBNAME'];
+        $dbHost = $arr_config['PATDA_HOSTPORT'];
+        $dbPwd = $arr_config['PATDA_PASSWORD'];
+        $dbTable = $arr_config['PATDA_TABLE'];
+        $dbUser = $arr_config['PATDA_USERNAME'];
+        $day = $arr_config['TENGGAT_WAKTU'];
+        $area_code = $arr_config['KODE_AREA'];
+        // echo $dbHost;
+        // echo $dbPwd;
+        // exit();
+
+        $KODE_PAJAK = $this->idpajak_sw_to_gw[$jns];
+        $Conn_gw = mysqli_connect($dbHost, $dbUser, $dbPwd, $dbName);
+        //mysql_select_db($dbName, $Conn_gw);
+
+        $payment_code = $this->get_payment_code($Conn_gw,'',$arr_config, $jns);
+        $this->CPM_TOTAL_PAJAK = ceil(str_replace(",", "", $this->CPM_TOTAL_PAJAK));
+
+        $dbLimit = "DATE_FORMAT(saved_date,'%Y-%m-15')";
+        $bulan_pajak = str_pad($this->CPM_MASA_PAJAK, 2, "0", STR_PAD_LEFT);
+
+        $ms1 = $this->CPM_MASA_PAJAK1;
+        $ms2 = $this->CPM_MASA_PAJAK2;
+        $periode = "000000{$this->CPM_TAHUN_PAJAK}{$bulan_pajak}";
+
+        if ($jns == 7) { #reklame semuanya non reguler
+            $this->CPM_TIPE_PAJAK = 2;
+        }
+
+        if ($this->CPM_TIPE_PAJAK == 2) {
+            $dbLimit = "DATE_ADD(DATE(saved_date), INTERVAL 1 MONTH)";
+            $bulan_pajak = "00";
+
+            #$non_reguler = array(1 => "AIR", 2 => "HIB", 3 => "HTL", 4 => "GAL", 5 => "PKR", 6 => "LIS", 7 => "REK", 8 => "RES", 9 => "WLT");
+            $KODE_PAJAK = $this->non_reguler[$jns];
+            #$periode = substr($ms1, 8, 2) . "" . substr($ms1, 3, 2) . "" . substr($ms1, 0, 2) . "" . substr($ms2, 8, 2) . "" . substr($ms2, 3, 2) . "" . substr($ms2, 0, 2);
+            $periode = substr($this->CPM_NO, -2) . "00" . substr($this->CPM_NO, 0, 8);
+        }
+
+        // jatuh tempo self: +20 hari dari masa pajak akhir
+        $dbLimit = "DATE_ADD(str_to_date('$ms2', '%d/%m/%Y'), INTERVAL +20 DAY)";

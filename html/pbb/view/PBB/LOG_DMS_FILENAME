@@ -1,0 +1,204 @@
+[20200430071540][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430071540][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430071540][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430071540][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071540][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430071540][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430071540][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430071540][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071540][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071542][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430071542][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430071542][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430071542][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430071542][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071542][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071542][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071542][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071550][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430071550][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430071550][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430071550][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430071550][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071550][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071550][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071550][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071552][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430071552][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430071552][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430071552][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430071552][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071552][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430071552][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430071552][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072317][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430072317][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430072317][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430072317][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430072317][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072317][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072317][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072317][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072627][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430072627][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430072627][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430072627][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430072627][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072627][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072627][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072627][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072826][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430072826][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430072826][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430072826][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430072826][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072826][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072826][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072826][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072828][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430072828][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430072828][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430072828][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430072828][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072828][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072828][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072828][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072849][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430072849][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430072849][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430072849][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430072849][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072849][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430072849][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430072849][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073104][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430073104][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430073104][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430073104][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073104][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430073104][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430073104][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430073104][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073104][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073125][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430073125][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430073125][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430073125][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430073125][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073125][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430073125][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430073125][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074853][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430074853][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430074853][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430074853][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430074853][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074853][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074853][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074853][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074954][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430074954][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430074954][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430074954][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430074954][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074954][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074954][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074954][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074955][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430074955][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430074955][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430074955][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430074955][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074955][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430074955][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430074955][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430080541][user-central.php:1037] [DEBUG] sQ [SELECT CTR_A_DB FROM central_app WHERE CTR_A_ID = 'aPBB' ]
+[20200430080541][user-central.php:1059] [DEBUG] sQ [SELECT * FROM central_database WHERE CTR_DB_ID = 'd1' ]
+[20200430080541][user-central.php:1390] [DEBUG] sQ [select * from central_module_config where CTR_CFG_MID = 'm176' order by CTR_CFG_MKEY asc]
+[20200430080541][user-central.php:1432] [DEBUG] sQ [select * from central_app_config where CTR_AC_AID = 'aPBB' order by CTR_AC_KEY asc]
+[20200430080541][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430080541][dbspec-central.php:54] [DEBUG] sQ [SELECT * FROM cppmod_tax_kecamatan WHERE  CPC_TKC_KKID LIKE '%1801%' ORDER BY CPC_TKC_KECAMATAN ASC]
+[20200430080541][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]
+[20200430080541][dbspec-central.php:54] [DEBUG] sQ [SELECT * from cppmod_tax_kelurahan WHERE CPC_TKL_KCID IN (
+                        SELECT CPC_TKC_ID FROM cppmod_tax_kecamatan WHERE CPC_TKC_KKID="1801"
+                ) ORDER BY CPC_TKL_KELURAHAN ASC]

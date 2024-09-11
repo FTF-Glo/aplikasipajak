@@ -1,0 +1,60 @@
+fieldset {
+	
+	margin-bottom:5px;
+}
+
+#div-search td{
+	background: transparent;
+}
+
+.monitoring-content{
+	margin:auto;
+	width:100%;
+	border:thin solid #CCC;
+	/*-moz-box-shadow: 0 0 2px #888;
+	-webkit-box-shadow: 0 0 2px#888;
+	box-shadow: 0 0 2px #888;*/
+	text-align:center;
+	min-height:20px;
+	padding-bottom:30px;
+}
+
+input {
+    border:1px solid #dadada;
+    border-radius:2px;
+    padding:4px; 
+}
+
+
+input:focus { 
+    outline:none;
+    border-color:#9ecaed;
+    box-shadow:0 0 4px #9ecaed;
+}
+
+#next-page{
+	background:url(../../../image/icon/navigation-000-button.png) no-repeat;
+	background-position:center left ;	
+	padding-left:20px;
+	cursor:pointer;
+}
+#prev-page{
+	background:url(../../../image/icon/navigation-180-button.png) no-repeat;
+	background-position:center left ;	
+	padding-left:20px;
+	cursor:pointer;
+}
+
+#frame-tbl-monitoring {
+	overflow:scroll;
+	height:320px;
+}
+
+#frame-tbl-monitoring td{
+	background-color:#fff;
+	font-size:0.7em;
+}
+.paging-tbl-class {
+	padding:8px;
+	float:right;
+}

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="22" docname="struk" lmargin="2" rmargin="85" draftmode="true">
+	<line>
+		<item repeat="0" center="0" rpad="34" lpad="0" text="SURAT TANDA TERIMA SETORAN" italic="true" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="52" text="SURAT TANDA TERIMA SETORAN" italic="false" size="10" bold="true" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="WJB PJK" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#WJBPJK#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="WJB PJK" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#WJBPJK#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="NOP/NPWP" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="28" lpad="0" text="#NOPNPWP1#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="0" text="NOP/NPWP" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#NOPNPWP1#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="42" lpad="22" text="#NOPNPWP2#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="22" text="#NOPNPWP2#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="LETAK OBJEK PAJAK" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="13" text="LETAK OBJEK PAJAK" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="7" lpad="0" text="KECAMATAN" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="KECAMATAN" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="DESA/KEL" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#DESAKEL#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="10" text="DESA/KEL" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#DESAKEL#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="JTH TMP" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#JTHTMP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="JTH TMP" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#JTHTMP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="TGL BYR" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#TGLBYR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="TGL BYR" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#TGLBYR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="SREF" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#SREF1#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="SREF" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#SREF1#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="42" lpad="19" text="#SREF2#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="19" text="#SREF2#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="JML TGHN" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#JMLTAGIH#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="JML TGHN" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="#TMLTAGIH#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="ADM" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text="Rp." italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="23" lpad="16" text="#ADMIN#,-" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="ADM" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text="Rp." italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="17" lpad="16" text="#ADMIN#,-" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="9" lpad="0" text="TTL BAYAR" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text="Rp." italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="23" lpad="16" text="#TOTAL#,-" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="11" lpad="13" text="TTL BAYAR" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="3" text=":" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text="Rp." italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="17" lpad="16" text="#TOTAL#,-" italic="false" size="20" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#PPID#/#OPERATOR#/#CETAK##NTRIAL#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#PPID#/#OPERATOR#/#CETAK##NTRIAL#/#TGLPRINT#/#JAMPRINT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>	
+</tns:report>

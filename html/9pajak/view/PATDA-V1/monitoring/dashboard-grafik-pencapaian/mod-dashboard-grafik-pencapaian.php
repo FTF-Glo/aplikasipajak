@@ -1,0 +1,527 @@
+<?php
+$DIR = "PATDA-V1";
+$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+$styleFolder = $User->GetLayoutUser($uid);
+$_SESSION['uname'] = $data->uname;
+global $DBLink;
+
+
+$count_pemabayaran_today = mysqli_fetch_row(mysqli_query($DBLink, "SELECT COALESCE(SUM(patda_total_bayar), 0) AS total_pembayaran_hari_ini FROM simpatda_gw WHERE DATE(payment_paid) = CURDATE()"));
+$count_belum_bayar = mysqli_fetch_row(mysqli_query($DBLink, "SELECT COALESCE(SUM(simpatda_dibayar), 0) AS tunggakan FROM simpatda_gw WHERE payment_flag = 0"));
+// var_dump($count_belum_bayar);
+// die;
+$count_wp = mysqli_fetch_row(mysqli_query($DBLink, "SELECT COUNT(*)  FROM PATDA_WP"));
+$count_op = 0;
+$count_op_query = mysqli_query($DBLink, "
+	SELECT COUNT(*) as JML_ROW FROM PATDA_AIRBAWAHTANAH_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_HIBURAN_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_HOTEL_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_JALAN_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_MINERAL_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_PARKIR_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_REKLAME_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_RESTORAN_PROFIL
+	UNION
+	SELECT COUNT(*) as JML_ROW FROM PATDA_WALET_PROFIL
+	");
+while ($count_op_res = mysqli_fetch_assoc($count_op_query)) {
+	$count_op += ($count_op_res['JML_ROW']);
+};
+$tahunTargetPajak = mysqli_query($DBLink, "SELECT CPM_TAHUN FROM PATDA_TARGET_PAJAK GROUP BY CPM_TAHUN");
+$arr_bulan = array(1 => "Januari", 2 => "Februari", 3 => "Maret", 4 => "April", 5 => "Mei", 6 => "Juni", 7 => "Juli", 8 => "Agustus", 9 => "September", 10 => "Oktober", 11 => "November", 12 => "Desember");
+
+// TABEL
+$query_for_table = "
+	SELECT
+		SUM( A.patda_total_bayar ) AS TOTAL_PENDAPATAN,
+		C.CPM_JUMLAH AS TARGET,
+		B.id_sw AS ID_JENIS_PAJAK,
+		B.jenis_sw AS JENIS_PAJAK,
+		YEAR ( A.payment_paid ) AS TAHUN 
+	FROM
+		SIMPATDA_GW A
+		INNER JOIN SIMPATDA_TYPE B ON A.simpatda_type = B.id
+		INNER JOIN PATDA_TARGET_PAJAK C ON B.id_sw = C.CPM_JENIS_PAJAK 
+		AND C.CPM_TAHUN = YEAR ( CURRENT_DATE ) 
+		AND C.CPM_AKTIF = '1' 
+	WHERE
+		YEAR ( A.payment_paid ) = YEAR ( CURRENT_DATE ) 
+		AND A.payment_flag = '1' 
+	GROUP BY
+		B.id_sw;
+";
+
+$result_for_table = mysqli_query($DBLink, $query_for_table) or die(mysqli_error($DBLink));
+function get_bulan_lalu_table()
+{
+	global $DBLink;
+	$query = "
+		SELECT
+			SUM(A.patda_total_bayar) AS TOTAL_PENDAPATAN,
+			C.CPM_JUMLAH AS TARGET,
+			B.id_sw AS ID_JENIS_PAJAK,
+			B.jenis_sw AS JENIS_PAJAK,
+			YEAR(A.payment_paid) AS TAHUN,
+			MONTH(A.payment_paid) AS BULAN
+		FROM
+			SIMPATDA_GW A 
+			INNER JOIN SIMPATDA_TYPE B ON A.simpatda_type = B.id
+			INNER JOIN PATDA_TARGET_PAJAK C ON B.id_sw = C.CPM_JENIS_PAJAK AND C.CPM_TAHUN = YEAR(CURRENT_DATE) AND C.CPM_AKTIF = '1'
+		WHERE
+			YEAR ( A.payment_paid ) = YEAR ( CURRENT_DATE ) 
+			AND A.payment_flag = '1' AND MONTH(A.payment_paid) = MONTH(CURRENT_DATE)
+		GROUP BY A.simpatda_type, MONTH(A.payment_paid)
+		UNION
+		SELECT
+			SUM(A.patda_total_bayar) AS TOTAL_PENDAPATAN,
+			C.CPM_JUMLAH AS TARGET,
+			B.id_sw AS ID_JENIS_PAJAK,
+			B.jenis_sw AS JENIS_PAJAK,
+			YEAR(A.payment_paid) AS TAHUN,
+			MONTH(A.payment_paid) AS BULAN
+		FROM
+			SIMPATDA_GW A 
+			INNER JOIN SIMPATDA_TYPE B ON A.simpatda_type = B.id
+			INNER JOIN PATDA_TARGET_PAJAK C ON B.id_sw = C.CPM_JENIS_PAJAK AND C.CPM_TAHUN = YEAR(CURRENT_DATE) AND C.CPM_AKTIF = '1'
+		WHERE
+			YEAR ( A.payment_paid ) = YEAR ( CURRENT_DATE ) 
+			AND A.payment_flag = '1' AND MONTH(A.payment_paid) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
+		GROUP BY A.simpatda_type, MONTH(A.payment_paid);
+	";
+
+	$result = mysqli_query($DBLink, $query);
+
+	$arr_res = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$arr_res[$row['BULAN']][$row['ID_JENIS_PAJAK']] = $row['TOTAL_PENDAPATAN'];
+	}
+
+	return $arr_res;
+}
+
+function get_2bulan_lalu_table()
+{
+	global $DBLink;
+	$query = "
+		SELECT
+			SUM(A.patda_total_bayar) AS TOTAL_PENDAPATAN,
+			C.CPM_JUMLAH AS TARGET,
+			B.id_sw AS ID_JENIS_PAJAK,
+			B.jenis_sw AS JENIS_PAJAK,
+			YEAR(A.payment_paid) AS TAHUN,
+			MONTH(A.payment_paid) AS BULAN
+		FROM
+			SIMPATDA_GW A 
+			INNER JOIN SIMPATDA_TYPE B ON A.simpatda_type = B.id
+			INNER JOIN PATDA_TARGET_PAJAK C ON B.id_sw = C.CPM_JENIS_PAJAK AND C.CPM_TAHUN = YEAR(CURRENT_DATE) AND C.CPM_AKTIF = '1'
+		WHERE
+			YEAR ( A.payment_paid ) = YEAR ( CURRENT_DATE ) 
+			AND A.payment_flag = '1' AND MONTH(A.payment_paid) = MONTH(CURRENT_DATE)
+		GROUP BY A.simpatda_type, MONTH(A.payment_paid)
+		UNION
+		SELECT
+			SUM(A.patda_total_bayar) AS TOTAL_PENDAPATAN,
+			C.CPM_JUMLAH AS TARGET,
+			B.id_sw AS ID_JENIS_PAJAK,
+			B.jenis_sw AS JENIS_PAJAK,
+			YEAR(A.payment_paid) AS TAHUN,
+			MONTH(A.payment_paid) AS BULAN
+		FROM
+			SIMPATDA_GW A 
+			INNER JOIN SIMPATDA_TYPE B ON A.simpatda_type = B.id
+			INNER JOIN PATDA_TARGET_PAJAK C ON B.id_sw = C.CPM_JENIS_PAJAK AND C.CPM_TAHUN = YEAR(CURRENT_DATE) AND C.CPM_AKTIF = '1'
+		WHERE
+			YEAR ( A.payment_paid ) = YEAR ( CURRENT_DATE ) 
+			AND A.payment_flag = '1' AND MONTH(A.payment_paid) = MONTH(CURRENT_DATE - INTERVAL 2 MONTH)
+		GROUP BY A.simpatda_type, MONTH(A.payment_paid);
+	";
+
+	$result = mysqli_query($DBLink, $query);
+
+	$arr_res = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$arr_res[$row['BULAN']][$row['ID_JENIS_PAJAK']] = $row['TOTAL_PENDAPATAN'];
+	}
+
+	return $arr_res;
+}
+
+$result_perbulan_for_table = get_bulan_lalu_table();
+$result_per2bulan_for_table = get_2bulan_lalu_table();
+
+?>
+<input type="hidden" id="iLink" value="<?php echo "view/{$DIR}/monitoring/dashboard-grafik-pencapaian/svc-grafik.php" ?>">
+
+<style>
+	#container #content {
+		padding-left: 0 !important;
+	}
+
+	.customtable th {
+		background-color: #e6EEEE;
+	}
+
+	.customtable,
+	.customtable th,
+	.customtable td {
+		text-align: center;
+	}
+
+	.small-box {
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		transition: all 0.3s ease;
+	}
+
+	.small-box:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.small-box .inner {
+		padding: 20px;
+	}
+
+	.small-box p {
+		font-size: 18px;
+		margin-bottom: 10px;
+	}
+
+	.small-box p:first-child {
+		font-size: 20px;
+		font-weight: bold;
+	}
+</style>
+<script src="inc/js/jquery-1.9.1.min.js"></script>
+<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+<script src="inc/js/Highcharts/highcharts.js"></script>
+<script src="inc/js/Highcharts/modules/exporting.js"></script>
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-lg-3 col-6 mb-2">
+			<!-- small box -->
+			<div class="small-box bg-info">
+				<div class="inner">
+					<p id="tot-trims"><?= number_format($count_wp[0], 0, ',', '.');  ?></p>
+					<p>Total Wajib Pajak Terdaftar</p>
+				</div>
+				&nbsp;
+			</div>
+		</div>
+		<div class="col-lg-3 col-6 mb-2">
+			<!-- small box -->
+			<div class="small-box bg-success">
+				<div class="inner">
+					<p id="tot-trans"><?= number_format($count_op, 0, ',', '.'); ?></p>
+					<p>Total Objek Pajak Terdaftar</p>
+				</div>
+				&nbsp;
+			</div>
+		</div>
+		<div class="col-lg-3 col-6 mb-2">
+			<!-- small box -->
+			<div class="small-box bg-warning">
+				<div class="inner">
+					<p id="sdh_bayar">Rp. <?= number_format($count_pemabayaran_today[0], 0, ',', '.'); ?></p>
+					<p>Jumlah Pembayaran Hari ini</p>
+				</div>
+				&nbsp;
+			</div>
+		</div>
+		<div class="col-lg-3 col-6 mb-2">
+			<!-- small box -->
+			<div class="small-box bg-danger">
+				<div class="inner">
+					<p id="blm_byr">Rp. <?= number_format($count_belum_bayar[0], 0, ',', '.'); ?></p>
+					<p>Jumlah Pokok Pajak Yang Belum dibayar</p>
+				</div>
+				<div class="icon">
+					&nbsp;
+					<!-- <i class="ion ion-pie-graph"></i>
+              </div> -->
+					<!-- <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> -->
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<select class="form-control" id="txt-thn">
+				<option value="-" disabled>Pilih Tahun</option>
+				<?php
+				$lastYear = date('Y');
+				$firstYear = $lastYear - 5;
+				$selected = ' selected';
+				for ($i = $firstYear; $i <= $lastYear; $i++) {
+					echo "<option value=\"$i\" selected>" . $i . "</option>";
+					$selected = '';
+				}
+				?>
+			</select>
+		</div>
+	</div>
+
+
+
+	<div class="row">
+
+
+
+		<div class="col-sm-6">
+			<div class="panel panel-default" style="margin-top: 3em">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3>Statistik Pencapaian Target</h3>
+						</div>
+
+						<div class="col-sm-12">
+							<hr>
+						</div>
+						<div class="col-sm-12">
+							<div id="chart-container"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-sm-6">
+			<div class="panel panel-default" style="margin-top: 3em">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3>Statistik Tunggakan Pajak</h3>
+						</div>
+						<div class="col-sm-12">
+							<hr>
+						</div>
+						<div class="col-sm-12">
+							<div id="chart-tunggakan"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-sm-12">
+			<div class="panel panel-default" style="margin-top: 3em">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3>Statistik Perbandingan</h3>
+						</div>
+						<div class="col-sm-12">
+							<hr>
+						</div>
+						<div class="col-sm-12">
+							<div id="chart-perbandingan"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-sm-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<h3>Tabel Pencapaian Target</h3>
+					<small><strong>Update per tanggal: <?php echo date('d') . " " . $arr_bulan[date('n')] . " " . date('Y') ?></strong></small>
+					<table class="table table-bordered customtable">
+						<thead>
+							<tr>
+								<th rowspan="2">Jenis Pajak</th>
+								<th rowspan="2">Target (Rp)</th>
+								<th colspan="4">Realisasi (Rp)</th>
+								<th rowspan="2">Persentase</th>
+							</tr>
+							<tr>
+								<th><?php echo $arr_bulan[date('n', strtotime('-2 month'))] ?> <?php echo date('Y') ?></th>
+								<th><?php echo $arr_bulan[date('n', strtotime('-1 month'))] ?> <?php echo date('Y') ?></th>
+								<th><?php echo $arr_bulan[date('n')] ?> <?php echo date('Y') ?></th>
+								<th>Total Hingga Bulan Ini</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							while ($row = mysqli_fetch_assoc($result_for_table)) {
+								// die(print_r($row));
+								echo "<tr>";
+								echo "<td>{$row['JENIS_PAJAK']}</td>";
+								echo "<td>" . number_format($row['TARGET'], 2) . "</td>";
+								echo "<td>" . (isset($result_per2bulan_for_table[date('n', strtotime('-2 month'))][(int)$row['ID_JENIS_PAJAK']]) ? number_format($result_per2bulan_for_table[date('n', strtotime('-2 month'))][(int)$row['ID_JENIS_PAJAK']]) : '0') . "</td>";
+
+								echo "<td>" . (isset($result_perbulan_for_table[date('n', strtotime('-1 month'))][(int)$row['ID_JENIS_PAJAK']]) ? number_format($result_perbulan_for_table[date('n', strtotime('-1 month'))][(int)$row['ID_JENIS_PAJAK']]) : '0') . "</td>";
+
+								echo "<td>" . (isset($result_perbulan_for_table[date('n')][(int)$row['ID_JENIS_PAJAK']]) ? number_format($result_perbulan_for_table[date('n')][(int)$row['ID_JENIS_PAJAK']]) : '0') . "</td>";
+								echo "<td>" . number_format($row['TOTAL_PENDAPATAN'], 2) . "</td>";
+								echo "<td>" . round(((float) $row['TOTAL_PENDAPATAN'] / (float) $row['TARGET'] * 100), 2) . " %</td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+					</table>
+					<form action="view/<?php echo $DIR ?>/monitoring/dashboard-grafik-pencapaian/svc-grafik.php" method="post">
+						<input type="hidden" name="download-excel" value="1">
+						<input type="hidden" id="thnselect" name="tahun" value="<?= date('Y') ?>">
+						<button type="submit" class="btn btn-primary pull-right">Download</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		total_tagihan();
+		total_tunggakan();
+		total_perbandingan();
+	});
+
+	//grafik sudah lunas
+	function visitorData(data) {
+		$('#chart-container').highcharts({
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: 'Grafik Objek Pajak'
+			},
+			xAxis: {
+				categories: ['Objek Pajak']
+			},
+			yAxis: {
+				title: {
+					text: 'Persentase Pencapaian Pajak (%)'
+				}
+			},
+			series: data,
+		});
+	}
+
+	function total_tagihan() {
+		var TxtThn = $("#txt-thn").val();
+		$.ajax({
+			url: $('#iLink').val(),
+			type: 'GET',
+			data: {
+				get_target_pajak: 1,
+				tahun: TxtThn
+			},
+			async: true,
+			dataType: "json",
+			success: function(data) {
+				visitorData(data.grafik);
+			}
+		});
+
+	}
+
+	//grafik belum lunas
+	function visitorDataTunggakan(data) {
+		$('#chart-tunggakan').highcharts({
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: 'Grafik Objek Pajak'
+			},
+			xAxis: {
+				categories: ['Objek Pajak']
+			},
+			yAxis: {
+				title: {
+					text: 'Persentase Pencapaian Pajak (%)'
+				}
+			},
+			series: data,
+		});
+	}
+
+	function total_tunggakan() {
+		var TxtThn = $("#txt-thn").val();
+		$.ajax({
+			url: $('#iLink').val(),
+			type: 'GET',
+			data: {
+				get_target_pajak_tunggakan: 1,
+				tahun: TxtThn
+			},
+			async: true,
+			dataType: "json",
+			success: function(data) {
+				visitorDataTunggakan(data.grafik);
+			}
+		});
+	}
+
+
+	//grafik perbandingan
+	function visitorDataPerbandingan(data) {
+		$('#chart-perbandingan').highcharts({
+			chart: {
+				type: 'pie'
+			},
+			title: {
+				text: 'Grafik Objek Pajak'
+			},
+			xAxis: {
+				categories: ['Objek Pajak']
+			},
+			yAxis: {
+				title: {
+					text: 'Persentase Pencapaian Pajak (%)'
+				}
+			},
+			tooltip: {
+				valueDecimals: 2,
+				pointFormat: '{series.name} : <b>{point.percentage:.1f}%</b> <br>Jumlah : {point.custom}'
+			},
+
+			series: data,
+		});
+	}
+
+	function total_perbandingan() {
+		var TxtThn = $("#txt-thn").val();
+		$.ajax({
+			url: $('#iLink').val(),
+			type: 'GET',
+			data: {
+				get_target_pajak_perbandingan: 1,
+				tahun: TxtThn
+			},
+			async: true,
+			dataType: "json",
+			success: function(data) {
+				visitorDataPerbandingan(data.grafik);
+			}
+		});
+
+	}
+
+
+
+	$("#txt-thn").change(function() {
+		total_tagihan();
+		total_tunggakan();
+		total_perbandingan();
+		$('#thnselect').val($(this).val());
+	});
+</script>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="22" docname="struk" lmargin="2" rmargin="84" draftmode="true">
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Bukti Pembayaran Bea Perolehan Hak atas Tanah dan Bangunan" italic="false" size="10" bold="true" font="0" underline="false"/>				
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Dinas Pendapatan Daerah" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #AREA_NAME#"             italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="Nomor Referensi Laporan" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=": #TAX_REFNUM#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="Nomor Referensi Pembayaran" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=": #PAY_REFNUM#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="Loket" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=": #PPID#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="Tanggal Bayar" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=": #TRAN_DT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="Wajib Pajak" italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="Objek Pajak" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#SUBJECT_NAME#"   italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="NOP : #NOP#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#SUBJECT_ADDRESS# RT/RW #SUBJECT_RT_RW#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#OBJECT_ADDRESS# RT/RW #OBJECT_RT_RW#"  italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#SUBJECT_KELURAHAN#, #SUBJECT_KECAMATAN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#OBJECT_KELURAHAN#, #OBJECT_KECAMATAN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#SUBJECT_KABUPATEN#, #SUBJECT_ZIP_POST#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="40" lpad="0" text="#OBJECT_KABUPATEN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="Biaya tagihan"    italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#COLL_BILL_TEXT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="Biaya lain"  italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#MISC_BILL_TEXT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="Biaya admin"   italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ADMIN_FEE_TEXT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Bea Perolehan Hak atas Tanah dan Bangunan yang harus dibayar : " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TRAN_AMOUNT_TEXT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="(#TERBILANG#)" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Terima Kasih atas Pembayarannya - Pajak Anda turut membangun daerah" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #AREA_NAME#"             italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#INFO_TEXT#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#INFO_TEXT2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#PPID# / #STATUS#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OPR# / #TIMESTAMP#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+</tns:report>

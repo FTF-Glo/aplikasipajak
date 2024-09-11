@@ -1,0 +1,16 @@
+<description>
+	<name>Pemda Kota Palembang Style</name>
+	<creationDate>5 Desember 2011</creationDate>
+	<author>icetea</author>
+	<version>1.0</version>
+	
+	<files>
+		<style>style.css</style>
+		<logo>logo.png</logo>
+		<littleLogo>little_logo.png</littleLogo>
+		<icon>favicon.ico</icon>
+		<screenshot>vplg.png</screenshot>
+		
+		<renderMenu>renderMenu.php</renderMenu>
+	</files>
+</description>

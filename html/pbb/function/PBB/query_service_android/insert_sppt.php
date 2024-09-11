@@ -1,0 +1,312 @@
+<?php 
+	require_once('queryOpen.php');
+	require_once('../../../inc/payment/inc-payment-db-c.php');
+	require_once('../../../inc/payment/db-payment.php');
+	SCANPayment_ConnectToDB($DBLink, $DBConn, ONPAYS_DBHOST, ONPAYS_DBUSER, ONPAYS_DBPWD, ONPAYS_DBNAME, true);
+	
+	
+	$dataSPOP  = $_REQUEST['jsonDataSPOP'];
+	$dataLSPOP  = $_REQUEST['jsonDataLSPOP'];
+//        $dataSPOP = '[{"SPPT_DOC_ID": "hqwie2381263812","SPPT_DOC_VERSION": "1","SPPT_DOC_AUTHOR": "aaaa","SPPT_DOC_CREATED": "2014-01-01","NOP": "123456789012345678","NOP_BERSAMA": "","OP_ALAMAT": "JL. A","OP_NOMOR": "","OP_KELURAHAN": "1234567890","OP_RT": "001","OP_RW": "001","OP_KECAMATAN": "1234567","OP_KOTAKAB": "1234","WP_STATUS": "1","WP_PEKERJAAN": "1","WP_NAMA": "AHMAD","WP_ID": "123123","WP_ALAMAT": "JL. A","WP_KELURAHAN": "AHMAD","WP_RT": "001","WP_RW": "001","WP_PROPINSI": "PROP","WP_KOTAKAB": "KAB","WP_KECAMATAN": "KECAMATAN","WP_KODEPOS": "POS","WP_NO_KTP": "12357162537","WP_NO_HP": "17263872163","OT_LATITUDE": "","OT_LONGITUDE": "","OT_ZONA_NILAI": "AA","OT_JENIS": "3","OT_PENILAIAN_TANAH": "1","OT_PAYMENT_SISTEM": "12313","OT_PAYMENT_INDIVIDU": "0","OP_JML_BANGUNAN": "0","PP_TIPE": "1","PP_NAMA": "AA","PP_DATE": "2014-10-12","OPR_TGL_PENDATAAN": "2014-10-12","OPR_NAMA": "DENI","OPR_NIP": "72631","PJB_TGL_PENELITIAN": "2014-10-12","PJB_NAMA": "SAMSI","PJB_NIP": "1263","OP_SKET": "","OP_FOTO": "","OP_KELAS_TANAH": "","OP_KELAS_BANGUNAN": "","NJOP_BANGUNAN": ""},{"SPPT_DOC_ID": "hqwie23812638132","SPPT_DOC_VERSION": "1","SPPT_DOC_AUTHOR": "aaaa","SPPT_DOC_CREATED": "2014-01-01","NOP": "123456789012345678","NOP_BERSAMA": "","OP_ALAMAT": "JL. A","OP_NOMOR": "","OP_KELURAHAN": "1234567890","OP_RT": "001","OP_RW": "001","OP_KECAMATAN": "1234567","OP_KOTAKAB": "1234","WP_STATUS": "1","WP_PEKERJAAN": "1","WP_NAMA": "AHMAD","WP_ID": "123123","WP_ALAMAT": "JL. A","WP_KELURAHAN": "AHMAD","WP_RT": "001","WP_RW": "001","WP_PROPINSI": "PROP","WP_KOTAKAB": "KAB","WP_KECAMATAN": "KECAMATAN","WP_KODEPOS": "POS","WP_NO_KTP": "12357162537","WP_NO_HP": "17263872163","OT_LATITUDE": "","OT_LONGITUDE": "","OT_ZONA_NILAI": "AA","OT_JENIS": "3","OT_PENILAIAN_TANAH": "1","OT_PAYMENT_SISTEM": "12313","OT_PAYMENT_INDIVIDU": "0","OP_JML_BANGUNAN": "0","PP_TIPE": "1","PP_NAMA": "AA","PP_DATE": "2014-10-12","OPR_TGL_PENDATAAN": "2014-10-12","OPR_NAMA": "DENI","OPR_NIP": "72631","PJB_TGL_PENELITIAN": "2014-10-12","PJB_NAMA": "SAMSI","PJB_NIP": "1263","OP_SKET": "","OP_FOTO": "","OP_KELAS_TANAH": "","OP_KELAS_BANGUNAN": "","NJOP_BANGUNAN": ""}]';
+//        $dataLSPOP = '[{"SPPT_DOC_ID": "hqwie2381263812","SPPT_DOC_VERSION": "1","OP_NUM": "1","OP_PENGGUNAAN": "0","OP_LUAS_BANGUNAN": "0","OP_JML_LANTAI": "0","OP_THN_DIBANGUN": "0","OP_THN_RENOVASI": "0","OP_DAYA": "0","OP_KONDISI": "0","OP_KONSTRUKSI": "0","OP_ATAP": "0","OP_DINDING": "0","OP_LANTAI": "0","OP_LANGIT": "0","FOP_AC_SPLIT": "0","FOP_AC_WINDOW": "0","FOP_AC_CENTRAL": "0","FOP_KOLAM_LUAS": "0","FOP_KOLAM_LAPISAN": "0","FOP_PERKERASAN_RINGAN": "0","FOP_PERKERASAN_SEDANG": "0","FOP_PERKERASAN_BERAT": "0","FOP_PERKERASAN_PENUTUP": "0","FOP_TENIS_LAMPU_BETON": "0","FOP_TENIS_LAMPU_ASPAL": "0","FOP_TENIS_LAMPU_TANAH": "0","FOP_TENIS_TANPA_LAMPU_BETON": "0","FOP_TENIS_TANPA_LAMPU_ASPAL": "0","FOP_TENIS_TANPA_LAMPU_TANAH": "0","FOP_LIFT_PENUMPANG": "0","FOP_LIFT_KAPSUL": "0","FOP_LIFT_BARANG": "0","FOP_ESKALATOR_SEMPIT": "0","FOP_ESKALATOR_LEBAR": "0","FOP_SALURAN": "0","FOP_SUMUR": "0","PAYMENT_PENILAIAN_BGN": "0","PAYMENT_SISTEM": "0","PAYMENT_INDIVIDU": "0","NJOP_BANGUNAN": "0","PAGAR_BESI_PANJANG": "0","PAGAR_BATA_PANJANG": "0","PEMADAM_HYDRANT": "0","PEMADAM_SPRINKLER": "0","PEMADAM_FIRE_ALARM": "0","JPB2_KELAS_BANGUNAN": "0","JPB3_TINGGI_KOLOM": "0","JPB3_DAYA_DUKUNG_LANTAI": "0","JPB3_LEBAR_BENTANG": "0","JPB3_KELILING_DINDING": "0","JPB3_LUAS_MEZZANINE": "0","JPB4_KELAS_BANGUNAN": "0","JPB5_KELAS_BANGUNAN": "0","JPB5_LUAS_KMR_AC_CENTRAL": "0","JPB5_LUAS_RUANG_AC_CENTRAL": "0","JPB6_KELAS_BANGUNAN": "0","JPB7_JENIS_HOTEL": "0","JPB7_JUMLAH_BINTANG": "0","JPB7_JUMLAH_KAMAR": "0","JPB7_LUAS_KMR_AC_CENTRAL": "0","JPB7_LUAS_RUANG_AC_CENTRAL": "0","JPB8_TINGGI_KOLOM": "0","JPB8_DAYA_DUKUNG_LANTAI": "0","JPB8_LEBAR_BENTANG": "0","JPB8_KELILING_DINDING": "0","JPB8_LUAS_MEZZANINE": "0","JPB9_KELAS_BANGUNAN": "0","JPB12_TIPE_BANGUNAN": "0","JPB13_JUMLAH_APARTEMEN": "0","JPB13_KELAS_BANGUNAN": "0","JPB13_LUAS_APARTEMEN_AC_CENTRAL": "0","JPB13_LUAS_RUANG_AC_CENTRAL": "0","JPB15_TANGKI_MINYAK_KAPASITAS": "0","JPB15_TANGKI_MINYAK_LETAK": "0","JPB16_KELAS_BANGUNAN": "0"},{"SPPT_DOC_ID": "hqwie23812638132","SPPT_DOC_VERSION": "1","OP_NUM": "1","OP_PENGGUNAAN": "0","OP_LUAS_BANGUNAN": "0","OP_JML_LANTAI": "0","OP_THN_DIBANGUN": "0","OP_THN_RENOVASI": "0","OP_DAYA": "0","OP_KONDISI": "0","OP_KONSTRUKSI": "0","OP_ATAP": "0","OP_DINDING": "0","OP_LANTAI": "0","OP_LANGIT": "0","FOP_AC_SPLIT": "0","FOP_AC_WINDOW": "0","FOP_AC_CENTRAL": "0","FOP_KOLAM_LUAS": "0","FOP_KOLAM_LAPISAN": "0","FOP_PERKERASAN_RINGAN": "0","FOP_PERKERASAN_SEDANG": "0","FOP_PERKERASAN_BERAT": "0","FOP_PERKERASAN_PENUTUP": "0","FOP_TENIS_LAMPU_BETON": "0","FOP_TENIS_LAMPU_ASPAL": "0","FOP_TENIS_LAMPU_TANAH": "0","FOP_TENIS_TANPA_LAMPU_BETON": "0","FOP_TENIS_TANPA_LAMPU_ASPAL": "0","FOP_TENIS_TANPA_LAMPU_TANAH": "0","FOP_LIFT_PENUMPANG": "0","FOP_LIFT_KAPSUL": "0","FOP_LIFT_BARANG": "0","FOP_ESKALATOR_SEMPIT": "0","FOP_ESKALATOR_LEBAR": "0","FOP_SALURAN": "0","FOP_SUMUR": "0","PAYMENT_PENILAIAN_BGN": "0","PAYMENT_SISTEM": "0","PAYMENT_INDIVIDU": "0","NJOP_BANGUNAN": "0","PAGAR_BESI_PANJANG": "0","PAGAR_BATA_PANJANG": "0","PEMADAM_HYDRANT": "0","PEMADAM_SPRINKLER": "0","PEMADAM_FIRE_ALARM": "0","JPB2_KELAS_BANGUNAN": "0","JPB3_TINGGI_KOLOM": "0","JPB3_DAYA_DUKUNG_LANTAI": "0","JPB3_LEBAR_BENTANG": "0","JPB3_KELILING_DINDING": "0","JPB3_LUAS_MEZZANINE": "0","JPB4_KELAS_BANGUNAN": "0","JPB5_KELAS_BANGUNAN": "0","JPB5_LUAS_KMR_AC_CENTRAL": "0","JPB5_LUAS_RUANG_AC_CENTRAL": "0","JPB6_KELAS_BANGUNAN": "0","JPB7_JENIS_HOTEL": "0","JPB7_JUMLAH_BINTANG": "0","JPB7_JUMLAH_KAMAR": "0","JPB7_LUAS_KMR_AC_CENTRAL": "0","JPB7_LUAS_RUANG_AC_CENTRAL": "0","JPB8_TINGGI_KOLOM": "0","JPB8_DAYA_DUKUNG_LANTAI": "0","JPB8_LEBAR_BENTANG": "0","JPB8_KELILING_DINDING": "0","JPB8_LUAS_MEZZANINE": "0","JPB9_KELAS_BANGUNAN": "0","JPB12_TIPE_BANGUNAN": "0","JPB13_JUMLAH_APARTEMEN": "0","JPB13_KELAS_BANGUNAN": "0","JPB13_LUAS_APARTEMEN_AC_CENTRAL": "0","JPB13_LUAS_RUANG_AC_CENTRAL": "0","JPB15_TANGKI_MINYAK_KAPASITAS": "0","JPB15_TANGKI_MINYAK_LETAK": "0","JPB16_KELAS_BANGUNAN": "0"}]';
+//        $dataLSPOP = '[]';
+	$dataSPOPDecoded  = json_decode($dataSPOP);
+	$dataLSPOPDecoded  = json_decode($dataLSPOP);
+        $sqlSPOP = "";
+        $sqlDelSPOP = "";
+        $sqlLSPOP = "";
+        
+        $sqlSPOP  = "INSERT INTO `cppmod_pbb_sppt` (
+                                            `CPM_SPPT_DOC_ID`, 
+                                            `CPM_SPPT_DOC_VERSION`, 
+                                            `CPM_SPPT_DOC_AUTHOR`, 
+                                            `CPM_SPPT_DOC_CREATED`, 
+                                            `CPM_NOP`, 
+                                            `CPM_NOP_BERSAMA`, 
+                                            `CPM_OP_ALAMAT`, 
+                                            `CPM_OP_NOMOR`, 
+                                            `CPM_OP_KELURAHAN`, 
+                                            `CPM_OP_RT`, 
+                                            `CPM_OP_RW`, 
+                                            `CPM_OP_KECAMATAN`, 
+                                            `CPM_OP_KOTAKAB`, 
+                                            `CPM_WP_STATUS`, 
+                                            `CPM_WP_PEKERJAAN`, 
+                                            `CPM_WP_NAMA`, 
+                                            `CPM_WP_ID`, 
+                                            `CPM_WP_ALAMAT`, 
+                                            `CPM_WP_KELURAHAN`, 
+                                            `CPM_WP_RT`, 
+                                            `CPM_WP_RW`, 
+                                            `CPM_WP_PROPINSI`, 
+                                            `CPM_WP_KOTAKAB`, 
+                                            `CPM_WP_KECAMATAN`, 
+                                            `CPM_WP_KODEPOS`, 
+                                            `CPM_WP_NO_KTP`, 
+                                            `CPM_WP_NO_HP`, 
+                                            `CPM_OT_LATITUDE`, 
+                                            `CPM_OT_LONGITUDE`, 
+                                            `CPM_OT_ZONA_NILAI`, 
+                                            `CPM_OT_JENIS`, 
+                                            `CPM_OT_PENILAIAN_TANAH`, 
+                                            `CPM_OT_PAYMENT_SISTEM`, 
+                                            `CPM_OT_PAYMENT_INDIVIDU`, 
+                                            `CPM_OP_JML_BANGUNAN`, 
+                                            `CPM_PP_TIPE`, 
+                                            `CPM_PP_NAMA`, 
+                                            `CPM_PP_DATE`, 
+                                            `CPM_OPR_TGL_PENDATAAN`, 
+                                            `CPM_OPR_NAMA`, 
+                                            `CPM_OPR_NIP`, 
+                                            `CPM_PJB_TGL_PENELITIAN`, 
+                                            `CPM_PJB_NAMA`, 
+                                            `CPM_PJB_NIP`, 
+                                            `CPM_OP_SKET`, 
+                                            `CPM_OP_FOTO`, 
+                                            `CPM_OP_KELAS_TANAH`, 
+                                            `CPM_OP_KELAS_BANGUNAN`, 
+                                            `CPM_NJOP_BANGUNAN`) 
+                                    VALUES ";
+        foreach($dataSPOPDecoded as $key => $row){
+            if($key != 0) $sqlSPOP  .= ",";
+            $sqlSPOP  .= "(
+                    '".$row->SPPT_DOC_ID."',
+                    '".$row->SPPT_DOC_VERSION."',
+                    '".$row->SPPT_DOC_AUTHOR."',
+                    '".$row->SPPT_DOC_CREATED."',
+                    '".$row->NOP."',
+                    '".$row->NOP_BERSAMA."',
+                    '".$row->OP_ALAMAT."',
+                    '".$row->OP_NOMOR."',
+                    '".$row->OP_KELURAHAN."',
+                    '".$row->OP_RT."',
+                    '".$row->OP_RW."',
+                    '".$row->OP_KECAMATAN."',
+                    '".$row->OP_KOTAKAB."',
+                    '".$row->WP_STATUS."',
+                    '".$row->WP_PEKERJAAN."',
+                    '".$row->WP_NAMA."',
+                    '".$row->WP_ID."',
+                    '".$row->WP_ALAMAT."',
+                    '".$row->WP_KELURAHAN."',
+                    '".$row->WP_RT."',
+                    '".$row->WP_RW."',
+                    '".$row->WP_PROPINSI."',
+                    '".$row->WP_KOTAKAB."',
+                    '".$row->WP_KECAMATAN."',
+                    '".$row->WP_KODEPOS."',
+                    '".$row->WP_NO_KTP."',
+                    '".$row->WP_NO_HP."',
+                    '".$row->OT_LATITUDE."',
+                    '".$row->OT_LONGITUDE."',
+                    '".$row->OT_ZONA_NILAI."',
+                    '".$row->OT_JENIS."',
+                    '".$row->OT_PENILAIAN_TANAH."',
+                    '".$row->OT_PAYMENT_SISTEM."',
+                    '".$row->OT_PAYMENT_INDIVIDU."',
+                    '".$row->OP_JML_BANGUNAN."',
+                    '".$row->PP_TIPE."',
+                    '".$row->PP_NAMA."',
+                    '".$row->PP_DATE."',
+                    '".$row->OPR_TGL_PENDATAAN."',
+                    '".$row->OPR_NAMA."',
+                    '".$row->OPR_NIP."',
+                    '".$row->PJB_TGL_PENELITIAN."',
+                    '".$row->PJB_NAMA."',
+                    '".$row->PJB_NIP."',
+                    '".$row->OP_SKET."',
+                    '".$row->OP_FOTO."',
+                    '".$row->OP_KELAS_TANAH."',
+                    '".$row->OP_KELAS_BANGUNAN."',
+                    '".$row->NJOP_BANGUNAN."') ";
+        }
+
+
+        $sqlDelSPOP  = "DELETE FROM `cppmod_pbb_sppt` WHERE CPM_SPPT_DOC_ID IN (";
+        foreach($dataSPOPDecoded as $key => $row){
+            if($key != 0) $sqlDelSPOP  .= ",";
+            $sqlDelSPOP  .= "'".$row->SPPT_DOC_ID."'";
+
+        }
+        $sqlDelSPOP  .= ")";
+        
+        $sqlLSPOP  = "INSERT INTO `cppmod_pbb_sppt_ext` (
+                                            `CPM_SPPT_DOC_ID`,
+                                            `CPM_SPPT_DOC_VERSION`,
+                                            `CPM_OP_NUM`,
+                                            `cpm_op_penggunaan`,
+                                            `CPM_OP_LUAS_BANGUNAN`,
+                                            `CPM_OP_JML_LANTAI`,
+                                            `CPM_OP_THN_DIBANGUN`,
+                                            `CPM_OP_THN_RENOVASI`,
+                                            `CPM_OP_DAYA`,
+                                            `CPM_OP_KONDISI`,
+                                            `CPM_OP_KONSTRUKSI`,
+                                            `CPM_OP_ATAP`,
+                                            `CPM_OP_DINDING`,
+                                            `CPM_OP_LANTAI`,
+                                            `CPM_OP_LANGIT`,
+                                            `CPM_FOP_AC_SPLIT`,
+                                            `CPM_FOP_AC_WINDOW`,
+                                            `CPM_FOP_AC_CENTRAL`,
+                                            `CPM_FOP_KOLAM_LUAS`,
+                                            `CPM_FOP_KOLAM_LAPISAN`,
+                                            `CPM_FOP_PERKERASAN_RINGAN`,
+                                            `CPM_FOP_PERKERASAN_SEDANG`,
+                                            `CPM_FOP_PERKERASAN_BERAT`,
+                                            `CPM_FOP_PERKERASAN_PENUTUP`,
+                                            `CPM_FOP_TENIS_LAMPU_BETON`,
+                                            `CPM_FOP_TENIS_LAMPU_ASPAL`,
+                                            `CPM_FOP_TENIS_LAMPU_TANAH`,
+                                            `CPM_FOP_TENIS_TANPA_LAMPU_BETON`,
+                                            `CPM_FOP_TENIS_TANPA_LAMPU_ASPAL`,
+                                            `CPM_FOP_TENIS_TANPA_LAMPU_TANAH`,
+                                            `CPM_FOP_LIFT_PENUMPANG`,
+                                            `CPM_FOP_LIFT_KAPSUL`,
+                                            `CPM_FOP_LIFT_BARANG`,
+                                            `CPM_FOP_ESKALATOR_SEMPIT`,
+                                            `CPM_FOP_ESKALATOR_LEBAR`,
+                                            `CPM_FOP_SALURAN`,
+                                            `CPM_FOP_SUMUR`,
+                                            `CPM_PAYMENT_PENILAIAN_BGN`,
+                                            `CPM_PAYMENT_SISTEM`,
+                                            `CPM_PAYMENT_INDIVIDU`,
+                                            `CPM_NJOP_BANGUNAN`,
+                                            `CPM_PAGAR_BESI_PANJANG`,
+                                            `CPM_PAGAR_BATA_PANJANG`,
+                                            `CPM_PEMADAM_HYDRANT`,
+                                            `CPM_PEMADAM_SPRINKLER`,
+                                            `CPM_PEMADAM_FIRE_ALARM`,
+                                            `CPM_JPB2_KELAS_BANGUNAN`,
+                                            `CPM_JPB3_TINGGI_KOLOM`,
+                                            `CPM_JPB3_DAYA_DUKUNG_LANTAI`,
+                                            `CPM_JPB3_LEBAR_BENTANG`,
+                                            `CPM_JPB3_KELILING_DINDING`,
+                                            `CPM_JPB3_LUAS_MEZZANINE`,
+                                            `CPM_JPB4_KELAS_BANGUNAN`,
+                                            `CPM_JPB5_KELAS_BANGUNAN`,
+                                            `CPM_JPB5_LUAS_KMR_AC_CENTRAL`,
+                                            `CPM_JPB5_LUAS_RUANG_AC_CENTRAL`,
+                                            `CPM_JPB6_KELAS_BANGUNAN`,
+                                            `CPM_JPB7_JENIS_HOTEL`,
+                                            `CPM_JPB7_JUMLAH_BINTANG`,
+                                            `CPM_JPB7_JUMLAH_KAMAR`,
+                                            `CPM_JPB7_LUAS_KMR_AC_CENTRAL`,
+                                            `CPM_JPB7_LUAS_RUANG_AC_CENTRAL`,
+                                            `CPM_JPB8_TINGGI_KOLOM`,
+                                            `CPM_JPB8_DAYA_DUKUNG_LANTAI`,
+                                            `CPM_JPB8_LEBAR_BENTANG`,
+                                            `CPM_JPB8_KELILING_DINDING`,
+                                            `CPM_JPB8_LUAS_MEZZANINE`,
+                                            `CPM_JPB9_KELAS_BANGUNAN`,
+                                            `CPM_JPB12_TIPE_BANGUNAN`,
+                                            `CPM_JPB13_JUMLAH_APARTEMEN`,
+                                            `CPM_JPB13_KELAS_BANGUNAN`,
+                                            `CPM_JPB13_LUAS_APARTEMEN_AC_CENTRAL`,
+                                            `CPM_JPB13_LUAS_RUANG_AC_CENTRAL`,
+                                            `CPM_JPB15_TANGKI_MINYAK_KAPASITAS`,
+                                            `CPM_JPB15_TANGKI_MINYAK_LETAK`,
+                                            `CPM_JPB16_KELAS_BANGUNAN`) 
+                                    VALUES ";
+        foreach($dataLSPOPDecoded as $key => $row){
+            if($key != 0) $sqlLSPOP  .= ",";
+            $sqlLSPOP  .= "(
+                    '".$row->SPPT_DOC_ID."',
+                    '".$row->SPPT_DOC_VERSION."',
+                    '".$row->OP_NUM."',
+                    '".$row->OP_PENGGUNAAN."',
+                    '".$row->OP_LUAS_BANGUNAN."',
+                    '".$row->OP_JML_LANTAI."',
+                    '".$row->OP_THN_DIBANGUN."',
+                    '".$row->OP_THN_RENOVASI."',
+                    '".$row->OP_DAYA."',
+                    '".$row->OP_KONDISI."',
+                    '".$row->OP_KONSTRUKSI."',
+                    '".$row->OP_ATAP."',
+                    '".$row->OP_DINDING."',
+                    '".$row->OP_LANTAI."',
+                    '".$row->OP_LANGIT."',
+                    '".$row->FOP_AC_SPLIT."',
+                    '".$row->FOP_AC_WINDOW."',
+                    '".$row->FOP_AC_CENTRAL."',
+                    '".$row->FOP_KOLAM_LUAS."',
+                    '".$row->FOP_KOLAM_LAPISAN."',
+                    '".$row->FOP_PERKERASAN_RINGAN."',
+                    '".$row->FOP_PERKERASAN_SEDANG."',
+                    '".$row->FOP_PERKERASAN_BERAT."',
+                    '".$row->FOP_PERKERASAN_PENUTUP."',
+                    '".$row->FOP_TENIS_LAMPU_BETON."',
+                    '".$row->FOP_TENIS_LAMPU_ASPAL."',
+                    '".$row->FOP_TENIS_LAMPU_TANAH."',
+                    '".$row->FOP_TENIS_TANPA_LAMPU_BETON."',
+                    '".$row->FOP_TENIS_TANPA_LAMPU_ASPAL."',
+                    '".$row->FOP_TENIS_TANPA_LAMPU_TANAH."',
+                    '".$row->FOP_LIFT_PENUMPANG."',
+                    '".$row->FOP_LIFT_KAPSUL."',
+                    '".$row->FOP_LIFT_BARANG."',
+                    '".$row->FOP_ESKALATOR_SEMPIT."',
+                    '".$row->FOP_ESKALATOR_LEBAR."',
+                    '".$row->FOP_SALURAN."',
+                    '".$row->FOP_SUMUR."',
+                    '".$row->PAYMENT_PENILAIAN_BGN."',
+                    '".$row->PAYMENT_SISTEM."',
+                    '".$row->PAYMENT_INDIVIDU."',
+                    '".$row->NJOP_BANGUNAN."',
+                    '".$row->PAGAR_BESI_PANJANG."',
+                    '".$row->PAGAR_BATA_PANJANG."',
+                    '".$row->PEMADAM_HYDRANT."',
+                    '".$row->PEMADAM_SPRINKLER."',
+                    '".$row->PEMADAM_FIRE_ALARM."',
+                    '".$row->JPB2_KELAS_BANGUNAN."',
+                    '".$row->JPB3_TINGGI_KOLOM."',
+                    '".$row->JPB3_DAYA_DUKUNG_LANTAI."',
+                    '".$row->JPB3_LEBAR_BENTANG."',
+                    '".$row->JPB3_KELILING_DINDING."',
+                    '".$row->JPB3_LUAS_MEZZANINE."',
+                    '".$row->JPB4_KELAS_BANGUNAN."',
+                    '".$row->JPB5_KELAS_BANGUNAN."',
+                    '".$row->JPB5_LUAS_KMR_AC_CENTRAL."',
+                    '".$row->JPB5_LUAS_RUANG_AC_CENTRAL."',
+                    '".$row->JPB6_KELAS_BANGUNAN."',
+                    '".$row->JPB7_JENIS_HOTEL."',
+                    '".$row->JPB7_JUMLAH_BINTANG."',
+                    '".$row->JPB7_JUMLAH_KAMAR."',
+                    '".$row->JPB7_LUAS_KMR_AC_CENTRAL."',
+                    '".$row->JPB7_LUAS_RUANG_AC_CENTRAL."',
+                    '".$row->JPB8_TINGGI_KOLOM."',
+                    '".$row->JPB8_DAYA_DUKUNG_LANTAI."',
+                    '".$row->JPB8_LEBAR_BENTANG."',
+                    '".$row->JPB8_KELILING_DINDING."',
+                    '".$row->JPB8_LUAS_MEZZANINE."',
+                    '".$row->JPB9_KELAS_BANGUNAN."',
+                    '".$row->JPB12_TIPE_BANGUNAN."',
+                    '".$row->JPB13_JUMLAH_APARTEMEN."',
+                    '".$row->JPB13_KELAS_BANGUNAN."',
+                    '".$row->JPB13_LUAS_APARTEMEN_AC_CENTRAL."',
+                    '".$row->JPB13_LUAS_RUANG_AC_CENTRAL."',
+                    '".$row->JPB15_TANGKI_MINYAK_KAPASITAS."',
+                    '".$row->JPB15_TANGKI_MINYAK_LETAK."',
+                    '".$row->JPB16_KELAS_BANGUNAN."') ";
+        }
+//        echo $sqlSPOP.'<br>';
+//        echo $sqlDelSPOP.'<br>';
+//        echo $sqlLSPOP.'<br>';
+        $bOk1 = $bOk2 = true;
+        if(count($dataSPOPDecoded) > 0){
+            $bOk1 = mysqli_query($DBLink, $sqlSPOP);
+        }
+        if($bOk1){
+            if(count($dataLSPOPDecoded) > 0){
+                $bOk2 = mysqli_query($DBLink, $sqlLSPOP);
+            }
+        }
+        if(!$bOk2){
+            $bOk1 = mysqli_query($DBLink, $sqlDelSPOP);
+        }
+        
+        if ($bOk1 && $bOk2) {
+            echo '{"response":"success"}';
+        }else {
+            echo '{"response":"failed"}';
+        }
+?>

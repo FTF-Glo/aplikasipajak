@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="40" docname="struk" lmargin="1" rmargin="85" draftmode="true">
+	
+	<line>
+		<!-- Judul -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Bukti Pembayaran Bea Perolehan Hak atas Tanah dan Bangunan" italic="false" size="20" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- kabupaten/kota -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Badan Pendapatan Daerah Kab. Katingan" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tempat Pembayaran -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="User Loket" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":    #USER_LOKET#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tgl Bayar -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Tanggal Pembayaran" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="7" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":    #TGL_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- NOP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="NOP                      : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#NOPNPWP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Nama WP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Nama Wajib Pajak         : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#WP_NAMA#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Nama WP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Alamat Wajib Pajak       : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#WP_ALAMAT#, RT/RW #WP_RT_RW#, #WP_KEL#, #WP_KEC#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	
+	<line>
+		<!-- Nama WP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Alamat Objek Pajak       : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OP_ALAMAT#, RT/RW #OP_RT_RW#, #OP_KEL#, #OP_KEC#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Nama WP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Luas Tanah               : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#LT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Nama WP -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Luas Bangunan            : " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="3" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#LB#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>	
+	<line>
+		<!-- Tagihan -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Biaya Tagihan RP. #TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- BPHTB dibayar -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Bea Perolehan Hak atas Tanah dan Bangunan yang harus dibayar RP. #TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Terbilang -->
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="(#TERBILANG# RUPIAH)" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		
+		<item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="Terima Kasih atas Pembayarannya - Pajak Anda turut membangun daerah" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	
+</tns:report>

@@ -1,0 +1,44 @@
+<?
+include "library.php";
+$konek=new konek();
+$konek->koneksiHost('192.168.168.192','sw_user_devel','sw_pwd_devel');
+$konek->konekDb('VSI_SWITCHER_DEVEL');
+$koneksi=mysql_connect($konek->h,$konek->u,$konek->p);
+
+if (! $koneksi) {
+					echo "Mengalami kegagalan koneksi";
+					mysql_error();
+				}
+
+$connectDb=mysql_select_db($konek->d);
+if(!$connectDb){
+					die ("Database tidak ada".mysql_error());
+				}
+
+
+		if(isset($_POST['userId']))//Jika username telah disubmit
+		{
+			$username = mysqli_real_escape_string($_POST['userId']);//Some clean up :)
+			$check_for_username = mysql_query("SELECT userId FROM TBL_REG_USER_CETAK_TAGIHAN WHERE userId='$username'");
+			$check_for_username2 = mysql_query("SELECT CPC_U_UID FROM cpccore_user WHERE CPC_U_UID='$username'");
+			//Query untuk mengecek apakah username tersedia atau tidak
+
+			if(trim($username)=="") {
+				echo "<font size='2' color='#FF0000'>Maaf, Nama ID harus diisi dahulu sebelumnya!</font>";
+			}
+			else if(stristr($username,"'"))
+			{
+				echo "<font size='2' color='#FF0000'>&nbsp;Maaf, Nama ID tidak boleh mengandung tanda kutip (') !</font>";
+			}
+			else if(mysql_num_rows($check_for_username)||mysql_num_rows($check_for_username2))
+			{
+				//Jika terdapat record yang sesuai dalam databaese, maka tidak tersedia
+				echo "<font size='2' color='#FF0000'>Maaf, Nama ID sudah terpakai. Silahkan gunakan Nama ID yang lain!</font>";
+			}
+			else
+			{
+				//Tak ada record yang sesuai dalam database, maka Username tersedia
+				echo "<font size='2' color='#FF0000'>&nbsp;Nama ID tersedia!</font>";
+			}
+		}
+?>

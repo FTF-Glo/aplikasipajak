@@ -1,0 +1,21 @@
+.form, .result{
+	padding: 30px;
+	border-width: 0px; 
+	border-style: solid; 
+	border-color: black;
+	width: 400px; 
+	-webkit-border-radius: 9px;
+	-moz-border-radius: 9px;
+	border-radius: 9px;
+}
+form{
+	margin: 0 auto;
+}
+
+body{
+	background: yellow;
+}
+
+.content{
+	background: white;
+}

@@ -1,0 +1,9 @@
+CATATAN :
+1. COPY TABEL TBL_ATRBPN_ORI DARI KAB. INDRAMAYU -> RENAME JADI TBL_ATRBPN
+2. COPY FOLDER getATRBPN KE PATH /var/www/html/bpn-service ATAU /var/www/bphtb/bpn-service
+3. SETUP FILE index.php
+4. COPY FILE getATRBPN.sh KE PATH /usr/local/bin -> LALU SET PERMISION 777
+5. SETUP FILE getATRBPN.sh
+6. crontab -e
+7. 30 20 * * * source /etc/profile; bash /usr/local/bin/getATRBPN.sh
+8. TEST

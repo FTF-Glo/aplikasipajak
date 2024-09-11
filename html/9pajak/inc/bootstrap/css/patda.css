@@ -1,0 +1,87 @@
+.main{
+	background:#fff;
+	margin:2px 10px 2px 2px;
+}
+.tab-content{
+	padding:10px 5px 5px 10px;	
+}
+#subMenu b{
+	background:#FFF;
+	padding:5px;
+}
+#subMenu{
+	border:none;
+}
+body, div, td, th, option, select, input, textarea {
+	font-family	: Arial;
+	font-size: 9pt;
+}
+blockquote{
+	background:#FFF !important;
+}
+.form-group.required .control-label:after {
+  content:" *" !important;
+  color:red;
+}
+.huge {
+    font-size: 40px;
+}
+.panel-green {
+    border-color: #5cb85c;
+}
+
+.panel-green .panel-heading {
+    border-color: #5cb85c;
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+.panel-green a {
+    color: #5cb85c;
+}
+
+.panel-green a:hover {
+    color: #3d8b3d;
+}
+
+.panel-red {
+    border-color: #d9534f;
+}
+
+.panel-red .panel-heading {
+    border-color: #d9534f;
+    color: #fff;
+    background-color: #d9534f;
+}
+
+.panel-red a {
+    color: #d9534f;
+}
+
+.panel-red a:hover {
+    color: #b52b27;
+}
+
+.panel-yellow {
+    border-color: #f0ad4e;
+}
+
+.panel-yellow .panel-heading {
+    border-color: #f0ad4e;
+    color: #fff;
+    background-color: #f0ad4e;
+}
+
+.panel-yellow a {
+    color: #f0ad4e;
+}
+
+.panel-yellow a:hover {
+    color: #df8a13;
+}
+.number{
+	text-align:right
+}
+#footer{
+	z-index:999
+}

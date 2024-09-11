@@ -1,0 +1,122 @@
+function hideMask(){
+	//hideDialog();
+}
+
+function showMask(){
+	//showDialog('Load','<img src="image/large-loading.gif" width="32" height="32" style="margin-right:8px;" align="absmiddle"/>Tunggu','prompt',false,true);
+}
+
+
+function sendReprint(refnum,a,ppid,uid){
+	hideMask();
+	if (refnum != ''){
+		
+		var params = "{'refnum' : '"+refnum+"','a':'"+a+"','p':'"+ppid+"','u':'"+uid+"','au':'"+aU+"'}";
+		params = Base64.encode(params);
+		  Ext.Ajax.request({
+			   url: 'svr/bphtb/svc-bphtb-reprint.php',
+			   success: sendUpdateSuccess,
+			   failure: sendUpdateException,
+			   params: { q:params}
+			});
+		showMask();
+	} else {
+		alert ("Pencetakan laporan tidak bisa dilakukan !");
+	}
+	
+}
+
+function sendUpdateSuccess(param){
+	hideMask();
+	var objResult=Ext.decode(Base64.decode(param.responseText));
+	//var val = document.getElementById('reprintVal-'+objResultPayment.refnum).value;
+	print64(objResult.dataprint);
+}
+function sendUpdateException(param){
+	hideMask();
+	alert("Terjadi Kesalahan : Update NTRIAL Gagal !");
+}
+
+ function print64(content) {
+	 if(content){
+		 if(content!=""){
+			 var applet = document.jZebra;
+			 if (applet != null) {
+				applet.append64(content);
+				applet.print();
+				while (!applet.isDonePrinting()) {
+					// Wait
+				}
+				var e = applet.getException();
+				if(e!=null){
+					//showDialog('Cetak Gagal', "Pastikan Seting Nama Printer anda Betul<br/>Exception occured: " + e.getLocalizedMessage(), 'error',false);
+					alert("Pastikan Seting Nama Printer anda Betul!\r\nException occured: "+e.getLocalizedMessage());
+				}
+			 }
+			 else {
+				alert("Applet not loaded!");
+			 }
+		 }
+	}
+ }
+ 
+ 
+ function sendReportSuccess(params){
+	hideMask();
+	if(params.responseText){
+		var objResultPayment=Ext.decode(Base64.decode(params.responseText));
+		if (objResultPayment.result) {
+			//var strBtn = "<input name='btnSend' type='button' value='Cetak Ke Printer' onclick='printReport(\""+objResultPayment.printCode+"\","+pcopy+");'><br>";
+			var strBtn = "<input name='btnSend' type='button' value='Cetak Ke Printer' onclick='alert(\"wooi\")');'><br>";
+			document.getElementById('bphtb-report-result').innerHTML = objResultPayment.printHTML;
+		} else {
+			document.getElementById('bphtb-report-result').innerHTML ='<label style="font-weight:bold;color:red">'+objResultPayment.message+'</label>';
+		}
+	}
+}
+
+function sendReportException(param){
+	hideMask();
+}
+
+function printReport(param,cpy) {
+	console.log(param);
+	for (var i=0;i<cpy;i++) {
+		print64(param);
+	}
+}
+/*function printReport(param) {
+	print64(param);
+}*/
+function sendReport(a) {
+	var report = document.getElementById('jenis-laporan');
+	//var rpt = report.options[report.selectedIndex].value;
+	var dateTrs = document.getElementById('filtertgl').value;
+	var monthTrs = document.getElementById('filterbl').value;
+	var yearTrs = document.getElementById('filterth').value;
+	if (dateTrs != ''){
+		console.log(a);
+		var params = "{'dateTrs' : '"+dateTrs+"','a':'"+a+"'}";
+		params = Base64.encode(params);
+		  Ext.Ajax.request({
+			   url: 'svr/bphtb/svc-bphtb-daily-report.php',
+			   success: sendReportSuccess,
+			   failure: sendReportException,
+			   params: { q:params}
+			});
+		showMask();
+	} else {
+		alert ("Pencetakan laporan tidak bisa dilakukan !");
+	}
+}
+
+function downloadFile(a){
+		ft=document.getElementById('filtertgl').value;
+		var params = "{'dateTrs' : '"+ft+"','a':'"+a+"'}";
+		if(ft.value!=""){			
+			urlparam=Base64.encode(params);
+			url='http://'+window.location.host+window.location.pathname.replace("main.php","")+'svr/bphtb/svc-bphtb-download-detail-daily.php?q='+urlparam;
+			
+			document.getElementById('download-file').src=url;
+		}
+}

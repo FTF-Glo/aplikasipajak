@@ -1,0 +1,23 @@
+.dataTable-wrapper .dataTable-selector{
+    cursor: pointer;
+    background-image: var(--select-bg-image);
+    background-size: var(--select-bg-size);
+    background-repeat: var(--select-bg-repeat);
+    background-position: var(--select-bg-position);
+}
+
+.dataTable-wrapper .dataTable-selector, .dataTable-wrapper .dataTable-search .dataTable-input{
+    padding-right: var(--select-padding-right);
+    height: var(--input-height);
+    padding-left: var(--input-horizontal-padding);
+    color: var(--lm-input-text-color);
+    background-color: var(--lm-input-bg-color);
+    border: var(--input-border-width) solid var(--lm-input-border-color);
+    border-radius: var(--input-border-radius);
+    -moz-box-shadow: var(--lm-input-box-shadow);
+    -webkit-box-shadow: var(--lm-input-box-shadow);
+    box-shadow: var(--lm-input-box-shadow);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}

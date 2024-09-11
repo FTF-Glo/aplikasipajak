@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="cp437"?>
+<tns:report xmlns:tns="vsi.co.id" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="vsi.co.id" length="88" docname="struk" lmargin="2" rmargin="0" draftmode="true" pagerow = "39" firstpagerow = "33">
+
+<header>
+	<line></line>
+	<line></line>
+	<line></line>
+	<line></line>
+	<line></line>
+	<line><item repeat="0" center="160" rpad="0" lpad="0" text="DAFTAR HIMPUNAN KETETAPAN DAN  PENERIMAAN PBB - P2" italic="false" size="12" bold="true" font="2" underline="false"/></line>
+	<line><item repeat="0" center="160" rpad="0" lpad="0" text="PAJAK & PEMBAYARAN TAHUN : #TAHUN#" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line> </line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="TEMPAT PEMBAYARAN     " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" BANK NTT(1), BANK BRI(2), BANK BTN(3), BANK MANDIRI(4), DINAS PPKAD KAB. KPG(5)" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="KABUPATEN             " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #KOTA_KAB_KODE#  - #KOTA_KAB#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="70" text="KECAMATAN            " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #KECAMATAN_KODE# - #KECAMATAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="KELURAHAN             " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #KELURAHAN_KODE# - #KELURAHAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="70" text="RW / RT              " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=":" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #RW# / #RT#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line> </line>
+	<line> </line>
+	<line>
+		<item repeat="160" center="0" rpad="0" lpad="0" text="=" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+
+
+	<line>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="39" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="PBB TERUTANG"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="1" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	
+	<line>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" " />
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="ALAMAT OBJEK PAJAK"/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="KLS"/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="39" rpad="0" center="39" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="="/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="PEMBAYARAN"/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TANDA TANGAN"/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	
+	<line>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" NO"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="NOP"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="NIK (KTP)"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="NAMA WAJIB PAJAK"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="WAJIB PAJAK"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TNH"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="JB"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="ST"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="4"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="34" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="JUMLAH (RP)"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	
+
+	
+	<line>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0"  rpad="0" center="4"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TAHN"/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="34" rpad="0" center="34" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="="/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="16" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="="/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="16" rpad="0" center="16" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="="/>
+	    <item repeat="0"  rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	
+	
+
+	<line>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="4"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="10" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="POKOK"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="10" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="DENDA"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="12" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TOTAL"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="9"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TANGGAL"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="6"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="BANK"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="8"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="TERIMA"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" rpad="0" center="7"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="BAYAR"/>
+	    <item repeat="0" rpad="0" center="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	
+	<line>
+		<item repeat="160" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+</header>	
+	
+	
+<body>
+	<line>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="5" rpad="0"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#NO#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="11" lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#NOP#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="11" lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#NOMOR_INDUK#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="20" lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#NAMA_WAJIB_PAJAK#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="23" lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#ALAMAT_OBJEK_PAJAK#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="3" rpad="0"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#KELAS_BUMI#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" center="2" rpad="0"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" center="0" rpad="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" center="1" rpad="0"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="4"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="#PBB_TAHUN#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="0"  lpad="10" italic="false" size="12" bold="false" font="2" underline="false" text="#PBB_POKOK#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="0"  lpad="10" italic="false" size="12" bold="false" font="2" underline="false" text="#PBB_DENDA#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="0" lpad="12"  italic="false" size="12" bold="false" font="2" underline="false" text="#PBB_TOTAL#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="9"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="6"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="8"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="7"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0"  italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="5"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="11" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="20" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="23" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="#ALAMAT_WAJIB_PAJAK#"/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="3"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+	    <item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	    <item repeat="0" center="0" rpad="2"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="4"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="10" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="10" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="12" lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="9"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="6"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="8"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+		<item repeat="0" center="0" rpad="7"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text=" "/>
+		<item repeat="0" center="0" rpad="1"  lpad="0" italic="false" size="12" bold="false" font="2" underline="false" text="|"/>
+	</line>
+	<line>
+		<item repeat="160" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+</body>
+
+<footer>
+	<line><item repeat="0" center="0" rpad="160" lpad="0" text="HALAMAN : #HALAMAN# dari #HALAMAN_JUMLAH#" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line> </line>
+	<line> </line>
+	<line>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text="#TXT_TTD_MENGETAHUI#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text="#TXT_TTD_LURAH#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text="#TXT_TTD_PETUGAS#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="24" rpad="0" lpad="0" text="#TXT_TTD_RT#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line> </line>
+	<line> </line>
+	<line> </line>	
+	<line>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="24" center="24" rpad="0" lpad="0" text="#LINE#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="24" center="24" rpad="0" lpad="0" text="#LINE#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="40" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="24" center="24" rpad="0" lpad="0" text="#LINE#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="6" rpad="0" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line><item repeat="0" center="0" rpad="160" lpad="0" text="KETERANGAN" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line>
+		<item repeat="0" center="0" rpad="32" lpad="0" text="ST : STATUS TANAH" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="10" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="JB : JENIS BANGUNAN" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="32" center="0" rpad="32" lpad="0" text="=" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="10" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="25" center="0" rpad="25" lpad="0" text="=" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0"  center="0" rpad="32" lpad="0" text="(1)  PEMILIK BERSERTIFIKAT" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="10" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="25" lpad="0" text="(T)  TEMBOK" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0"  center="0" rpad="32" lpad="0" text="(2)  PEMILIK TIDAK BERSERTIFIKAT" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="10" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="25" lpad="0" text="(ST) SETENGAH TEMBOK" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0"  center="0" rpad="32" lpad="0" text="(3)  PENGELOLAH / PENGGARAP, DLL" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="10" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0"  center="0" rpad="25" lpad="0" text="(BT) BUKAN TEMBOK" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>	
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="160" text="" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+</footer>
+
+</tns:report>

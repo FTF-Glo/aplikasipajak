@@ -1,0 +1,627 @@
+var cNPOPTKP=0;
+var xOk = false;
+function checkform()
+{
+	var f = document.getElementById('form-notaris');
+	var els = f.elements;
+	var err = '';
+	var rg = document.getElementsByName("RadioGroup1");
+	var rb = getCheckedValue(rg);
+	var imgEx = Array();
+		
+	for (var i=0, len=els.length; i<len; i++){
+		x = els[i];
+		
+		
+		if (x.type == 'text') {
+			var ge = document.getElementById('err_'+i);
+				if (ge) {
+					x.parentNode.removeChild(ge);
+				}
+			if (els.item(i).id == 'noktp') {
+				if (els.item(i).value.length < 16 ) {
+					var ge = document.getElementById('err_'+i);
+					if (!ge) {
+						imgEx[i]=document.createElement("img");
+						imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+						imgEx[i].setAttribute("title",x.title+' belum diisi atau kurang dari 16 digit (tanpa tanda pemisah)!');
+						imgEx[i].setAttribute("id",'err_'+i);
+						x.parentNode.appendChild(imgEx[i]);
+					}
+					err += x.title+' belum diisi atau kurang dari 16 digit (tanpa tanda pemisah)!\n'	
+				}
+			}
+			if (els.item(i).id == 'name2') {
+				if (els.item(i).value.length < 18 ) {
+					var ge = document.getElementById('err_'+i);
+					if (!ge) {
+						imgEx[i]=document.createElement("img");
+						imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+						imgEx[i].setAttribute("title",x.title+' belum diisi atau kurang dari 18 digit (tanpa tanda pemisah)!');
+						imgEx[i].setAttribute("id",'err_'+i);
+						x.parentNode.appendChild(imgEx[i]);
+					}
+					err += x.title+' belum diisi atau kurang dari 18 digit (tanpa tanda pemisah)!\n'	
+				}
+			}
+			if (x.value == '') {
+				//35,36,37
+				if ((i!=30) && (i!=31) && (i!=33) && (i!=34)) {
+					var ge = document.getElementById('err_'+i);
+					if (!ge) {
+						imgEx[i]=document.createElement("img");
+						imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+						imgEx[i].setAttribute("title",x.title+' belum diisi!');
+						imgEx[i].setAttribute("id",'err_'+i);
+						x.parentNode.appendChild(imgEx[i]);
+					}
+					err += x.title+' belum diisi!\n'	
+				};
+				
+				if (rb==2) {
+					if ((i==30) || (i==31)) {
+						var ge = document.getElementById('err_'+i);
+						if (!ge) {
+							imgEx[i]=document.createElement("img");
+							imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+							imgEx[i].setAttribute("title",x.title+' belum diisi!');
+							imgEx[i].setAttribute("id",'err_'+i);
+							x.parentNode.appendChild(imgEx[i]);
+						}
+						err += x.title+' belum diisi!\n';
+					}
+				}
+				if (rb==3) {
+					if ((i==33) || (i==34)) {
+						var ge = document.getElementById('err_'+i);
+						if (!ge) {
+							imgEx[i]=document.createElement("img");
+							imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+							imgEx[i].setAttribute("title",x.title+' belum diisi!');
+							imgEx[i].setAttribute("id",'err_'+i);
+							x.parentNode.appendChild(imgEx[i]);
+						}
+						err += x.title+' belum diisi!\n';
+					}
+				}
+			} else {
+				/*var ge = document.getElementById('err_'+i);
+				if (ge) {
+					x.parentNode.removeChild(ge);
+				}*/
+			}
+		};
+		if (rb==4) {
+			if (x.name == 'jsb-etc'){
+				if (x.value=="") {
+					var ge = document.getElementById('err_'+i);
+					if (!ge) {
+						imgEx[i]=document.createElement("img");
+						imgEx[i].setAttribute("src","./image/icon/exclamation.png");
+						imgEx[i].setAttribute("title",x.title+' belum diisi!'+i);
+						imgEx[i].setAttribute("id",'err_'+i);
+						x.parentNode.appendChild(imgEx[i]);
+					}
+					err += x.title+' belum diisi!\n';
+				}
+			};
+		}
+	}
+	
+	if (rb=='') err += 'Jumlah Setoran Berdasarkan belum dipilih!';
+	if (err != '') {
+		alert(err);
+		checkTransLast();
+		return false;
+	}
+	hideMask();
+	return true;
+}
+
+function numbersonly(myfield, e, dec)
+{
+	var key;
+	var keychar;
+	
+	if (window.event)
+	   key = window.event.keyCode;
+	else if (e)
+	   key = e.which;
+	else
+	   return true;
+	keychar = String.fromCharCode(key);
+	nextFocus(myfield, e);
+	// control keys
+	if ((key==null) || (key==0) || (key==8) || 
+		(key==9) ||  (key==27) )
+	   return true;
+	
+	// numbers
+	else if ((("0123456789").indexOf(keychar) > -1))
+	   return true;
+	
+	// decimal point jump
+	/*else if (dec && (keychar == "."))
+	   {
+	   myfield.form.elements[dec].focus();
+	   return false;
+	   }*/
+	else
+	   return false;
+}
+
+function number_format(a, b, c, d) {
+ a = Math.round(a * Math.pow(10, b)) / Math.pow(10, b);
+ e = a + '';
+ f = e.split('.');
+ if (!f[0]) {
+  f[0] = '0';
+ }
+ if (!f[1]) {
+  f[1] = '';
+ }
+ if (f[1].length < b) {
+  g = f[1];
+  for (i=f[1].length + 1; i <= b; i++) {
+   g += '0';
+  }
+  f[1] = g;
+ }
+ if(d != '' && f[0].length > 3) {
+  h = f[0];
+  f[0] = '';
+  for(j = 3; j < h.length; j+=3) {
+   i = h.slice(h.length - j, h.length - j + 3);
+   f[0] = d + i +  f[0] + '';
+  }
+  j = h.substr(0, (h.length % 3 == 0) ? 3 : (h.length % 3));
+  f[0] = j + f[0];
+ }
+ c = (b <= 0) ? '' : c;
+ return f[0] + c + f[1];
+}
+
+function removeFChild (td) {
+	if (td!=null) {
+			if ( td.hasChildNodes() )
+			{
+				while ( td.childNodes.length >= 1 )
+				{
+					td.removeChild( td.firstChild );       
+				} 
+			}
+	}
+}
+
+function NPOPKP () {
+	var s1 = parseFloat(document.getElementById('land-area').value) * parseFloat(document.getElementById('land-njop').value);
+	var s2 = parseFloat(document.getElementById('building-area').value) * parseFloat(document.getElementById('building-njop').value);
+	var t = parseFloat(document.getElementById('trans-value').value);
+	var NPOPTKP = parseFloat(document.getElementById('NPOPTKP').value);
+	var NPOPKP=0;
+	if ((s1+s2) > t ) {
+		NPOPKP = (s1+s2) - NPOPTKP;
+	} else {
+		NPOPKP = t - NPOPTKP;
+	}
+	
+	var ttext =  document.createTextNode(number_format(NPOPKP, 2, '.', ','));
+	var tNPOPKP = document.getElementById('tNPOPKP');
+	removeFChild (tNPOPKP);
+	tNPOPKP.appendChild(ttext);
+	//if(edit)document.getElementById('hd-npoptkp').value = NPOPKP;
+	
+}
+
+function warisNonWaris() {
+	var sel = document.getElementById("right-land-build");
+	var d = sel.options[sel.selectedIndex].value;
+	//console.log(d);
+	if ((d==6) || (d==4)) {
+		return true;
+	}
+	return false;
+}
+
+function getCheckedValue(radioObj) {
+	if(!radioObj)
+		return "";
+	var radioLength = radioObj.length;
+	if(radioLength == undefined)
+		if(radioObj.checked)
+			return radioObj.value;
+		else
+			return "";
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			return radioObj[i].value;
+		}
+	}
+	return "";
+}
+
+function enableE(t,p) {
+	var rg = document.getElementsByName("RadioGroup1");
+	
+	if (t.checked) {
+		document.getElementById("jsb-choose").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-number").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-role-number").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-date").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-percent").setAttribute("disabled","disabled");
+		document.getElementById("jsb-etc").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-percent").value = 0;
+		if (p==1) {
+			document.getElementById("jsb-choose").removeAttribute("disabled");
+			document.getElementById("jsb-choose-number").removeAttribute("disabled");
+			document.getElementById("jsb-choose-date").removeAttribute("disabled");
+		} 
+		
+		if (p==2) {
+			document.getElementById("jsb-choose-percent").removeAttribute("disabled");
+			document.getElementById("jsb-choose-role-number").removeAttribute("disabled");
+		}
+		if (p==3) {document.getElementById("jsb-etc").removeAttribute("disabled");}
+		checkTransaction ();
+	}
+}
+
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
+function checkTransaction () {
+	var lnjop = document.getElementById('land-njop').value;
+	var larea = document.getElementById('land-area').value;
+	var bnjop = document.getElementById('building-njop').value;
+	var barea = document.getElementById('building-area').value
+	var tvalue = document.getElementById('trans-value').value;
+
+	var jcp = document.getElementById('jsb-choose-percent').value;
+	
+	if (isEmpty(document.getElementById('land-njop').value)) lnjop = 0;
+	if (isEmpty(document.getElementById('land-area').value)) larea = 0;
+	if (isEmpty(document.getElementById('building-area').value)) barea = 0;
+	if (isEmpty(document.getElementById('building-njop').value)) bnjop = 0;
+	if (isEmpty(document.getElementById('trans-value').value)) tvalue = 0;
+	if (isEmpty(document.getElementById('jsb-choose-percent').value)) jcp =0;
+	
+	var s1 = parseFloat(larea) * parseFloat(lnjop);
+	var s2 = parseFloat(barea) * parseFloat(bnjop);
+	var t = parseFloat(tvalue);
+	var per = parseFloat(jcp);
+		//var NPOPTKP = parseFloat(document.getElementById('NPOPTKP').value);
+	var eNPOPTKP = document.getElementById('NPOPTKP');
+	var tNJOP = document.getElementById('tNJOP');
+	var akumulasi = document.getElementById('akumulasi');
+	var tBPHTBT = document.getElementById('tBPHTBT');
+	var tWasiat = document.getElementById('tWasiat');
+	var tTotal = document.getElementById('tTotal');
+	var eNPOPKP = document.getElementById('tNPOPKP');
+	var text =  document.createTextNode("0");
+	var text2 =  document.createTextNode("0");
+	var bphtbt =  document.createTextNode("0");
+	var wasiat =  document.createTextNode("0");
+	var total = document.createTextNode("0");
+	//if (edit) cNPOPTKP = cnpoptkp;
+	var noptkp = document.createTextNode(number_format(cNPOPTKP, 2, '.', ','));
+	var jsbtotalbefore = document.getElementById('jsb-total-before');
+	var jpay = document.getElementById("jmlBayar");
+	
+	var w = 0;
+	var NPOPKP=0;
+	//if (edit) eNPOPTKP.value = cnpoptkp;
+	
+	var ctjpay = document.createTextNode("Jumlah yang dibayarkan :");
+	
+	/*if ((s1+s2) > t ) {
+		text =  document.createTextNode(number_format(s1+s2, 2, '.', ','));
+		text2 = document.createTextNode(number_format(s1+s2, 2, '.', ','));
+		jsbtotalbefore.value = s1+s2;
+		
+	} else {*/
+		text =  document.createTextNode(number_format(t, 2, '.', ','));
+		text2 = document.createTextNode(number_format(t, 2, '.', ','));
+		jsbtotalbefore.value = t;
+		
+	//}
+	var m = jsbtotalbefore.value - cNPOPTKP;
+	if (m <= 0) {
+		//console.log("1 "+cNPOPTKP); 
+		NPOPKP = 0;
+		bphtbt = document.createTextNode(number_format(0, 2, '.', ','));
+		//if (per!=0) ctjpay = document.createTextNode("Jumlah yang dibayarkan : "+number_format(0*per*0.01, 2, '.', ','));
+		//else 
+		ctjpay = document.createTextNode("Jumlah yang dibayarkan : "+number_format(0, 2, '.', ','));
+	}
+	else {
+		//console.log("2 "+m); 
+		NPOPKP = jsbtotalbefore.value - cNPOPTKP;
+		bphtbt = document.createTextNode(number_format(NPOPKP*0.05, 2, '.', ','));
+		
+		if (!isNaN(per) && (per!=0)) ctjpay = document.createTextNode("Jumlah yang dibayarkan : "+number_format(NPOPKP*0.05-(NPOPKP*0.05*per*0.01), 2, '.', ','));
+	    else ctjpay = document.createTextNode("Jumlah yang dibayarkan : "+number_format(NPOPKP*0.05, 2, '.', ','));
+	}
+	
+	var npopkp = document.createTextNode(number_format(NPOPKP, 2, '.', ','));
+	
+	 
+	//text2= text;
+	removeFChild (eNPOPTKP);
+	removeFChild (eNPOPKP);
+	removeFChild (tNJOP);
+	removeFChild (akumulasi);
+	removeFChild (tBPHTBT);
+	removeFChild (tWasiat);
+	removeFChild (jpay);
+	//removeFChild (tTotal);
+	
+	//tTotal.appendChild(total);
+	//tWasiat.appendChild(wasiat);
+	eNPOPKP.appendChild(npopkp)
+	eNPOPTKP.appendChild(noptkp)
+	tNJOP.appendChild(text);
+	akumulasi.appendChild(text2);
+	tBPHTBT.appendChild(bphtbt);
+	jpay.appendChild(ctjpay);
+	
+}
+
+function addSN () {
+	var lnjop = document.getElementById('land-njop').value;
+	var larea = document.getElementById('land-area').value;
+	var bnjop = document.getElementById('building-njop').value;
+	var barea = document.getElementById('building-area').value
+	
+	if (isEmpty(document.getElementById('land-njop').value)) lnjop = 0;
+	if (isEmpty(document.getElementById('land-area').value)) larea = 0;
+	if (isEmpty(document.getElementById('building-area').value)) barea = 0;
+	if (isEmpty(document.getElementById('building-njop').value)) bnjop = 0;
+	
+	var s1 = parseFloat(larea) * parseFloat(lnjop);
+	var s2 = parseFloat(barea) * parseFloat(bnjop);
+	
+	var td1 = document.getElementById('t1');
+	var td2 = document.getElementById('t3');
+	var text =  document.createTextNode(number_format(s1, 2, '.', ','));
+	removeFChild (td1);
+	removeFChild (td2);
+	if (s==null) text = document.createTextNode("");
+	var text2 =  document.createTextNode(number_format(s1+s2, 2, '.', ','));
+	td1.appendChild(text);
+	td2.appendChild(text2);
+	NPOPKP ();
+}
+
+function addET () {
+	var lnjop = document.getElementById('land-njop').value;
+	var larea = document.getElementById('land-area').value;
+	var bnjop = document.getElementById('building-njop').value;
+	var barea = document.getElementById('building-area').value
+	
+	if (isEmpty(document.getElementById('land-njop').value)) lnjop = 0;
+	if (isEmpty(document.getElementById('land-area').value)) larea = 0;
+	if (isEmpty(document.getElementById('building-area').value)) barea = 0;
+	if (isEmpty(document.getElementById('building-njop').value)) bnjop = 0;
+	
+	var s1 = parseFloat(larea) * parseFloat(lnjop);
+	var s2 = parseFloat(barea) * parseFloat(bnjop);
+	
+	var td1 = document.getElementById('t2');
+	var td2 = document.getElementById('t3');
+	var text =  document.createTextNode(number_format(s2, 2, '.', ','));
+	removeFChild (td1);
+	removeFChild (td2);
+	if (s==null) text = document.createTextNode("");
+	var text2 =  document.createTextNode(number_format(s1+s2, 2, '.', ','));
+	td1.appendChild(text);
+	td2.appendChild(text2);
+	NPOPKP ();
+}
+
+function copyPasteAddress() {
+	var address1 = document.getElementById('address').value;
+	var kelurahan1 = document.getElementById("kelurahan").value;
+	var rt1 = document.getElementById("rt").value;
+	var rw1 = document.getElementById("rw").value;
+	var kecamatan1 = document.getElementById("kecamatan").value;
+	var kabupaten1 = document.getElementById("kabupaten").value;
+	var zipcode1 = document.getElementById("zip-code").value;
+	document.getElementById("address2").value = address1;
+	document.getElementById("kelurahan2").value = kelurahan1;
+	document.getElementById("rt2").value = rt1;
+	document.getElementById("rw2").value = rw1;
+	document.getElementById("kecamatan2").value = kecamatan1;
+	document.getElementById("kabupaten2").value = kabupaten1;
+	document.getElementById("zip-code2").value = zipcode1;
+}
+
+function nextFocus (el,e) {
+	if (e.keyCode != 13) {
+        return;
+    }
+	var f = el.form;
+	var els = f.elements;
+	var x, nextEl;
+	for (var i=0, len=els.length; i<len; i++){
+		x = els[i];
+		if (el == x && (nextEl = els[i+1])){
+		if (nextEl.focus) nextEl.focus();
+		}
+	}
+	return false;
+}
+
+function printToPDF(json) {
+	window.open('./function/PBB/loket/svc-print-disposisi.php?q='+encodeBase64(json), '_newtab');
+}
+
+function loadNPOPTKP() {
+	//showMask();
+	
+	var sel = document.getElementById("right-land-build");
+	var d = sel.options[sel.selectedIndex].value;
+	Ext.Ajax.request({
+	 url : './function/BPHTB/notaris/svc-npoptkp.php',
+			  method: 'POST',
+			  params :{id:d,axx:axx},
+			  success: function ( result, request ) {
+				 var jsonData = Ext.util.JSON.decode(result.responseText);
+				 if (jsonData.success) {
+					 
+				 	if(!xOk) cNPOPTKP = jsonData.result;
+					else cNPOPTKP = 0;
+					if (warisNonWaris()) cNPOPTKP = jsonData.result;
+					//console.log(warisNonWaris());
+					checkTransaction ();
+					hideMask();
+					document.getElementById('hd-npoptkp').value = cNPOPTKP;
+					//console.log(cNPOPTKP);
+					
+				 }
+		   },
+			  failure: function ( result, request ) {
+			   
+		   }
+   });
+}
+
+function hideMask(){
+	hideDialog();
+}
+
+function showMask(){
+	//console.log(showDialog);
+	showDialog('Load','<img src="image/large-loading.gif" width="32" height="32" style="margin-right:8px;" align="absmiddle"/>Tunggu','prompt',false,true);
+	//alert("");
+}
+
+function setCheckedValue(radioObj, newValue) {
+	if(!radioObj)
+		return;
+	var radioLength = radioObj.length;
+	if(radioLength == undefined) {
+		radioObj.checked = (radioObj.value == newValue.toString());
+		return;
+	}
+	for(var i = 0; i < radioLength; i++) {
+		radioObj[i].checked = false;
+		if(radioObj[i].value == newValue.toString()) {
+			radioObj[i].checked = true;
+		}
+	}
+}
+
+function getCheckedObject(radioObj) {
+	if(!radioObj)
+		return "";
+	var radioLength = radioObj.length;
+	if(radioLength == undefined)
+		if(radioObj.checked)
+			return radioObj;
+		else
+			return "";
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			return radioObj[i];
+		}
+	}
+	return "";
+}
+
+var loop = 0;
+var loop2 = 0;
+var cloop = 15
+function sendNames(i) {
+	loop--;
+	var n = document.getElementById("name2").value;
+	var sel = document.getElementById("noktp").value;
+	var prm = encodeBase64("{'noktp':'"+sel+"','axx':'"+axx+"','n':'"+n+"'}");
+    $.ajax({
+        url : './function/BPHTB/notaris/svc-check-noktp.php',
+		data :{req:prm},
+		dataType: 'json',
+		success: function ( result) {
+				//console.log(result);
+				// var jsonData = Ext.util.JSON.decode(result.responseText);
+				 if (result.success) {
+				 	if(result.found) xOk = true;
+					else xOk = false;
+					loadNPOPTKP();
+					hideMask();
+					loop = 0;
+					$("input[type=submit]").removeAttr("disabled");
+				 } else {
+				 	$("input[type=submit]").attr("disabled", "disabled");
+					alert ("Error : Respon salah!");
+				 }
+		   	  },
+	    error: function () {
+			if (loop2 == cloop) {
+				loop2 = 0;
+			//$("input[type=submit]").attr("disabled", "disabled");
+			//alert ("Error : Terjadi gangguan koneksi ke server pusat, perhitungan tidak bisa dilakukan, periksa koneksi modem anda atau segera hubungi call center kami !");
+			}
+		},
+        complete: function () {
+			loop2++;
+            if (loop > 0) {
+                sendNames();
+            } else {
+			 	hideMask();
+			}
+			if (loop2 == cloop) {
+				 $("input[type=submit]").attr("disabled", "disabled");
+				alert ("Error : Terjadi gangguan koneksi ke server pusat, perhitungan tidak bisa dilakukan, \npilih kembali jenis perolehan, periksa koneksi modem anda atau segera hubungi call center kami !");
+			}
+        }
+    });
+}
+
+function checkTransLast() {
+	showMask();
+	loop = cloop;
+	/*var n = document.getElementById("name2").value;
+	var sel = document.getElementById("noktp").value;
+	var prm = encodeBase64("{'noktp':'"+sel+"','axx':'"+axx+"','n':'"+n+"'}");
+	//console.log(document.getElementById('hd-npoptkp').value);
+	Ext.Ajax.request({
+	 url : './function/BPHTB/notaris/svc-check-noktp.php',
+			  method: 'POST',
+			  params :{req:prm},
+			  success: function ( result, request ) {
+				 var jsonData = Ext.util.JSON.decode(result.responseText);
+				 if (jsonData.success) {
+				 	if(jsonData.found) xOk = true;
+					else xOk = false;
+					loadNPOPTKP();
+					hideMask();
+				 }
+		   	  },
+			  failure: function ( result, request ) {
+			   
+		      }
+   });*/
+   sendNames();
+}
+
+Ext.onReady(function(){
+     // loadNPOPTKP();
+	  checkTransLast();
+	  var rb = getCheckedValue(document.forms['form-notaris'].elements['RadioGroup1']);
+	  if (rb) {
+		 var objChecked = getCheckedObject(document.forms['form-notaris'].elements['RadioGroup1']);
+	  	 if (!edit) enableE(objChecked,1);
+	  }
+	  if (!edit)  {
+		setCheckedValue(document.forms['form-notaris'].elements['RadioGroup1'], '1');
+		document.getElementById("jsb-choose").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-number").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-role-number").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-date").setAttribute("disabled","disabled");
+		document.getElementById("jsb-choose-percent").setAttribute("disabled","disabled");
+		document.getElementById("jsb-etc").setAttribute("disabled","disabled");
+	  }
+});
+
+

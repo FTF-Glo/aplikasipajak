@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<company>
+	<api>
+		<base-url>https://services.atrbpn.go.id/BPNApiService/Api/</base-url>
+		<user>bapendalampungselatan</user>
+		<pass>kablampungselatan-</pass>
+	</api>
+	<db-mysql-bphtb>
+		<url-db>jdbc:mysql://127.0.0.1:3306/SW_SSB</url-db>
+		<user>root</user>
+		<pass>getpass</pass>		
+		<driver>com.mysql.jdbc.Driver</driver>		
+	</db-mysql-bphtb>
+</company>

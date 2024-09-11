@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="72" docname="struk" lmargin="1" rmargin="85" draftmode="true">
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tempat Pembayaran -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TEMPAT_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tahun -->
+		<item repeat="0" center="0" rpad="26" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="0" text="#THN_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text="#THN_DARI#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Nama Wajib Pajak -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#SUBJECT_NAME#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Kecamatan Letak Objek Pajak -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Kelurahan Letak Objek Pajak -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KELURAHAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- NOP -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#NOPNPWP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Sejumlah -->
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tanggal Jatuh Tempo -->
+		<item repeat="0" center="0" rpad="22" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#JTHTMP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_1#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_13#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_2#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_14#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_3#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_15#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_4#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_16#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_5#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_17#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line space="0">
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_6#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_18#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+ 	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_7#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_19#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_8#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_20#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_9#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_21#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_10#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_22#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_11#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_23#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="35" lpad="20" text="#BAYAR_PLUS_DENDA_12#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="18" text="#BAYAR_PLUS_DENDA_24#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Tanggal Pemabayaran -->
+		<item repeat="0" center="0" rpad="16" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TGL_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="10" text="#LT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="2" lpad="45" text="#LB#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<!-- Jumlah yang dibayar -->
+                <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TOT_TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	 
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TEMPAT_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="26" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="0" text="#THN_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text="#THN_DARI#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#SUBJECT_NAME#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>        
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KELURAHAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#NOPNPWP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#TGL_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+                <item repeat="0" center="0" rpad="0" lpad="0" text="#TOT_TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<!-- Lembar untuk kelurahan -->
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text="Tempat Pembayaran" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TEMPAT_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text="Nama Wajib Pajak" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#SUBJECT_NAME#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text="Letak Objek Pajak" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="12" lpad="0" text="Kecamatan" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="12" lpad="0" text="Kelurahan" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KELURAHAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text="Nomor SPPT (NOP)" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#NOPNPWP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#TGL_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+                <item repeat="0" center="0" rpad="0" lpad="0" text="#TOT_TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="25" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="25" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="25" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TEMPAT_BAYAR# BJB" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="26" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="13" lpad="0" text="#THN_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text="#THN_DARI#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#SUBJECT_NAME#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KECAMATAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="9" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#OBJECT_KELURAHAN#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#NOPNPWP#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#TGL_BAYAR#" italic="false" size="20" bold="false" font="0" underline="false"/>
+		
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="2" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+                <item repeat="0" center="0" rpad="0" lpad="0" text="#TOT_TRAN_AMOUNT_TEXT#" italic="false" size="20" bold="false" font="0" underline="false"/>
+	</line>
+	
+</tns:report>

@@ -1,0 +1,107 @@
+/*
+#consol-menu-add {
+	width : 130px;
+	float:left;
+	display:block;
+}
+#consol-menu-add  a {
+	text-decoration:none;
+	color:#000;	
+	vertical-align:middle;
+}
+#consol-menu-add  a:active {
+	background-color:#666;
+	color:#FFF;
+}
+#consol-menu-add  #selected {
+	background-color:#666;
+	color:#FFF;
+}
+#consol-menu-add  li:hover {
+	background-color:#666;
+	color:#FF0;
+}
+#consol-menu-add  li {
+	background-color:#CCC;
+	height:45px;
+	list-style:none;
+	overflow:hidden;
+	margin-left:-20px;
+	padding-left:5px;
+	padding-top:7px;
+	margin-top:1px;
+	font-weight:bold;
+}
+*/
+
+h4 {
+	margin-bottom: 5px;
+}
+
+#consol-menu-add {
+	width: 100%;
+}
+
+#consol-menu-add ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+#consol-menu-add ul li {
+	position: relative;
+	display: inline;
+	float: left;
+}
+
+#consol-menu-add ul li a {
+	display: block;
+	width: 150px;
+	/*Width of top level menu link items*/
+	padding: 2px 8px;
+	border: 1px solid #202020;
+	border-left-width: 0;
+	text-decoration: none;
+	background: url(menubg.gif) center center repeat-x;
+	color: black;
+	font: bold 13px Tahoma;
+}
+
+#consol-menu-add ul li a:hover {
+	background: url(menubgover.gif) center center repeat-x;
+}
+
+#consol-menu-add #selected {
+	background: url(menubgover.gif) center center repeat-x;
+	border: 2px solid #202020;
+	border-bottom-style: hidden;
+}
+
+#spacerlong {
+	display: inline-block;
+	width: 30%;
+}
+
+#spacer {
+	float: left;
+	width: 200px;
+}
+
+#colored {
+	background-color: #EBEBEB;
+}
+
+#newl {
+	height: 5px;
+}
+
+#nopsub {
+	text-align: center;
+	font-size: 10px;
+	border: hidden;
+}
+
+.tbl-rekomen {
+	background-color: #FFF;
+
+}

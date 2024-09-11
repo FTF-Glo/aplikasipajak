@@ -1,0 +1,24 @@
+		<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$config['title']                        = "E-Pajak BandarLampung";
+$config['desc']                         = "E-Pajak BandarLampung"; 
+$config['website']                      = "https://bandarlampungkota.go.id//";
+$config['email']                        = "diskominfo@bandarlampungkota.go.id";
+$config['email_name']                   = "E-Pajak bandarlampung";
+$config['phone']                        = "0721 456-7890";
+$config['bank_name']                    = "Bank Lampung";
+$config['contact_whatsapp']             = "";
+$config['contact_whatsapp_msg']         = "Halo, saya ingin bertanya mengenai ABC";
+$config['contact_whatsapp_enabled']     = false;
+$config['external_link_daftar_wp']      = "http://103.140.188.162:5052/registrasi/registrasi.php";
+$config['external_link_daftar_notaris'] = "http://36.92.151.83:2030/registrasi/registrasi.php";
+$config['external_link_pelaporan_1']    = "http://103.140.188.162:5052";
+$config['external_link_pelaporan_2']    = "http://103.169.238.243:8071/";
+$config['api_gateway_pajak']            = "http://10.100.66.3:8071/paymentbanklampung/GetBillingPajak";
+$config['api_gateway_pbb']              = "http://103.140.188.162:7073/paymentbanklampung/GetBillingPBB";
+$config['api_gateway_auth']             = "ftfuser:lalaland2020";
+$config['wilayah_nama']                 = "Lampung Utara";
+$config['wilayah_alamat']               = "Jl. Dr.Susilo No.2 Lampung Utara, Kota Lampung Utara";
+$config['contact_telp']                 = "0721 456-7890";
+$config['contact_email']                = "diskominfo@bandarlampungkota.go.id";

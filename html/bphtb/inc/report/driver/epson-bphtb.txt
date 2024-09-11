@@ -1,0 +1,25 @@
+init=#27 @
+controlPaper=#27 #25 #1
+lineSpacing7/72=#27 1
+setPageLength=#27 C #
+setLeftMargin=#27 l #
+setRightMargin=#27 Q #
+lqOn=#27 x #1
+draftOn=#27 x #0
+setTypeface=#27 k #
+boldOn=#27 E
+boldOff=#27 F
+italicOn=#27 4
+italicOff=#27 5
+underlineOn=#27 -
+underlineOff=#27 -
+cpi10=#27 P
+cpi12=#27 M
+cpi15=#27 g
+formFeed=#12
+characterSpace=#27 #32 #14
+characterSpaceStop=#27 #32 #0 
+lineSpacing1/8=#27 #51 #45
+perhitungan=#27 #51 #34
+smallspace=#27 #51 #11
+

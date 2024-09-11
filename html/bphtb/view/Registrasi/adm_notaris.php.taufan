@@ -1,0 +1,562 @@
+<?
+if ($data) {
+	$uid = $data->uid;
+	
+	// get module
+	$bOK = $User->GetModuleInArea($uid, $area, $moduleIds);
+	if (!$bOK) {
+		return false;
+	}
+
+
+/* ------------Setting each city/town for all--------------------- */
+$arConfig=$User->GetAreaConfig($area);
+$AreaPajak=$arConfig["AreaPajak"];
+
+$Qry="SELECT *FROM cppmod_tax_kabkota WHERE CPC_TK_ID='$AreaPajak'";
+$bOK=$dbSpec->sqlQuery($Qry,$result);
+$Key=mysql_fetch_array($result);
+
+$IdKK=$Key['CPC_TK_ID'];
+$NameKK=$Key['CPC_TK_KABKOTA'];
+/*-----------------------------------------------------------------*/
+
+//error_reporting(E_ERROR & ~E_NOTICE & ~E_DEPRECATED);
+//ini_set("display_errors", 1); 
+
+function c_uuid($sDelim = '')
+{
+  // The field names refer to RFC 4122 section 4.1.2
+  return sprintf('%04x%04x%s%04x%s%03x4%s%04x%s%04x%04x%04x',
+    mt_rand(0, 65535), mt_rand(0, 65535), // 32 bits for "time_low"
+    $sDelim,
+    mt_rand(0, 65535), // 16 bits for "time_mid"
+    $sDelim,
+    mt_rand(0, 4095),  // 12 bits before the 0100 of (version) 4 for "time_hi_and_version"
+    $sDelim,
+    bindec(substr_replace(sprintf('%016b', mt_rand(0, 65535)), '01', 6, 2)),
+    $sDelim,
+    // 8 bits, the last two of which (positions 6 and 7) are 01, for "clk_seq_hi_res"
+    // (hence, the 2nd hex digit after the 3rd hyphen can only be 1, 5, 9 or d)
+    // 8 bits for "clk_seq_low"
+    mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535) // 48 bits for "node"
+  );
+} // end of c_uuid
+
+$sRootPath = str_replace('\\', '/', str_replace(DIRECTORY_SEPARATOR.'Registrasi', '', dirname(__FILE__))).'/';
+		//aksi status 4
+		$func4=$func[7][id];
+		//aksi status 2
+		$func2=$func[6][id];
+//aksi dari status 0
+if(@isset($email) && @isset($id)){
+					
+							//Kirim Link notifikasi
+							require_once "Mail.php";
+
+							$from = "getaufan@gmail.com";
+							$to = $email;
+							$subject = "Konfirmasi Pendaftaran";
+							$body = "Terima kasih \n\n Anda telah berhasil mendaftar :-). \n Silahkan aktifkan account Anda, dengan mengklik link berikut : \n http://192.168.30.2:9800/payment/pc/svr/central/aktivasi_account.php?id=".$id;
+							$host = "ssl://smtp.gmail.com";
+							$port = "465";
+							$username = "getaufan@gmail.com";
+							$password = "septaufani";
+							$headers = array ('From' => $from,'To' => $to,'Subject' => $subject);
+							$smtp = Mail::factory('smtp',
+							array ('host' => $host,'port' => $port,'auth' => true,'username' => $username,'password' => $password));
+							$mail = $smtp->send($to, $headers, $body);
+
+							if (PEAR::isError($mail)) {
+
+							/*echo("<p><font color='#FFFFFF'>" . */$mail->getMessage();/* . "</font></p>");*/
+
+							} else {
+
+							echo "<img src='image/icon/wait.gif' alt=''></img>Email notifikasi telah berhasil dikirimkan...<br>";
+							$url64 = base64_encode("a=$a&m=$m");
+					        echo "<meta http-equiv='REFRESH' content='1;url=main.php?param=$url64'>\n";
+							echo "Tunggu beberapa saat... \n";
+							}
+
+}		
+
+
+//aksi dari status 1
+$func=$func[5][id];
+if(isset($dataId) || isset($nameUser) || isset($pwdUser)|| isset($email1)){
+		function c_uuid($sDelim = '')
+		{
+			// The field names refer to RFC 4122 section 4.1.2
+			return sprintf('%04x%04x%s%04x%s%03x4%s%04x%s%04x%04x%04x',
+				mt_rand(0, 65535), mt_rand(0, 65535), // 32 bits for "time_low"
+				$sDelim,
+				mt_rand(0, 65535), // 16 bits for "time_mid"
+				$sDelim,
+				mt_rand(0, 4095),  // 12 bits before the 0100 of (version) 4 for "time_hi_and_version"
+				$sDelim,
+				 bindec(substr_replace(sprintf('%016b', mt_rand(0, 65535)), '01', 6, 2)),
+				$sDelim,
+				// 8 bits, the last two of which (positions 6 and 7) are 01, for "clk_seq_hi_res"
+				// (hence, the 2nd hex digit after the 3rd hyphen can only be 1, 5, 9 or d)
+				// 8 bits for "clk_seq_low"
+				mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535) // 48 bits for "node"
+			 );
+		}
+		$idUser = "u" . $Setting->GetNextUserId();
+		$idUser = htmlentities($idUser, ENT_QUOTES);
+		$keterangan="approve";
+		$status=2;
+		$newuuid=c_uuid();
+		$nameUser=addslashes($nameUser);
+		$sqlUpdate="UPDATE tbl_reg_user_notaris SET uuid='$newuuid',status='$status',keterangan='$keterangan' WHERE id='$dataId' AND areapajak='$IdKK'";
+		$bOK=$Setting->InsertUser($idUser, $nameUser, $pwdUser, 0, 0,0);
+		$bOK = $dbSpec->sqlQuery($sqlUpdate, $result);
+		if ($bOK) {
+					//$arConfig = $User->GetAreaConfig($area);
+					//$central = $arConfig["DATA_BANK"];
+					echo "<div>Berhasil di-approve...</div>\n";
+					$url64 = base64_encode("a=$a&m=$m");
+					echo "<meta http-equiv='REFRESH' content='1;url=main.php?param=$url64'>\n";
+					echo "Tunggu beberapa saat... <img src='image/icon/wait.gif' alt=''></img>\n";
+					require_once($sRootPath."Registrasi/konfirmasi_kedua.php");
+					$arConfig=$User->GetAreaConfig($area);
+					$notarisApp=$arConfig["notarisApp"];
+					$NotarisRole=$arConfig["notarisRole"];
+					$Setting->ChangeRole($idUser,$notarisApp,$NotarisRole);
+
+		} else {
+					echo "<script language='javascript'>alert('Gagal di-approve!.')</script>";
+				}
+}
+
+
+
+if (isset($submit) || isset($userId)){
+	
+	if($_POST['status']=="pilih"){
+		$userId=mysqli_real_escape_string($userId);
+		$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+		$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+		$jumlah=mysql_num_rows($result);
+		$no=0;
+		$tampil5="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						<th>AKSI</th>
+						</tr>
+				";
+		if($bOK){
+				if($jumlah>0)
+				{
+					while($dataTampil5=mysql_fetch_array($result)){
+					$no++;
+					$action="<table border='0'><tr>";
+					if($dataTampil5['status']==0){
+								$action.="
+								<td><a href='main.php?param=".base64_encode("a=$a&m=$m&email=".$dataTampil5['email']."&id=".$dataTampil5['uuid'])."'><img src='./image/icon/email_go.png' title='kirim ulang email validasi' alt='kirim ulang email validasi'></a>
+								</td>
+								<td>&nbsp;&nbsp;-</td>";
+							}
+					else if($dataTampil5['status']==1){
+								$action.="<td><a href='main.php?param=".base64_encode("a=$a&m=$m&dataId=".$dataTampil5['id']."&nameUser=".addslashes($dataTampil5['userId'])."&pwdUser=".$dataTampil5['password']."&email1=".$dataTampil5['email'])."'><img src='./image/icon/accept.png' title='DITERIMA' alt='DITERIMA'></a></td><td><a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func&dataId=".$dataTampil5['id']."&nameUser=".addslashes($dataTampil5['userId'])."&pwdUser=".$dataTampil5['password']."&email=".$dataTampil5['email'])."'><img src='./image/icon/reject.png' title='DITOLAK' alt='DITOLAK'></a></td>";
+							}
+					else if($dataTampil5['status']==2){
+								$action.="<td><a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func2&dataId=".$dataTampil5['id']."&nameUser=".addslashes($dataTampil5['userId'])."&pwdUser=".$dataTampil5['password']."&email=".$dataTampil5['email'])."'><img src='./image/icon/delete.png' height='15' width='15' alt='BLOKIR' title='BLOKIR'></img></a></td><td>&nbsp;&nbsp;-</td>";
+							}
+					else if($dataTampil5['status']==3){
+								$action.="status :telah ditolak";
+							}
+					else if($dataTampil5['status']==4){
+								$action.="<td><a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func4&dataId=".$dataTampil5['id']."&nameUser=".addslashes($dataTampil5['userId'])."&pwdUser=".$dataTampil5['password']."&email=".$dataTampil5['email'])."'><img src='./image/icon/accept.png' height='15' width='15' alt='AKTIFKAN' title='AKTIFKAN'></img></a></td><td>&nbsp;&nbsp;-</td>";
+							}
+					$action.="</tr></table>";
+					$tampil5.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil5['userId'])."</td>
+						<td align='center'>".md5($dataTampil5['password'])."</td>
+						<td align='center'>".$dataTampil5['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil5['email']."</td>
+						<td align='center'>".$dataTampil5['no_tlp']."</td>
+						<td align='center'>".$dataTampil5['almt_jalan']."</td>
+						<td align='center'>".$dataTampil5['almt_kota']."</td>
+						<td align='center'>".$dataTampil5['no_identitas']."</td>
+						<td align='center'>".$action."
+						</td>
+						</tr>
+						";
+					}
+				}
+				else
+				{
+					$tampil5.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+			else
+			{
+				echo "<script>alert('Maaf, pencarian gagal')</script>";
+			}
+			$tampil5.="</table>";
+	}
+	
+	
+	
+	
+	if($_POST['status']=="0"){
+			//tulis di sini status 0
+			$userId=mysqli_real_escape_string($userId);
+			$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE status='0' AND userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+			$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+			$jumlah=mysql_num_rows($result);
+			$no=0;
+			$tampil0="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						<th>AKSI</th>
+						</tr>
+					";
+			if($bOK){
+				if($jumlah>0)
+				{
+					
+					while($dataTampil0=mysql_fetch_array($result)){
+					$no++;
+	
+					$tampil0.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil0['userId'])."</td>
+						<td align='center'>".md5($dataTampil0['password'])."</td>
+						<td align='center'>".$dataTampil0['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil0['email']."</td>
+						<td align='center'>".$dataTampil0['no_tlp']."</td>
+						<td align='center'>".$dataTampil0['almt_jalan']."</td>
+						<td align='center'>".$dataTampil0['almt_kota']."</td>
+						<td align='center'>".$dataTampil0['no_identitas']."</td>
+						<td align='center'><a href='main.php?param=".base64_encode("a=$a&m=$m&email=".$dataTampil0['email']."&id=".$dataTampil0['uuid'])."'><img src='./image/icon/email_go.png' title='kirim ulang email validasi' alt='kirim ulang email validasi'></a></td>
+						</tr>
+					";
+						
+					}
+					
+				}
+				else
+				{
+					$tampil0.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+		else
+		{
+			echo "<script>alert('Maaf, pencarian gagal')</script>";
+		}
+		$tampil0.="</table>";
+	}
+	else if($_POST['status']=="1"){
+			//tulis di sini status 1
+			$userId=mysqli_real_escape_string($userId);
+			$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE status='1' AND userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+			$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+			$jumlah=mysql_num_rows($result);
+			$no=0;
+			$tampil1="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						<th>AKSI</th>
+						</tr>
+					";
+			if($bOK){
+				if($jumlah>0)
+				{
+					while($dataTampil1=mysql_fetch_array($result)){
+					$no++;
+	
+					$tampil1.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil1['userId'])."</td>
+						<td align='center'>".md5($dataTampil1['password'])."</td>
+						<td align='center'>".$dataTampil1['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil1['email']."</td>
+						<td align='center'>".$dataTampil1['no_tlp']."</td>
+						<td align='center'>".$dataTampil1['almt_jalan']."</td>
+						<td align='center'>".$dataTampil1['almt_kota']."</td>
+						<td align='center'>".$dataTampil1['no_identitas']."</td>
+						<td align='center'>
+						<a href='main.php?param=".base64_encode("a=$a&m=$m&dataId=".$dataTampil1['id']."&nameUser=".addslashes($dataTampil1['userId'])."&pwdUser=".$dataTampil1['password']."&email1=".$dataTampil1['email'])."'><img src='./image/icon/accept.png' title='DITERIMA' alt='DITERIMA'></a>&nbsp;&nbsp;<a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func&dataId=".$dataTampil1['id']."&nameUser=".addslashes($dataTampil1['userId'])."&pwdUser=".$dataTampil1['password']."&email=".$dataTampil1['email'])."'><img src='./image/icon/reject.png' title='DITOLAK' alt='DITOLAK'></a>
+						</td>
+						</tr>
+						";
+					}
+				}
+				else
+				{
+					$tampil1.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+			else
+			{
+				echo "<script>alert('Maaf, pencarian gagal')</script>";
+			}
+			$tampil1.="</table>";
+	}
+	else if($_POST['status']=="2"){
+			
+			//tulis di sini status 2
+			$userId=mysqli_real_escape_string($userId);
+			$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE status='2' AND userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+			$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+			$jumlah=mysql_num_rows($result);
+			$no=0;
+			$tampil2="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						<th>AKSI</th>
+						</tr>
+					";
+			if($bOK){
+				if($jumlah>0)
+				{
+					while($dataTampil2=mysql_fetch_array($result)){
+					$no++;
+	
+					$tampil2.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil2['userId'])."</td>
+						<td align='center'>".md5($dataTampil2['password'])."</td>
+						<td align='center'>".$dataTampil2['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil2['email']."</td>
+						<td align='center'>".$dataTampil2['no_tlp']."</td>
+						<td align='center'>".$dataTampil2['almt_jalan']."</td>
+						<td align='center'>".$dataTampil2['almt_kota']."</td>
+						<td align='center'>".$dataTampil2['no_identitas']."</td>
+						<td align='center'>
+						<a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func2&dataId=".$dataTampil2['id']."&nameUser=".addslashes($dataTampil2['userId'])."&pwdUser=".$dataTampil2['password']."&email=".$dataTampil2['email'])."'><img src='./image/icon/delete.png' height='15' width='15' alt='BLOKIR' title='BLOKIR'></img></a>
+						</td>
+						</tr>
+						";
+					}
+				}
+				else
+				{
+					$tampil2.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+			else
+			{
+				echo "<script>alert('Maaf, pencarian gagal')</script>";
+			}
+			$tampil2.="</table>";
+	}
+	else if($_POST['status']=="3"){
+			//tulis di sini status 3
+			$userId=mysqli_real_escape_string($userId);
+			$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE status='3' AND userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+			$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+			$jumlah=mysql_num_rows($result);
+			$no=0;
+			$tampil3="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						</tr>
+					";
+			if($bOK){
+				if($jumlah>0)
+				{
+					while($dataTampil3=mysql_fetch_array($result)){
+					$no++;
+	
+					$tampil3.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil3['userId'])."</td>
+						<td align='center'>".md5($dataTampil3['password'])."</td>
+						<td align='center'>".$dataTampil3['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil3['email']."</td>
+						<td align='center'>".$dataTampil3['no_tlp']."</td>
+						<td align='center'>".$dataTampil3['almt_jalan']."</td>
+						<td align='center'>".$dataTampil3['almt_kota']."</td>
+						<td align='center'>".$dataTampil3['no_identitas']."</td>
+						</tr>
+						";
+					}
+				}
+				else
+				{
+					$tampil3.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+			else
+			{
+				echo "<script>alert('Maaf, pencarian gagal')</script>";
+			}
+			$tampil3.="</table>";
+	}
+	else if($_POST['status']=="4"){
+			//tulis di sini status 4
+			$userId=mysqli_real_escape_string($userId);
+			$sqlTampil= "SELECT * FROM tbl_reg_user_notaris WHERE status='4' AND userId LIKE ('%$userId%') AND areapajak='$IdKK' ORDER BY id";
+			$bOK = $dbSpec->sqlQuery($sqlTampil, $result);
+			$jumlah=mysql_num_rows($result);
+			$no=0;
+			$tampil4="
+						<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+						<tr>
+						<th>NO.</th>
+						<th>USER ID</th>
+						<th>PASSWORD</th>
+						<th>NAMA LENGKAP</th>
+						<th>EMAIL</th>
+						<th>NO TELEPON/HP</th>
+						<th>JALAN</th>
+						<th>KOTA</th>
+						<th>NO IDENTITAS</th>
+						<th>AKSI</th>
+						</tr>
+					";
+			if($bOK){
+				if($jumlah>0)
+				{
+					while($dataTampil4=mysql_fetch_array($result)){
+					$no++;
+	
+					$tampil4.="	<tr>
+						<td align='center'>".$no."</td>
+						<td align='center'>".addslashes($dataTampil4['userId'])."</td>
+						<td align='center'>".md5($dataTampil4['password'])."</td>
+						<td align='center'>".$dataTampil4['nm_lengkap']."</td>
+						<td align='center'>".$dataTampil4['email']."</td>
+						<td align='center'>".$dataTampil4['no_tlp']."</td>
+						<td align='center'>".$dataTampil4['almt_jalan']."</td>
+						<td align='center'>".$dataTampil4['almt_kota']."</td>
+						<td align='center'>".$dataTampil4['no_identitas']."</td>
+						<td align='center'>
+						<a href='main.php?param=".base64_encode("a=$a&m=$m&f=$func4&dataId=".$dataTampil4['id']."&nameUser=".addslashes($dataTampil4['userId'])."&pwdUser=".$dataTampil4['password']."&email=".$dataTampil4['email'])."'><img src='./image/icon/accept.png' height='15' width='15' alt='AKTIFKAN' title='AKTIFKAN'></img></a>
+						</td>
+						</tr>
+						";
+					}
+				}
+				else
+				{
+					$tampil4.="<td align='center' colspan='10'>No Records Found</td>";
+				}
+			}
+			else
+			{
+				echo "<script>alert('Maaf, pencarian gagal')</script>";
+			}
+			$tampil4.="</table>";
+	}
+		
+}
+
+else {
+	$tampil="
+	<table border='0' cellspacing='1' cellpadding='1' bgcolor='#FF9900'>
+	<tr>
+		<th>NO.</th>
+		<th>USER ID</th>
+		<th>PASSWORD</th>
+		<th>NAMA LENGKAP</th>
+		<th>EMAIL</th>
+		<th>NO TELEPON/HP</th>
+		<th>JALAN</th>
+		<th>KOTA</th>
+		<th>NO IDENTITAS</th>
+		<th>AKSI</th>
+	</tr>
+	<tr>
+		<td colspan='10' align='center'>No Records Found</td>
+	</tr>
+	</table>
+	";
+}
+?>
+<script language="JavaScript">
+function ngecek(){
+	if (document.formC.userId.value=="")
+	{
+		alert("Mohon isi kata kunci pencarian");
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+</script>
+<form method="POST" action="main.php?param=<?=base64_encode("a=$a&m=$m")?>" name="formC" id="formC" onSubmit="return ngecek();">
+<table border="0" cellspacing="1" cellpadding="1">
+<tr>
+	<th colspan="5" align="left">Pencarian Pengguna</th>
+</tr>
+<tr>
+	<td>Nama Pengguna</td>
+	<td><input type="text" name="userId"></td>
+	<td>Status</td>
+	<td>
+		<select name="status">
+			<option value="pilih" selected>Pilih</option>
+			<option value="0">Belum Validasi</option>
+			<option value="1">Belum Notifikasi</option>
+			<option value="2">Diterima (Aktif)</option>
+			<option value="3">Ditolak</option>
+			<option value="4">Diblokir (Tidak Aktif)</option>
+		</select>
+	</td>
+	<td><input type="submit" value="Search Notaris" name="submit" id="submit"></td>
+</tr>
+</table>
+</form>
+
+<?
+	echo $tampil;
+	echo $tampil0;
+	echo $tampil1;
+	echo $tampil2;
+	echo $tampil3;
+	echo $tampil4;
+	echo $tampil5;
+}
+?>

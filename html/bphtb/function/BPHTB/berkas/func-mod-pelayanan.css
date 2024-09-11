@@ -1,0 +1,83 @@
+#msg-claim {
+	/*border:#F90 thin solid;*/
+	display:block;
+	padding:30;
+	width:400px;
+	background:url(../../../image/icon/warning.gif) no-repeat #FC9;
+	background-position:center left ;
+}
+#main-content {
+	border-bottom: 1px solid grey;
+	border-left: 1px solid grey;
+	border-right: 1px solid grey;
+	border-top: 1px solid grey;
+	width:975px;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	border-radius: 10px;
+	padding:30;
+}
+.msg-info{
+	border:#F90 thin solid;
+	display:block;
+	padding:30;
+	width:754px;
+	background:url(../../../image/icon/warning.gif) no-repeat #FC9;
+	background-position:center left ;
+}
+input[type="text"]{
+      border-radius:3px;
+      -moz-border-radius:3px;
+      -webkit-border-radius:3px;
+	  background: #FFF;
+	  border: 1px solid #7E7E7E;
+    }
+input[type="text"]:disabled {
+    background: #d3d3d3;
+  }
+  
+textarea{
+      border-radius:3px;
+      -moz-border-radius:3px;
+      -webkit-border-radius:3px;
+	  background: #FFF;
+	  border: 1px solid #7E7E7E;
+	  padding: 2px;
+    }
+	textarea:disabled {
+		background: #d3d3d3;
+	}
+	select{
+      border-radius:3px;
+      -moz-border-radius:3px;
+      -webkit-border-radius:3px;
+	  background: #FFF;
+	  border: 1px solid #000;
+    }
+	
+	
+	.button-success,
+        .button-error,
+        .button-warning,
+        .button-secondary {
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-success {
+            background: rgb(28, 184, 65); /* this is a green */
+        }
+
+        .button-error {
+            background: rgb(202, 60, 60); /* this is a maroon */
+        }
+
+        .button-warning {
+            background: rgb(223, 117, 20); /* this is an orange */
+        }
+
+        .button-secondary {
+            background: rgb(66, 184, 221); /* this is a light blue */
+        }

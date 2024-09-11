@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/templatereport.xsd" length="22" docname="struk" lmargin="2" rmargin="84" draftmode="true">
+	<line>
+		<item repeat="0" center="0" rpad="20" lpad="0" text="Tanggal" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text="Total Pendapatan" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="20" lpad="0" text="Diskon" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="20" lpad="0" text="Termasuk Pajak" italic="false" size="20" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="20" lpad="0" text="Pajak" italic="false" size="20" bold="true" font="0" underline="false"/>
+	</line><line>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="02/28/2013" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="25" lpad="0" text="40000" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="0" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="Ya" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="3636.3636363636" italic="false" size="20" bold="false" font="0" underline="false"/>
+				</line><line>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="02/22/2013" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="25" lpad="0" text="3000" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="0" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="Ya" italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="272.72727272727" italic="false" size="20" bold="false" font="0" underline="false"/>
+				</line><line>
+					<item repeat="0" center="0" rpad="20" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="25" lpad="0" text="43000" italic="false" size="20" bold="true" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text=" " italic="false" size="20" bold="false" font="0" underline="false"/>
+					<item repeat="0" center="0" rpad="20" lpad="0" text="3909.0909090909" italic="false" size="20" bold="true" font="0" underline="false"/>
+				</line></tns:report>

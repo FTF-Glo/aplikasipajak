@@ -1,0 +1,612 @@
+<?php
+/* 
+ *  Get Payment PBB
+ *  Author By budi.yuliaziz@vsi.co.id
+ */
+$sRootPath = str_replace('\\', '/', str_replace(DIRECTORY_SEPARATOR.'svr'.DIRECTORY_SEPARATOR.'pbb', '', dirname(__FILE__))).'/';
+require_once($sRootPath."inc/payment/ctools.php");
+require_once($sRootPath."inc/payment/comm-central.php");
+require_once($sRootPath."inc/payment/json.php");
+require_once($sRootPath."inc/payment/sayit.php");
+require_once($sRootPath."inc/payment/error-messages.php");
+require_once($sRootPath."inc/pbb/pbb-protocol-inquiry.php");
+require_once($sRootPath."inc/pbb/pbb-protocol-payment.php");
+require_once($sRootPath."inc/pbb/pbb-protocol-advice.php");
+require_once($sRootPath."inc/report/eng-report.php");
+require_once($sRootPath."inc/payment/inc-payment-c.php");
+require_once($sRootPath."inc/payment/inc-payment-db-c.php");
+require_once($sRootPath."inc/payment/prefs-payment.php");
+require_once($sRootPath."inc/payment/db-payment.php");
+require_once($sRootPath."inc/check-session.php");
+require_once($sRootPath."inc/central/user-central.php");
+require_once($sRootPath."inc/central/setting-central.php");
+require_once($sRootPath."inc/payment/nid.php");
+require_once($sRootPath."svr/pbb/svc-pbb-construct-IncResp.php");
+require_once($sRootPath."inc/pbb/pbb-lookup.php");
+
+SCANPayment_ConnectToDB($DBLink, $DBConn, ONPAYS_DBHOST, ONPAYS_DBUSER, ONPAYS_DBPWD, ONPAYS_DBNAME);
+if ($iErrCode != 0)
+{
+  $sErrMsg = 'FATAL ERROR: '.$sErrMsg;
+  if (CTOOLS_IsInFlag(DEBUG, DEBUG_ERROR))
+    error_log ("[".strftime("%Y%m%d%H%M%S", time())."][".(basename(__FILE__)).":".__LINE__."] [ERROR] [$iErrCode] $sErrMsg\n", 3, LOG_FILENAME);
+  exit(1);
+}
+
+function updateNtrial ($REFNUM) {
+	global $myConn;
+	
+	$arResult = LOOKUP_ALL_pbb($myConn);
+	if (!$arResult) {
+		return;
+	}
+	$LDBLink=null;
+	$LDBConn=null;
+	
+	$i = 0;
+	$lookDBLink=null;
+	$lookDBConn=null;
+	foreach ($arResult as $res) {
+		$resLookupId = $res["LOOK_ID"];
+		$resDbHost = $res["DB_HOST"];
+		$resDbUser = $res["DB_USER"];
+		$resDbPwd = $res["DB_PWD"];
+		$resDbName = $res["DB_NAME"];
+		$resDbTable = $res["DB_TABLE"];
+		// Payment related initialization
+		SCANPayment_ConnectToDB($lookDBLink, $lookDBConn, $resDbHost, $resDbUser, $resDbPwd, $resDbName,true);
+		if ($iErrCode != 0)
+		{
+		  $sErrMsg = 'FATAL ERROR: '.$sErrMsg;
+		  if (CTOOLS_IsInFlag(DEBUG, DEBUG_ERROR))
+			error_log ("[".strftime("%Y%m%d%H%M%S", time())."][".(basename(__FILE__)).":".__LINE__."] [ERROR] [$iErrCode] $sErrMsg\n", 3, LOG_FILENAME);
+		  exit(1);
+		}
+		
+		$sCond = " CSM_TM_SWITCH_REFNUM ='".$REFNUM."'";
+		
+		$sQ = "UPDATE ". $resDbTable ." SET CSM_TM_NTRIAL=1 WHERE ".$sCond;
+		//echo "$sQ  <br><br>";
+		$result = mysqli_query($lookDBLink, $sQ);
+		
+		SCANPayment_CloseDB($lookDBLink);
+	}
+	SCANPayment_CloseDB($LDBLink);
+}
+
+function findStream($refnum,&$stream) {
+	global $DBLink,$myConn;
+	$OK = false;
+	$Qry = "SELECT CSM_LT_STREAM FROM CSCMOD_TAX_LOG_TRAN_DOWN WHERE CSM_LT_SWITCH_REFNUM = '".$refnum."' AND CSM_LT_STREAM LIKE '2110%'";
+	$res = mysql_query($Qry,$myConn);
+	if ($res) {
+		$row = mysqli_fetch_assoc($res);
+		$stream = $row['CSM_LT_STREAM'];
+		$OK = true;
+		//echo $stream;
+	} else {
+		echo mysqli_error($DBLink);
+	}
+	return $OK;
+}
+
+function createStreamInqResponse($refnum,&$stream) {
+	global $DBLink,$sdata,$myConn ;
+	$OK = false;
+	
+	//echo $refnum."<br>";
+	$Qry = "SELECT * FROM CSCMOD_TAX_TRAN_MAIN WHERE CSM_TM_SWITCH_REFNUM = '".$refnum."'";
+	$res = mysql_query($Qry,$myConn);
+	if (isset($_REQUEST['v'])) {
+			echo $Qry."<BR>";
+		}
+	if ($res) {
+		
+		$row = mysqli_fetch_assoc($res);
+		$stan = $row['CSM_TM_REFNUM'];
+		$nop_npwp = $row['CSM_TM_TAX_YEAR'].$row['CSM_TM_NOP_NPWP'];
+		$area_code = $row['CSM_TM_AREA_CODE'];
+		$area_name = $row['CSM_TM_AREA_NAME'];
+		$tax_code = $row['CSM_TM_TAX_TYPE'];
+		$tax_name = $row['CSM_TM_TAX_NAME'];
+		$tax_refnum = $row['CSM_TM_TAX_REFNUM'];
+		$swrefnum = $row['CSM_TM_SWITCH_REFNUM'];
+		$gwrefnum = $row['CSM_TM_GW_REFNUM'];
+		$flag = $row['CSM_TM_TAXID_FLAG'];
+		$payrefnum = $row['CSM_TM_PAY_REFNUM'];
+		$due_date = $row['CSM_TM_TRAN_DT'];
+		$minor = $row['CSM_TM_MINOR_48'];
+		$total_amount = $row['CSM_TM_TOTAL_TRANSACT_AMOUNT'];
+		$ori_bill = $row['CSM_TM_ORIGINAL_AMOUNT'];	
+		$collectible_bil = $row['CSM_TM_COLLECTIVE_AMOUNT'];
+		$misc_bill = $row['CSM_TM_MISC_AMOUNT'];
+		$penalty_fee = $row['CSM_TM_PENALTY_FEE'];
+		$admin_fee = $row['CSM_TM_ADMIN_FEE'];
+		$subject_name= $row['CSM_TM_SUBJECT_NAME'];
+		$subjec_address= $row['CSM_TM_SUBJECT_ADDRESS'];
+		$subject_rt_rw= $row['CSM_TM_SUBJECT_RT_RW'];
+		$subject_kelurahan= $row['CSM_TM_SUBJECT_KELURAHAN'];
+		$subject_kecamatan= $row['CSM_TM_SUBJECT_KECAMATAN'];
+		$subject_kabupaten= $row['CSM_TM_SUBJECT_KABUPATEN'];
+		$subject_zip_post= $row['CSM_TM_SUBJECT_ZIP_POST'];
+		$object_name= $row['CSM_TM_OBJECT_NAME'];
+		$object_address= $row['CSM_TM_OBJECT_ADDRESS'];
+		$object_rt_rw= $row['CSM_TM_OBJECT_RT_RW'];
+		$object_kelurahan= $row['CSM_TM_OBJECT_KELURAHAN'];
+		$object_kecamantan= $row['CSM_TM_OBJECT_KECAMATAN'];
+		$object_kabupaten= $row['CSM_TM_OBJECT_KABUPATEN'];
+		$total = $row['CSM_TM_TOTAL_REPEAT'];
+		
+		$repeat = "11";
+		$sppt_tgl_terbit = $row['CSM_TM_SPPT_TGLTERBIT'] ;
+		$sppt_tgl_cetak = $row['CSM_TM_SPPT_TGLCETAK'];
+		$op_luas_bumi = $row['CSM_TM_OBJECT_LUASBUMI'];
+		$op_luas_bangunan = $row['CSM_TM_OBJECT_LUASBGN'];
+		$op_kelas_bumi = $row['CSM_TM_OBJECT_KLSBUMI'];
+		$op_kelas_bangunan = $row['CSM_TM_OBJECT_KLSBGN'];
+		$op_njop_bumi = $row['CSM_TM_OBJECT_NJOPBUMI'];
+		$op_njop_bangunan = $row['CSM_TM_OBJECT_NJOPBGN'];
+		$op_njop = $row['CSM_TM_OBJECT_NJOP'];
+		$op_njop_tkp = $row['CSM_TM_OBJECT_NJOPTKP'];
+		$op_njkp = $row['CSM_TM_OBJECT_NJKP'];
+		
+		$type1 = $row['CSM_TM_BILL_TYPE_1'];
+		$value1 = $row['CSM_TM_BILL_VALUE_1'];
+		$type2 = $row['CSM_TM_BILL_TYPE_2'];
+		$value2 = $row['CSM_TM_BILL_VALUE_2'];
+		$type3 = $row['CSM_TM_BILL_TYPE_3'];
+		$value3 = $row['CSM_TM_BILL_VALUE_3'];
+		$type4 = $row['CSM_TM_BILL_TYPE_4'];
+		$value4 = $row['CSM_TM_BILL_VALUE_4'];
+		$type5 = $row['CSM_TM_BILL_TYPE_5'];
+		$value5 = $row['CSM_TM_BILL_VALUE_5'];
+		
+		$type = array();
+		$value = array();
+		
+		if ($type1!=NULL) {$type[0]=$type1;}
+		if ($value1!=NULL) {$value[0]=$value1;}
+		if ($type2!=NULL) {$type[1]=$type2;}
+		if ($value2!=NULL) {$value[1]=$value2;}
+		if ($type3!=NULL) {$type[2]=$type3;}
+		if ($value3!=NULL) {$value[2]=$value3;}
+		if ($type4!=NULL) {$type[3]=$type4;}
+		if ($value4!=NULL) {$value[3]=$value4;}
+		if ($type5!=NULL) {$type[4]=$type5;}
+		if ($value5!=NULL) {$value[4]=$value5;}
+		
+		$total = count($type);
+		//print_r($type);
+		$OK = true;
+		if (isset($_REQUEST['v'])) {
+			echo $refnum."---".$stream;
+		}
+	} else {
+		echo mysqli_error($DBLink);
+	}
+	$aPrivData = array();
+	$aPrivData['switcherid'] = '0000000'; //switchid
+	$aPrivData['area_code'] = $area_code; //areacode
+	$aPrivData['tax_code']= $tax_code; //tax_type
+	$aPrivData['flag'] = $flag; //flag
+	$aPrivData['nop_npwp'] = $nop_npwp; 
+	$aPrivData['area_name'] = $area_name; 
+	$aPrivData['tax_name'] = $tax_name;
+	$aPrivData['tax_refnum'] = $tax_refnum;
+	$aPrivData['gw_refnum'] = $gwrefnum; 
+	$aPrivData['swrefnum'] = $swrefnum;
+	$aPrivData['pay_refnum'] = $payrefnum;
+	$aPrivData['due_date'] = substr($due_date,0,8);
+	$aPrivData['minor'] = $minor;
+	$aPrivData['total_amount'] = $total_amount;
+	$aPrivData['ori_bill'] = $ori_bill;
+	$aPrivData['collectible_bil'] = $collectible_bil;
+	$aPrivData['misc_bill'] = $misc_bill;
+	$aPrivData['penalty_fee'] = $penalty_fee;
+	$aPrivData['admin_fee'] = $admin_fee; 
+	$aPrivData['subject_name'] = $subject_name;
+	$aPrivData['subject_address'] = $subjec_address;
+	$aPrivData['subject_rt_rw'] = $subject_rt_rw;
+	$aPrivData['subject_kelurahan'] = $subject_kelurahan;
+	$aPrivData['subject_kecamatan'] = $subject_kecamatan;
+	$aPrivData['subject_kabupaten'] = $subject_kabupaten;
+	$aPrivData['subject_zip_post'] = $subject_zip_post;
+	$aPrivData['object_address']=  $object_name;
+	$aPrivData['object_rt_rw'] = $object_rt_rw;
+	$aPrivData['object_kelurahan'] = $object_kelurahan;
+	$aPrivData['object_kecamatan'] = $object_kecamantan;
+	$aPrivData['object_kabupaten'] = $object_kabupaten;
+	
+	$aPrivData2 = array();	
+	$aPrivData2['repeat'] = $repeat;
+	$aPrivData2['sppt_tgl_terbit'] = $sppt_tgl_terbit;
+	$aPrivData2['sppt_tgl_cetak'] = $sppt_tgl_cetak;
+	$aPrivData2['op_luas_bumi'] = $op_luas_bumi;
+	$aPrivData2['op_luas_bangunan'] = $op_luas_bangunan;
+	$aPrivData2['op_kelas_bumi'] = $op_kelas_bumi;
+	$aPrivData2['op_kelas_bangunan'] = $op_kelas_bangunan;
+	$aPrivData2['op_njop_bumi'] = $op_njop_bumi;
+	$aPrivData2['op_njop_bangunan'] = $op_njop_bangunan;
+	$aPrivData2['op_njop'] = $op_njop;
+	$aPrivData2['op_njop_tkp'] = $op_njop_tkp;
+	$aPrivData2['op_njkp'] = $op_njkp;
+	
+	$aPrivData3 = array();
+	$aPrivData3['minor']= $minor;
+	$aPrivData3['total']= $total;
+	
+	$aPrivData3['type'] = $type;
+	$aPrivData3['amount'] = $value;
+	
+	//$sSTAN = c_nid();
+	//echo "stan".$sSTAN ."<br>";
+	$Req = new constructInqResponse();
+	$Req->SetComponentTmp('pan','85000');
+	$Req->SetComponentTmp('stan',$stan );
+	$Req->SetComponentTmp('dt',$due_date);
+	$Req->SetComponentTmp('rp',$total_amount);
+	$Req->SetComponentTmp('central_id',$sdata->cid);
+	$Req->SetComponentTmp('rc',"0000");
+	$Req->SetComponentTmp('ppid',$sdata->ppid);
+	$Req->SetComponentTmp('priv',$aPrivData);
+	$Req->SetComponentTmp('priv2',$aPrivData2);
+	$Req->SetComponentTmp('priv3',$aPrivData3);
+	
+	$Req->ConstructStream();
+	$sRequestStream = $Req->GetConstructedStream();
+	$stream = $sRequestStream;
+	//echo $sRequestStream."<br>"; 
+	return $OK;
+	
+}
+
+function doPayment($prm, &$arrValues) {
+	global $paymentDt,$host,$port,$timeOut,$DBLink;
+	$paymentDt = strftime("%Y%m%d%H%M%S",time());
+	$status = false;
+	if (createStreamInqResponse($prm->inqResp,$stream)){
+		//echo $stream;
+		//findStream($prm->inqResp,$streamX);
+		$inqRes = new pbbProtocolInquiryResponse($stream);
+		$inqRes->ExtractDataElement();
+		
+		if (isset($_REQUEST['v'])) {
+			echo "<br>---- INQUIRY RESPONSE ----";
+			echo "<pre>";
+			print_r($inqRes->dataElement);
+			echo "</pre>";
+			echo "---- END INQUIRY RESPONSE ----<br>";
+		}
+		
+		$Req = new pbbProtocolPaymentRequest();
+		   
+		$Req->SetComponentTmp('pan',$inqRes->dataElement['pan']);
+		$Req->SetComponentTmp('tran_amount',$prm->rp );
+		$Req->SetComponentTmp('stan',$inqRes->dataElement['stan']);
+		$Req->SetComponentTmp('dt',$paymentDt);
+		$Req->SetComponentTmp('bank_code',$inqRes->dataElement['bank_code']);
+		$Req->SetComponentTmp('central_id',$inqRes->dataElement['central_id']);
+		$Req->SetComponentTmp('ppid',$inqRes->dataElement['ppid']);
+		$Req->SetComponentTmp('priv',$inqRes->dataElement['priv']);
+		$Req->SetComponentTmp('priv2',$inqRes->dataElement['priv2']);
+		$Req->SetComponentTmp('priv3',$inqRes->dataElement['priv3']);
+			
+		$Req->ConstructStream();
+		$sRequestStream = $Req->GetConstructedStream();
+	
+		if (isset($_REQUEST['v'])) {
+			echo "---- PAYMENT REQUEST ----";
+			echo "<pre>";
+			print_r($Req);
+			echo "</pre>";
+			echo "---- END PAYMENT REQUEST ----<br>";
+		}
+		
+		$bOK = GetRemoteResponse($host,$port,$timeOut, $sRequestStream,$sResp);
+		
+		if ($bOK == 0) {
+			$Res = new pbbProtocolPaymentResponse($sResp);
+			$Res->ExtractDataElement();
+			
+		}
+		if (isset($_REQUEST['v'])) {
+			echo "---- PAYMENT RESPONSE ----";
+			echo "<pre>";
+			echo "sResp [".$sResp."]<br>";
+			print_r($Res->dataElement);
+			echo "</pre>";
+			echo "---- END PAYMENT RESPONSE ----<br>";	
+		}
+		if ($bOK == 0) {
+			if ($Res->dataElement['rc'] == '0000') {
+				$arrValues['result'] = true;
+				$arrValues['message'] = 'Payment Berhasil !';
+				$arrValues['swrefnum'] = $Res->dataElement['priv']['sw_refnum'];
+				$arrValues['COUNT'] = $Res->dataElement['priv']['total_amount']/(pow(10,$Res->dataElement['priv']['minor']));
+				$arrValues['TOTAL_ADM'] = $Res->dataElement['priv']['admin_fee']/(pow(10,$Res->dataElement['priv']['minor']));
+				$arrValues['printValue'] = printRequest($Res, $strHTML);
+				$arrValues['HtmlValue'] = $strHTML;
+				updateNtrial($Res->dataElement['priv']['sw_refnum']);
+			} else if ($Res->dataElement != null) {
+				if ($Res->dataElement['rc'] != '0000') {
+					$errMsg = new ErrorMessageMapper(0,LOG_FILENAME, $DBLink);
+					$msg = $errMsg->getMessage($Res->dataElement['mti'], intval($Res->dataElement['rc']));
+					$arrValues['result'] = false;
+					$arrValues['message'] = "Payment Gagal dengan kode error !\n".$msg;
+				}
+			}
+			$status = true;
+		}
+		return $status;
+	}
+}
+
+function doAdvice($prm, &$arrValues) {
+	global $paymentDt,$host,$port,$timeOut,$DBLink;
+	
+	$status = false;
+	$inqRes = new pbbProtocolInquiryResponse($prm->inqResp);
+	$inqRes->ExtractDataElement();
+	
+	$aOdeData = array();
+	$aOdeData['stan'] = $inqRes->dataElement['stan'];
+	$aOdeData['dt'] = $paymentDt;
+	$aOdeData['bank_code'] = $inqRes->dataElement['bank_code'];
+	
+	$Req = new pbbProtocolAdviceRequest();
+	   
+	$Req->SetComponentTmp('pan',$inqRes->dataElement['pan']);
+	$Req->SetComponentTmp('tran_amount',$prm->rp );
+	$Req->SetComponentTmp('stan',$inqRes->dataElement['stan']);
+	$Req->SetComponentTmp('dt',$paymentDt);
+	$Req->SetComponentTmp('bank_code',$inqRes->dataElement['bank_code']);
+	$Req->SetComponentTmp('central_id',$inqRes->dataElement['central_id']);
+	$Req->SetComponentTmp('ppid',$inqRes->dataElement['ppid']);
+	$Req->SetComponentTmp('priv',$inqRes->dataElement['priv']);
+	$Req->SetComponentTmp('priv2',$inqRes->dataElement['priv2']);
+	$Req->SetComponentTmp('ode',$aOdeData);
+	
+		
+	$Req->ConstructStream();
+	$sRequestStream = $Req->GetConstructedStream();
+
+	if (isset($_REQUEST['v'])) {
+		echo "---- advice REQUEST ----";
+		echo "<pre>";
+		print_r($Req);
+		echo "</pre>";
+		echo "---- END advice REQUEST ----<br>";
+	}
+	
+	$bOK = GetRemoteResponse($host,$port,$timeOut, $sRequestStream,$sResp);
+	
+	
+	if ($bOK == 0) {
+		$Res = new pbbbProtocoladviceResponse($sResp);
+		$Res->ExtractDataElement();
+	}
+	
+	if (isset($_REQUEST['v'])) {
+		echo "---- advice RESPONSE ----";
+		echo "<pre>";
+		echo "sResp [".$sResp."]<br>";
+		print_r($Res->dataElement);
+		echo "</pre>";
+		echo "---- END advice RESPONSE ----<br>";	
+	}
+	if ($bOK == 0) {
+		
+		if ($Res->dataElement['rc'] == '0000') {
+			$arrValues['message'] = "Payment Gagal, data sudah diadvice !\n Silahkan ulang Inquiry";
+			updateNtrial($Res->dataElement['priv']['sw_refnum']);
+		} else if ($Res->dataElement != null) {
+			if ($Res->dataElement['rc'] != '0000') {
+				$errMsg = new ErrorMessageMapper(0,LOG_FILENAME, $DBLink);
+				$msg = $errMsg->getMessage($Res->dataElement['mti'], intval($Res->dataElement['rc']));				
+				$arrValues['message'] = "Payment Gagal, data gagal diadvice dengan kode error !\n".$msg;
+			}
+		}
+		$arrValues['result'] = false;
+		$status = true;
+	}
+	return $status;
+}
+
+function getValuesForPrint(&$aTemplateValues,$value)
+{
+	global $tTime, $sdata,$User;
+	
+	
+	$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+	$PPIDInfo = $User->getPPIDInfo($sdata->ppid);
+	
+	$configCode = $sdata->ppid.".PP.pbb.PC.kabkot";
+	
+	$query = sprintf( "SELECT *	FROM c_registry	WHERE C_R_KEY LIKE '%s'", mysql_real_escape_string($configCode));
+	$result = mysqli_query($appDbLink, $query);
+	if ($row = mysqli_fetch_array($result)) {
+		if ($row['C_R_VALUE']==0) $kabkot = "Kabupaten";
+		if ($row['C_R_VALUE']==1) $kabkot = "Kota";
+	}
+	$date_time = $value['dt'];
+	$dt = mktime(substr($value['dt'],8,2), substr($value['dt'],10,2),substr($value['dt'],12,2),substr($value['dt'],4,2), substr($value['dt'],6,2), substr($value['dt'],0,4));
+	$aTemplateValues["OPERATOR"]= $sdata->uname;
+	$aTemplateValues["OPRNAME"]=$sdata->uname;
+	$aTemplateValues["PPID"] = $sdata->ppid;
+	$aTemplateValues["PPID_NAME"] = $PPIDInfo['NAMA'];
+	$aTemplateValues["TIMESTAMP"] = strftime("%Y-%m-%d %H:%M:%S");
+	$aTemplateValues["AREA_NAME"] = $value['priv']['area_name'];
+	$aTemplateValues["AREA_KABKOTA"]=$kabkot;
+	$aTemplateValues["AREA_KABKOTA_UPPER"]=strtoupper($kabkot);
+	$aTemplateValues["AREA_NAME_UPPER"]=strtoupper($value['priv']['area_name']);
+	$aTemplateValues["TAX_REFNUM"] = $value['priv']['tax_refnum'];
+	$aTemplateValues["PAY_REFNUM"] = $value['priv']['pay_refnum'];
+
+	$aTemplateValues["TGL_BAYAR"] = strftime("%d-%m-%Y", $dt);
+	$aTemplateValues["JAM_BAYAR"]= strftime("%H:%M:%S", $dt);
+	$aTemplateValues["TGLPRINT"] = strftime("%d-%m-%Y", $dt);
+	$aTemplateValues["JAMPRINT"]= strftime("%H:%M:%S", $dt);
+	$aTemplateValues["TRAN_DT"]= strftime("%d-%m-%Y %H:%M:%S", $dt);
+	
+	$aTemplateValues["SUBJECT_NAME"] = $value['priv']['subject_name'];
+	$aTemplateValues["NOPNPWP"] = substr($value['priv']['nop_npwp'],4);
+	$aTemplateValues["SUBJECT_ADDRESS"] = $value['priv']['subject_address'];
+	$aTemplateValues["SUBJECT_RT_RW"] = $value['priv']['subject_rt_rw'];
+	$aTemplateValues["OBJECT_ADDRESS"] = $value['priv']['object_kelurahan'];
+	$aTemplateValues["OBJECT_RT_RW"] = $value['priv']['object_rt_rw'];
+	
+	$aTemplateValues["SUBJECT_KELURAHAN"] = $value['priv']['subject_kelurahan'];
+	$aTemplateValues["SUBJECT_KECAMATAN"] = $value['priv']['subject_kecamatan'];
+	$aTemplateValues["OBJECT_KELURAHAN"] = $value['priv']['object_kelurahan'];
+	$aTemplateValues["OBJECT_KECAMATAN"] = $value['priv']['object_kecamatan'];
+
+	$aTemplateValues["SUBJECT_KABUPATEN"] = $value['priv']['subject_kabupaten'];
+	$aTemplateValues["SUBJECT_ZIP_POST"] = $value['priv']['subject_zip_post'];
+	$aTemplateValues["OBJECT_KABUPATEN"] = $value['priv']['object_kabupaten'];
+	$tot = ($value['priv']['collectible_bil']/(pow(10,$value['priv']['minor']))) + ($value['priv']['misc_bil']/(pow(10,$value['priv']['minor']))) + ($value['priv']['admin_fee']/(pow(10,$value['priv']['minor'])))+($value['priv']['penalty_fee']/(pow(10,$value['priv']['minor'])));	
+	$aTemplateValues["COLL_BILL_TEXT"] = number_format($value['priv']['collectible_bil']/(pow(10,$value['priv']['minor'])), 2, ',', '.');
+	$aTemplateValues["MISC_BILL_TEXT"] = number_format($value['priv']['misc_bil']/(pow(10,$value['priv']['minor'])), 2, ',', '.');
+	$aTemplateValues["ADMIN_FEE_TEXT"] = number_format($value['priv']['admin_fee'/(pow(10,$value['priv']['minor']))], 2, ',', '.');
+	$aTemplateValues["TRAN_AMOUNT_TEXT"] = number_format($value['priv']['collectible_bil']/(pow(10,$value['priv']['minor'])), 2, ',', '.');
+	$aTemplateValues["PENALTY_FEE_TEXT"] = number_format($value['priv']['penalty_fee']/(pow(10,$value['priv']['minor'])), 2, ',', '.');
+	$aTemplateValues["TOT_TRAN_AMOUNT_TEXT"] =number_format($tot, 2, ',', '.');
+	$aTemplateValues["TERBILANG"] = SayInIndonesian($tot);
+	
+	$dttgh = explode("-",$value['priv2']['sppt_tgl_terbit']);
+	$dt2 = mktime(0,0,0,$dttgh[1],$dttgh[2],$dttgh[0]);
+	$aTemplateValues["JTHTMP"] = strftime("%d-%m-%Y", $dt2);
+	//$aTemplateValues["THNTGH"] = strftime("%Y", $dt2);
+	$aTemplateValues["THNTGH"] = substr($value['priv']['nop_npwp'],0,4);
+	$aTemplateValues["INFO_TEXT"] = " ";
+	$aTemplateValues["INFO_TEXT2"] = " ";
+	$aTemplateValues["CETAK"] = "CA";
+	$aTemplateValues["NTRIAL"] = "";
+	$aTemplateValues["SREF"] = $value['priv']['sw_refnum'];
+	$aTemplateValues["SREF1"] = substr($value['priv']['sw_refnum'],0,18);
+	$aTemplateValues["SREF2"] = substr($value['priv']['sw_refnum'],18,18);	
+  return true;
+} // end of
+
+function printRequest($Res, &$strHTML) {
+	global $DBLink, $tTime, $modConfig, $sRootPath,$sdata;
+	
+	$idBiller = $Res->dataElement['priv']['billercode'].$Res->dataElement['pan'];
+	$sTemplateFile = $sRootPath.(($modConfig[$idBiller." print_template"] != "") ? $modConfig[$idBiller." print_template"] : "inc/report/template/pbb/pbb-receipt.xml");
+	SCANPayment_Pref_GetAllWithFilter($DBLink,$sdata->ppid.".PP.pbb.PC.print.%",$PPID_setting);
+	$driver=isset($PPID_setting[$sdata->ppid.".PP.pbb.PC.print.driver"])?$PPID_setting[$sdata->ppid.".PP.pbb.PC.print.driver"]:"epson";
+	
+	// echo $sTemplateFile;
+	$re = new reportEngine($sTemplateFile,$driver);
+	
+	if (GetValuesForPrint($aTemplateValue,$Res->dataElement))
+    {
+		if (isset($_REQUEST['v'])) {
+			echo "<pre>";
+			echo "TEMPLATE VALUE FOR PRINT<br>";
+			print_r($aTemplateValue);
+			echo "</pre>";
+		}
+		$re->ApplyTemplateValue($aTemplateValue);
+		if($driver=="other"){
+			//echo $driver;
+			$re->Print2OnpaysTXT($printValue);
+			$strTxt = $printValue;
+		}else{
+			$re->Print2TXT($printValue);
+			$strTxt = base64_encode($printValue);
+		}
+		$re->PrintHTML($strHTML);
+	
+    }
+	return $strTxt;
+} 
+
+$tTime = time();
+$paymentDt;
+
+$params = @isset($_REQUEST['req']) ? $_REQUEST['req'] : '';
+$p = base64_decode($params);
+$json = new Services_JSON();
+$prm = $json->decode($p);
+
+$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+$myConn = $User->GetDbConnectionFromApp($prm->ab);
+		
+if (isset($_REQUEST['v'])) {
+	echo "---- PARAMETER REQUEST ----";
+	echo "<pre>";
+	print_r($prm);
+	echo "</pre>";
+	echo "---- END PARAMETER REQUEST ----<br>";
+}
+		
+//$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+$Setting = new SCANCentralSetting(DEBUG, LOG_FILENAME, $DBLink);
+
+$appConfig = $Setting->GetAppConfigValueByKey($prm->appID,"PBB_");
+
+$host = isset($appConfig["PBB_HOST"])?$appConfig["PBB_HOST"]:"127.0.0.1";
+$port = isset($appConfig["PBB_PORT"])?$appConfig["PBB_PORT"]:"23599";
+$timeOut =  isset($appConfig["PBB_TIMEOUT"])?$appConfig["PBB_TIMEOUT"]:"120";
+$taxType = isset($appConfig["PBB_TAX_TYPE"])?$appConfig["PBB_TAX_TYPE"]:"0001";
+
+
+
+if (isset($_REQUEST['v'])) {
+	echo "---- MODULE CONFIG ----";
+	echo "<pre>";
+	print_r($modConfig);
+	echo "</pre>";
+	echo "---- END MODULE CONFIG ----<br>";
+}
+
+$arrValues = array();
+//print_r ($prm);
+if(stillInSession($DBLink,$json,$sdata)){
+	
+	if ($params) {
+		if (doPayment($prm, $arrValues)) {
+			
+		} else {			
+			if (doAdvice("2400", $prm, $arrValues)) {
+				//first advice
+				
+			} else if (doAdvice("2410", $prm, $arrValues)) {
+				//second advice
+			} else {
+				$arrValues['result'] = false;
+				$arrValues['message'] = "Payment Gagal dan Gagal melakukan advice !\n Silahkan melakukan pengecekan data";
+			}
+		}
+		 
+		// else if ($Res->dataElement==null) {
+			// if (advice($values)) {
+				// $arrValues = $values;
+			// } else if (advice($values)) {
+				// $arrValues = $values;
+			// } else  if(advice($values)) {
+				// $arrValues = $values;
+			// } else {
+				// $arrValues['result'] = false;
+				// $arrValues['message'] = 'Payment(Advice) Gagal dengan kode error !'.$msg;
+			// }
+		// }
+	}
+} else {
+	$arrValues['result'] = false;
+	$arrValues['message'] = "Payment Gagal dengan kode error !\n Invalid access. Silahkan lakukan login";
+}
+
+if (isset($_REQUEST['v'])) {
+	echo "---- RETURN VALUES ----";
+	echo "<pre>";
+	print_r($arrValues);
+	echo "</pre>";
+	echo "---- END RETURN VALUES ----<br>";	
+}
+
+$val = $json->encode($arrValues);
+//print_r($val);
+echo base64_encode($val);
+
+?>

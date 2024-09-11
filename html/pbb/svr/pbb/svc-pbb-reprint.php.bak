@@ -1,0 +1,253 @@
+<?php
+/* 
+ *  update ntrial
+ *  Author By budi.yuliaziz@vsi.co.id
+ */
+$sRootPath = str_replace('\\', '/', str_replace(DIRECTORY_SEPARATOR.'svr'.DIRECTORY_SEPARATOR.'pbb', '', dirname(__FILE__))).'/';
+require_once($sRootPath."inc/payment/ctools.php");
+require_once($sRootPath."inc/payment/comm-central.php");
+require_once($sRootPath."inc/payment/json.php");
+require_once($sRootPath."inc/payment/error-messages.php");
+require_once($sRootPath."inc/report/eng-report.php");
+require_once($sRootPath."inc/payment/inc-payment-c.php");
+require_once($sRootPath."inc/payment/inc-payment-db-c.php");
+require_once($sRootPath."inc/payment/prefs-payment.php");
+require_once($sRootPath."inc/payment/db-payment.php");
+require_once($sRootPath."inc/check-session.php");
+require_once($sRootPath."inc/central/user-central.php");
+require_once($sRootPath."inc/central/setting-central.php");
+require_once($sRootPath."inc/payment/nid.php");
+require_once($sRootPath."inc/payment/sayit.php");
+require_once($sRootPath."inc/pbb/pbb-lookup.php");
+
+function updateNtrial ($REFNUM) {
+	$mbOK = false;
+	global $myConn;
+	$arResult = LOOKUP_ALL_pbb($myConn);
+	if (!$arResult) {
+		return;
+	}
+	$LDBLink=null;
+	$LDBConn=null;
+	
+	$i = 0;
+	$lookDBLink=null;
+	$lookDBConn=null;
+	foreach ($arResult as $res) {
+		$resLookupId = $res["LOOK_ID"];
+		$resDbHost = $res["DB_HOST"];
+		$resDbUser = $res["DB_USER"];
+		$resDbPwd = $res["DB_PWD"];
+		$resDbName = $res["DB_NAME"];
+		$resDbTable = $res["DB_TABLE"];
+		// Payment related initialization
+		SCANPayment_ConnectToDB($lookDBLink, $lookDBConn, $resDbHost, $resDbUser, $resDbPwd, $resDbName,true);
+		if ($iErrCode != 0)
+		{
+		  $sErrMsg = 'FATAL ERROR: '.$sErrMsg;
+		  if (CTOOLS_IsInFlag(DEBUG, DEBUG_ERROR))
+			error_log ("[".strftime("%Y%m%d%H%M%S", time())."][".(basename(__FILE__)).":".__LINE__."] [ERROR] [$iErrCode] $sErrMsg\n", 3, LOG_FILENAME);
+		  exit(1);
+		}
+		
+		$sCond = " CSM_TM_SWITCH_REFNUM ='".$REFNUM."'";
+		
+		$sQ = "UPDATE ". $resDbTable ." SET CSM_TM_NTRIAL=CSM_TM_NTRIAL+1 WHERE ".$sCond;
+		//echo "$sQ  <br><br>";
+		$result = mysqli_query($lookDBLink, $sQ);
+		$mbOK = true;
+		SCANPayment_CloseDB($lookDBLink);
+	}
+	SCANPayment_CloseDB($LDBLink);
+	return $mbOK;
+}
+
+function executeCekStatusQuery($REFNUM=NULL,$ppid,$uid) {
+	global $iErrCode,$sErrMsg,$DBLink,$data,$myConn,$sRootPath,$sdata,$PPID_setting;
+	$Response = array();
+	$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+	$UserName=$User->GetUserName($uid);
+	$PPIDInfo=$User->getPPIDInfo($ppid);
+	$configCode = $ppid.".PP.pbb.PC.kabkot";
+	
+	$query = sprintf( "SELECT *	FROM c_registry	WHERE C_R_KEY LIKE '%s'", mysql_real_escape_string($configCode));
+	$resultkk = mysqli_query($myConn, $query);
+	
+	if ($rowkk = mysqli_fetch_array($resultkk)) {
+		if ($rowkk['C_R_VALUE']==0) $kabkot = "Kabupaten";
+		if ($rowkk['C_R_VALUE']==1) $kabkot = "Kota";
+	}
+	
+	$retval=null;
+	$arResult = LOOKUP_ALL_pbb($myConn);
+	if (!$arResult) {
+		return;
+	}
+	$LDBLink=null;
+	$LDBConn=null;
+	
+	$i = 0;
+	$lookDBLink=null;
+	$lookDBConn=null;
+		
+	foreach ($arResult as $res) {
+		$resLookupId = $res["LOOK_ID"];
+		$resDbHost = $res["DB_HOST"];
+		$resDbUser = $res["DB_USER"];
+		$resDbPwd = $res["DB_PWD"];
+		$resDbName = $res["DB_NAME"];
+		$resDbTable = $res["DB_TABLE"];
+		// Payment related initialization
+		SCANPayment_ConnectToDB($lookDBLink, $lookDBConn, $resDbHost, $resDbUser, $resDbPwd, $resDbName,true);
+		if ($iErrCode != 0)
+		{
+		  $sErrMsg = 'FATAL ERROR: '.$sErrMsg;
+		  //echo $sErrMsg;
+		  if (CTOOLS_IsInFlag(DEBUG, DEBUG_ERROR))
+			error_log ("[".strftime("%Y%m%d%H%M%S", time())."][".(basename(__FILE__)).":".__LINE__."] [ERROR] [$iErrCode] $sErrMsg\n", 3, LOG_FILENAME);
+		  exit(1);
+		}
+			
+		$sCond = " CSM_TM_SWITCH_REFNUM ='".$REFNUM."'";
+		$sQ = "select * from ";
+		$sQ .= $resDbTable ." WHERE ".$sCond;
+		//echo  $sQ;
+		$result = mysqli_query($lookDBLink, $sQ);
+		
+		if($result){
+			$nRes = mysqli_num_rows($result);
+			$nRecord = $nRes;
+			
+			if ($nRes > 0)
+			{
+			  $i = 0;
+			
+			 // $Response['totalrow'] = $nRes;
+			  while($row = mysqli_fetch_array($result, MYSQL_ASSOC))
+			  {	
+				//var_dump($row);
+				$Response["OPERATOR"]= $sdata->uname;
+				$Response["OPRNAME"]= $sdata->uname;
+				$Response["PPID"] = $sdata->ppid; 
+				$Response["PPID_NAME"] = $PPIDInfo['NAMA'];
+				$Response["TIMESTAMP"] = strftime("%Y-%m-%d %H:%M:%S");
+				$Response["AREA_NAME"] = $row['CSM_TM_AREA_NAME'];
+				$Response["AREA_KABKOTA"]=$kabkot;
+				$Response["AREA_KABKOTA_UPPER"]=strtoupper($kabkot);
+				$Response["AREA_NAME_UPPER"]=strtoupper($row['CSM_TM_AREA_NAME']);
+				$Response["TAX_REFNUM"] =$row['CSM_TM_TAX_REFNUM'];
+				$Response["PAY_REFNUM"] = $row['CSM_TM_REFNUM'];
+				$tdt = trim($row['CSM_TM_TRAN_DT']);
+				//2010 11 25 154724
+				$dt = mktime(substr($tdt,8,2), substr($tdt,10,2),substr($tdt,12,2),substr($tdt,4,2), substr($tdt,6,2), substr($tdt,0,4));
+
+				$Response["TGL_BAYAR"] = strftime("%d-%m-%Y", $dt);
+				$Response["JAM_BAYAR"]= strftime("%H:%M:%S", $dt);
+				$Response["TRAN_DT"]= strftime("%d-%m-%Y %H:%M:%S", $dt);
+				$Response["JAMPRINT"]= strftime("%d-%m-%Y");
+				$Response["TGLPRINT"]= strftime("%H:%M:%S");
+				
+				$dttgh = explode("-",trim($row['CSM_TM_SPPT_TGLTERBIT']));
+				$dt2 = mktime(0,0,0,$dttgh[1],$dttgh[2],$dttgh[0]);
+				$Response["JTHTMP"] = strftime("%d-%m-%Y", $dt2);
+				$Response["THNTGH"] = strftime("%Y", $dt2);
+				
+				$Response["SUBJECT_NAME"] =  trim($row['CSM_TM_SUBJECT_NAME']);
+				$Response["NOPNPWP"] = $row['CSM_TM_NOP_NPWP'];
+				$Response["SUBJECT_ADDRESS"] =  trim($row['CSM_TM_SUBJECT_ADDRESS']);
+				$Response["SUBJECT_RT_RW"] =  trim($row['CSM_TM_SUBJECT_RT_RW']);
+				$Response["OBJECT_ADDRESS"] =  trim($row['CSM_TM_OBJECT_ADDRESS']);
+				$Response["OBJECT_RT_RW"] =  trim($row['CSM_TM_OBJECT_RT_RW']);
+				
+				$Response["SUBJECT_KELURAHAN"] =  trim($row['CSM_TM_SUBJECT_KELURAHAN']);
+				$Response["SUBJECT_KECAMATAN"] =  trim($row['CSM_TM_SUBJECT_KECAMATAN']);
+				$Response["OBJECT_KELURAHAN"] =  trim($row['CSM_TM_OBJECT_KELURAHAN']);
+				$Response["OBJECT_KECAMATAN"] =  trim($row['CSM_TM_OBJECT_KECAMATAN']);
+			 
+				$Response["SUBJECT_KABUPATEN"] =  trim($row['CSM_TM_SUBJECT_KABUPATEN']);
+				$Response["SUBJECT_ZIP_POST"] =  trim($row['CSM_TM_SUBJECT_ZIP_POST']);
+				$Response["OBJECT_KABUPATEN"] =  trim($row['CSM_TM_OBJECT_KABUPATEN']);
+				$tot =  $row['CSM_TM_COLLECTIVE_AMOUNT']/(pow(10,$row['CSM_TM_MINOR_48'])) + $row['CSM_TM_MISC_AMOUNT']/(pow(10,$row['CSM_TM_MINOR_48'])) +$row['CSM_TM_PENALTY_FEE']/(pow(10,$row['CSM_TM_MINOR_48'])) +  $row['CSM_TM_ADMIN_FEE']/(pow(10,$row['CSM_TM_MINOR_48']));	
+				$Response["TRAN_AMOUNT_TEXT"] = number_format($row['CSM_TM_COLLECTIVE_AMOUNT']/(pow(10,$row['CSM_TM_MINOR_48'])), 2, ',', '.');
+				$Response["MISC_BILL_TEXT"] = number_format($row['CSM_TM_MISC_AMOUNT']/(pow(10,$row['CSM_TM_MINOR_48'])), 2, ',', '.');
+				$Response["ADMIN_FEE_TEXT"] = number_format($row['CSM_TM_ADMIN_FEE']/(pow(10,$row['CSM_TM_MINOR_48'])), 2, ',', '.');
+				$Response["PENALTY_FEE_TEXT"] = number_format($row['CSM_TM_PENALTY_FEE']/(pow(10,$row['CSM_TM_MINOR_48'])), 2, ',', '.');
+				$Response["TOT_TRAN_AMOUNT_TEXT"] =number_format($tot, 2, ',', '.');
+				$Response["TERBILANG"] = SayInIndonesian($tot);
+				$Response["FLAG"] = $row['CSM_TM_FLAG'];
+				$Response["INFO_TEXT"] = " ";
+				$Response["INFO_TEXT2"] = " ";
+				
+				$dttgh = $row['CSM_TM_DUE_DATE'];
+				$dt2 = mktime(0,0,0,substr($dttgh,4,2),substr($dttgh,6,2),substr($dttgh,0,4));
+				$Response["JTHTMP"] = strftime("%d-%m-%Y", $dt2);
+				$Response["THNTGH"] = strftime("%Y", $dt2);
+				$Response["SREF"] = $row['CSM_TM_SWITCH_REFNUM'];
+				$Response["SREF1"] = substr($row['CSM_TM_SWITCH_REFNUM'],0,18);
+				$Response["SREF2"] = substr($row['CSM_TM_SWITCH_REFNUM'],18,18);	
+				
+				if ($row['CSM_TM_NTRIAL']==0) {
+					$Response["CETAK"] = "CA";
+					$Response["NTRIAL"] = $row['CSM_TM_NTRIAL'];
+				} else {
+					$Response["CETAK"] = "CU-";
+					$Response["NTRIAL"] = $row['CSM_TM_NTRIAL']+1;
+				}
+				
+			  }
+			  //print_r($Response);
+			
+				mysqli_free_result($result);
+				
+				//$sTemplateFile = str_replace(DIRECTORY_SEPARATOR.'function'.DIRECTORY_SEPARATOR.'bphtb', '', dirname(__FILE__)).DIRECTORY_SEPARATOR."inc".DIRECTORY_SEPARATOR."report".DIRECTORY_SEPARATOR."template".DIRECTORY_SEPARATOR."bphtb".DIRECTORY_SEPARATOR."ssb-receipt.xml";
+				$driver=isset($PPID_setting[$sdata->ppid.".PP.pbb.PC.print.driver"])?$PPID_setting[$sdata->ppid.".PP.pbb.PC.print.driver"]:"epson";
+				$sTemplateFile = $sRootPath.(($modConfig[$idBiller." print_template"] != "") ? $modConfig[$idBiller." print_template"] : "inc/report/template/pbb/pbb-receipt.xml");
+				//var_dump( $PPID_setting);;
+				$re = new reportEngine($sTemplateFile,$driver);	
+				$re->ApplyTemplateValue($Response);
+				if($driver=="other"){
+					//echo $driver;
+					$re->Print2OnpaysTXT($printValue);
+					$strTXT = $printValue;
+				}else{
+					$re->Print2TXT($printValue);
+					$strTXT = base64_encode($printValue);
+				}
+				$re->PrintHTML($strHTML);
+			}
+		} else {
+			echo mysqli_error($DBLink);
+		}
+		SCANPayment_CloseDB($lookDBLink);
+	}
+	SCANPayment_CloseDB($LDBLink);
+	return $strTXT;
+}
+
+$params = @isset($_REQUEST['q']) ? $_REQUEST['q'] : '';
+$p = base64_decode($params);
+$json = new Services_JSON();
+$prm = $json->decode($p);
+SCANPayment_ConnectToDB($DBLink, $DBConn, ONPAYS_DBHOST, ONPAYS_DBUSER, ONPAYS_DBPWD, ONPAYS_DBNAME,true);
+$User = new SCANCentralUser(DEBUG, LOG_DMS_FILENAME, $DBLink);
+$myConn = $User->GetDbConnectionFromApp($prm->a);
+if (stillInSession($DBLink,$json,$sdata)) {
+	SCANPayment_Pref_GetAllWithFilter($DBLink,$sdata->ppid.".PP.pbb.PC.print.%",$PPID_setting);				
+	if ($prm->a) {
+		$arrValues['result'] = false;
+		
+		if (updateNtrial($prm->refnum)){
+			
+				$arrValues['result'] = true;
+				$arrValues['dataprint'] = executeCekStatusQuery($prm->refnum,$prm->p,$prm->u);
+			
+		}
+	}
+
+
+
+	$val = $json->encode($arrValues);
+	//echo $val;
+	echo base64_encode($val);
+}
+?>

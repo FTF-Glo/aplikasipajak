@@ -1,0 +1,38 @@
+#docker-compose configured by irsal abu aisyah
+
+services:
+  apache:
+    image: apache2-alfatax:v5.0
+    container_name: apache_pesibar
+    restart: "always"
+    volumes:
+      - ./html:/var/www/html
+      - ./apache-config/sites-available:/etc/apache2/sites-available
+      - ./apache-config/port.conf:/etc/apache2/port.conf
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./home:/home
+    ports:
+      - "2001:8081"
+      - "2002:8082"
+      - "2003:8083"
+      - "2004:8084"
+      - "27009:27008"
+    entrypoint: /entrypoint.sh
+  db:
+    image: mysql:5.7.42-debian
+    container_name: db_pesibar
+    restart: "always"
+    environment:
+      MYSQL_ROOT_PASSWORD: pajak@2024
+      MYSQL_DATABASE: 9pajak
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user@2024
+    volumes:
+      - ./db_data:/var/lib/mysql
+      - ./db_log:/var/log/mysql
+      - ./local_db:/data
+      - ./mysql-config/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db-init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3309:3306"
+    command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_ZERO_DATE,NO_ZERO_IN_DATE,NO_AUTO_CREATE_USER" --lower_case_table_names=1

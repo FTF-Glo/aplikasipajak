@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://ebdesk.com/reporting/template/report.xsd" length="90" width="80" docname="inquiry"
+lmargin="2" rmargin="83" draftmode="true" pagerow="38" firstpagerow="30">
+
+<header>
+	<line>
+		<item repeat="0" center="0" rpad="45" lpad="0" text="Bank BJB" italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="45" text="#OPERATOR#"      italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="45" lpad="0" text="TANGGAL : #TGL#"     italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="45" text="#PP_NAME# (#PP_ID#)" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="90" text="#PP_ADDRESS#" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="90" text="#PP_REGION#" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="90" lpad="0" text="-" italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>	
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="NAMA KOLEKTIF    : #NAMA#"        italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   "JML. ANGGOTA  : #JML_ANGGOTA#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="DESKRIPSI        : #DESKRIPSI#"   italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   "SUKSES INQ    : #SUKSES_INQ#"  italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="KONTAK/TELPON    : #KONTAK#/#TELEPON#"      italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   "SUKSES PAY    : #SUKSES_PAY#"  italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="JML. DIBAYAR     : #SUKSES_BLN_PAY# dari #SUKSES_BLN#"     italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   "TOTAL INQUIRY : #TOTAL_INQ#"   italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="TERAKHIR INQUIRY : #LAST_INQ#"    italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   "TOTAL PAYMENT : #TOTAL_PAY#"   italic="false" size="12" bold="true"  font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="52" lpad="0" text="TERAKHIR BAYAR   : #LAST_PAY#"    italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text=   " " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line/>
+	<line/>
+	<line/>
+	<line/>
+	<line>
+		<item repeat="90" center="0" rpad="0" lpad="0" text="=" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="3"  rpad="0"  lpad="0"  text=" NO"           italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0"  rpad="20" lpad="0"  text=" ID PELANGGAN" italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="25" rpad="0"  lpad="0"  text=" NAMA"         italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="24" rpad="0"  lpad="0"  text=" TAHUN"  italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="16" rpad="0"  lpad="0"  text=" TAGIHAN"      italic="false" size="12" bold="true" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad=""  lpad="16"  text=" STATUS"       italic="false" size="12" bold="true" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="90" center="0" rpad="0" lpad="0" text="=" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line/>
+</header>
+<body>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="3" text="#REC#"           italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="15" lpad="0" text=" #CJM_SUBID#"      italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="25" lpad="0" text=" #CJM_SUBNAME#"    italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="8" lpad="0" text="#CJM_BILL_PERIOD#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="13" text=" #CJM_TOTAL_PAY#"  italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="17" rpad="0" lpad="0" text=" #STATUS#"         italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line/>
+</body>
+<footer>
+		<line>
+			<item repeat="90" center="0" rpad="90" lpad="0" text="=" italic="false" size="12" bold="false" font="0" underline="false"/>
+		</line>
+		<line>
+			<item repeat="0" center="0" rpad="4" lpad="0" text="hal: " italic="false" size="12" bold="true" font="0" underline="false"/>
+			<item repeat="0" center="0" rpad="0" lpad="4" text="#PAGENO#" italic="false" size="12" bold="true" font="0" underline="false"/>
+			<item repeat="0" center="0" rpad="6" lpad="0" text=" dari " italic="false" size="12" bold="true" font="0" underline="false"/>
+			<item repeat="0" center="0" rpad="0" lpad="4" text="#PAGECOUNT#" italic="false" size="12" bold="true" font="0" underline="false"/>
+			<item repeat="0" center="0" rpad="0" lpad="71" text="#CURRENTDATE#" italic="false" size="12" bold="true" font="0" underline="false"/>
+		</line>
+		<line/>
+		<line/>
+	</footer>
+</tns:report>

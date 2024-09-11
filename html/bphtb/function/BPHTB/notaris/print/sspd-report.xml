@@ -1,0 +1,228 @@
+<!-- 
+ *  Print SSPD - BPHTB
+ *  Author By ardi@vsi.co.id
+ *  06-12-2016
+ *
+-->
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="45" docname="struk" lmargin="0" rmargin="0" draftmode="true" pagewidth="20" >
+	<!--hal.9-->
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	
+	<!--nama wp-->
+	<line>
+	    <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="36" bold="false" font="2" underline="false"/>
+		<item repeat="0" space="characterSpace" center="0" rpad="0" lpad="0" text="#CPM_WP_NAMA#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--npwpd-->
+	<line>
+	    <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" space="characterSpace" center="0" rpad="0" lpad="0" text="#CPM_WP_NPWP#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--alamat wp-->
+	<line>
+	    <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="50" lpad="0" text="#CPM_WP_ALAMAT#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--kelurahan-->
+	<line>
+	    <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="26" lpad="0" text="#CPM_WP_KELURAHAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--RT/RW-->
+		<item repeat="0" center="0" rpad="22" lpad="0" text="#CPM_WP_RT#/#CPM_WP_RW#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--kecamatan-->
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_WP_KECAMATAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--kota-->
+	<line>
+	    <item repeat="0" center="0" rpad="19" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="48" lpad="0" text="#CPM_WP_KABUPATEN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--kodepos-->
+		<item repeat="0" space="characterSpace" center="0" rpad="0" lpad="0" text="#CPM_WP_KODEPOS#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!-- separator --> 
+	<!--nop-->
+	<line>
+	    <item repeat="0" center="0" rpad="25" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" space="characterSpace" center="0" rpad="0" lpad="0" text="#CPM_OP_NOMOR#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--letah tanah dan atau bangunan op-->
+	<line>
+	    <item repeat="0" center="0" rpad="25" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="50" lpad="0" text="#CPM_OP_LETAK#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--kelurahan op-->
+	<line>
+	    <item repeat="0" center="0" rpad="25" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="33" lpad="0" text="#CPM_OP_KELURAHAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--rt/rw-->
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_OP_RT#/#CPM_OP_RW#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--kecamatan op-->
+	<line>
+	    <item repeat="0" center="0" rpad="25" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="50" lpad="0" text="#CPM_OP_KECAMATAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!-- separator --> 
+	
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="21" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <!--luas bumi-->
+		<item repeat="0" center="0" rpad="20" lpad="0" text="#CPM_OP_LUAS_TANAH#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--njop pbb bumi -->
+		<item repeat="0" center="0" rpad="18" lpad="0" text="#CPM_OP_NJOP_TANAH#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--luas x njop pbb bumi -->
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#CPM_OP_LUAS_NJOP_TANAH#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="21" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <!--luas bangunan-->
+		<item repeat="0" center="0" rpad="20" lpad="0" text="#CPM_OP_LUAS_BANGUN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--njop pbb bangunan -->
+		<item repeat="0" center="0" rpad="18" lpad="0" text="#CPM_OP_NJOP_BANGUN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--luas x njop pbb bangunan -->
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#CPM_OP_LUAS_NJOP_BANGUN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="21" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="20" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="18" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--total -->
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#CPM_OP_LUAS_NJOP_TANAH_BANGUN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line ltype="smallspace"></line>
+	
+	<line>
+	    <item repeat="0" center="0" rpad="21" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="20" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<item repeat="0" center="0" rpad="18" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+		<!--Rp total -->
+		<item repeat="0" center="0" rpad="15" lpad="0" text="#CPM_OP_HARGA#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--jenis perolehan htb -->
+	<line>
+	    <item repeat="0" center="0" rpad="31" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" space="characterSpace" center="0" rpad="0" lpad="0" text="#CPM_OP_JENIS_HAK#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--no sertifikat -->
+	<line>
+	    <item repeat="0" center="0" rpad="17" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_OP_NMR_SERTIFIKAT#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	
+	<!--c.1 -->
+	<line>
+	    <item repeat="0" center="0" rpad="66" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_OP_NPOP#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--c.2 -->
+	<line>
+	    <item repeat="0" center="0" rpad="66" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_OP_NPOPTKP#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--c.3 -->
+	<line>
+	    <item repeat="0" center="0" rpad="66" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#C3#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--c.4 -->
+	<line>
+	    <item repeat="0" center="0" rpad="66" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#C4#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line></line>
+	
+	<!--d.a -->
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#DA#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--d.b -->
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#DB#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="42" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <!-- nomor -->
+	    <item repeat="0" center="0" rpad="24" lpad="0" text="#CPM_PAYMENT_TIPE_SURAT_NOMOR#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <!-- tanggal -->
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_PAYMENT_TIPE_SURAT_TANGGAL#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--d.c -->
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="30" lpad="0" text="#DC#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <!-- persen pengurangan -->
+	    <item repeat="0" space="characterSpace" center="0" rpad="12" lpad="0" text="#CPM_PAYMENT_TIPE_PENGURANGAN#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_PAYMENT_TIPE_KHD_NOMOR#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<!--d.d -->
+	<line ltype="perhitungan">
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="5" lpad="0" text="#DD#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#CPM_PAYMENT_TIPE_OTHER#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	</line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	
+	<!--jumlah yang disetor -->
+	<line>
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="36" lpad="0" text="#JUMLAH_DISETOR_ANGKA#" italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <!--dengan huruf -->
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#JUMLAH_DISETOR_TERBILANG1#" italic="false" size="20" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line>
+	    <item repeat="0" center="0" rpad="5" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="0" rpad="36" lpad="0" text=" " italic="false" size="12" bold="false" font="2" underline="false"/>
+	    <!--dengan huruf -->
+	    <item repeat="0" center="0" rpad="0" lpad="0" text="#JUMLAH_DISETOR_TERBILANG2#" italic="false" size="20" bold="false" font="2" underline="false"/>
+	</line>
+	
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line><item repeat="0" center="0" rpad="0" lpad="0" text="" italic="false" size="12" bold="false" font="2" underline="false"/></line>
+	<line>
+	    <item repeat="0" center="0" rpad="43" lpad="0" text=" " italic="false" size="32" bold="false" font="2" underline="false"/>
+	    <item repeat="0" center="64" rpad="0" lpad="0" text="#NAMA_PJB_PENGESAH#" italic="false" size="20" bold="false" font="4" underline="false"/>
+	</line>
+	
+</tns:report>

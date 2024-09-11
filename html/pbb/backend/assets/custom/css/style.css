@@ -1,0 +1,58 @@
+.c-pri{color:#cda300;}
+.c-sec{color:#455727;}
+.c-light{color:#fff}
+.bg-dark-gray{background:#cdcdcd;}
+.bg-gray{background:#eaeaea;}
+img{width:100%;height:auto;}
+.btn-primary{background-color:#cda300 !important;border:none;}
+.btn-primary:hover{background-color:#455727 !important;}
+.btn-secondary{background-color:#929c80; border:none}
+.btn-icon{background:#fff; color:#cda300; border:1px solid #848a7b; width:30px; height:30px; padding:6px; margin-bottom:2px;}
+.btn-icon:hover{background:#cdcdcd}
+.btn-icon-text{background:#fff; border:1px solid #999;  padding:8px}
+.btn-icon-text:hover{background:#cdcdcd}
+.btn-icon:disabled{color:#fff; background:#cdcdcd; border-color:#cdcdcd}
+
+.btn-nav{background:#eee; color:#cda300; border:none; width:30px; height:30px; padding:6px; margin-bottom:2px;}
+.btn-nav:hover{background:#cdcdcd}
+.btn-nav-text{background:#fff; border:none;  padding:8px}
+.btn-nav-text:hover{background:#cdcdcd}
+.btn-nav:disabled{color:#fff; background:#cdcdcd; border-color:#cdcdcd}
+
+.card-header .heading-elements a.btn, .card-header .heading-elements-toggle a.btn{padding:0.75rem 1rem;}
+.mt-go{margin-top:28px;}
+.pagination .page-item.active .page-link{background-color:#cdcdcd;border-color:#eaeaea}
+.pagination li a{border:1px solid #efefef !important;}
+.dataTables_info{color:#999;}
+.dataTables_length select{height:33px !important;}
+.dataTables_length{margin-top:14px;}
+table thead th{border-bottom:1px solid #eaeaea !important;}
+.menu-right{text-align:right;}
+.bor-bottom{border-bottom:1px solid #eee;}
+.table tbody tr td{border-top:none}
+.form-section{background:#eee; padding:10px; border-bottom:2px solid #cdcdcd !important;}
+.table-hover tbody tr:hover{background:#eaeaea;}
+.dataTables_filter input{border:1px solid #cdcdcd; background:#eee;}
+.dataTables_length select{border:1px solid #cdcdcd; background:#eee;}
+.dataTables_filter label, .dataTables_length label{color:#848a7b}
+.table-select tr td{
+    cursor: pointer;
+}
+
+.table-sm tr td{
+    font-size:0.9rem;
+    padding:5px !important;
+}
+
+@media only screen and (max-width: 600px) {
+    .menu-right{
+        text-align:center;
+    }
+}
+
+.picker__holder{
+    z-index:999999;
+    margin-top:-70px;
+}
+
+.main-dash{height:120px;}

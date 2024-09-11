@@ -1,0 +1,39 @@
+  <?php
+	$sRootPath = str_replace('\\', '/', str_replace(DIRECTORY_SEPARATOR.'view', '', dirname(__FILE__))).'/';
+	require_once($sRootPath."inc/registrasi/inc-registrasi.php");
+	$arConfig=$User->GetAreaConfig($area);
+	$urlCetakTagihan=$arConfig["urlCetakTagihan"];
+    require_once "Mail.php";
+
+    $from = "getaufan@gmail.com";
+    $to = $email;
+    $subject = "Notifikasi Pendaftaran";
+    $body = "Selamat!\n\n User Account Anda telah dinotifikasi, disetujui oleh Admin. :-)\n\n Username : ".$userId."\n Password : ".$pwd."\n\n Terima kasih.";
+    $host = "ssl://smtp.gmail.com";
+    $port = "465";
+    $username = "getaufan@gmail.com";
+    $password = "septaufani";
+    $headers = array ('From' => $from,
+    'To' => $to,
+    'Subject' => $subject);
+
+    $smtp = Mail::factory('smtp',
+    array ('host' => $host,
+    'port' => $port,
+    'auth' => true,
+    'username' => $username,
+    'password' => $password));
+
+    $mail = $smtp->send($to, $headers, $body);
+
+    if (PEAR::isError($mail)) {
+
+    echo("<p>" . $mail->getMessage() . "</p>");
+
+    } else {
+
+    echo("<p>Email Notifikasi telah dikirimkan..</p>");
+
+    }
+
+    ?>

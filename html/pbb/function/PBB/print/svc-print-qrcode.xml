@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:report xmlns:tns="http://ebdesk.com/reporting/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ebdesk.com/reporting/template
+report.xsd" length="20" docname="struk" lmargin="0" rmargin="0" draftmode="true" pagewidth="60" >
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="68" text="#AKUN#" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	<line>		
+		<item repeat="0" center="0" rpad="0" lpad="68" text="#SPPT_TAHUN_PAJAK# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="28" text="#NOP# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="40" text="#SPPT_DOC_ID#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line><line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	
+		
+   <line>		
+		<item repeat="0" center="0" rpad="36"  lpad="36" text="#ALAMAT1A# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT1B# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>		
+		<item repeat="0" center="0" rpad="36"  lpad="36" text="#ALAMAT2A# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT2B#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="36" lpad="36" text="#ALAMAT3A# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT3B# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="36" lpad="36" text="#ALAMAT4A# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT4B#  " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+
+	<line>		
+		<item repeat="0" center="0" rpad="36"  lpad="36" text="#ALAMAT5A# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT5B# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>		
+		<item repeat="0" center="0" rpad="36"  lpad="36" text="#ALAMAT6A# "  italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#ALAMAT6B# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="14" lpad="0"  text="BUMI" 				italic="false" size="10" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7"  text="#OP_LUAS_BUMI#" 		italic="false" size="10" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="8"  text="#OP_KELAS_BUMI#" 		italic="false" size="10" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="17" text="#OP_NJOP_BUMI_M2#" 	italic="false" size="10" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="22" text="#OP_NJOP_BUMI#" 		italic="false" size="10" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="14" lpad="0"  text="BANGUNAN" 				italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7"  text="#OP_LUAS_BANGUNAN#" 		italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="8"  text="#OP_KELAS_BANGUNAN#" 		italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="17" text="#OP_NJOP_BANGUNAN_M2#" 	italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="22" text="#OP_NJOP_BANGUNAN#" 		italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	
+	<line>
+		<item repeat="0" center="0" rpad="12" lpad="12" text="#TITLE_BUMI_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="12" lpad="12" text="#OP_LUAS_BUMI_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="8"  lpad="8" text="#OP_KELAS_BUMI_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#OP_NJOP_BUMI_M2_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#OP_NJOP_BUMI_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="10" lpad="10" text="#TITLE_BANGUNAN_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="16" lpad="12" text="#OP_LUAS_BANGUNAN_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#OP_KELAS_BANGUNAN_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#OP_NJOP_BANGUNAN_M2_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#OP_NJOP_BANGUNAN_BER# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	
+	
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="69" text="#OP_NJOP# " italic="false" size="12" bold="false" font="0" underline="false"/>				
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="69" text="#OP_NJOPTKP# " italic="false" size="12" bold="false" font="0" underline="false"/>				
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="69" text="#OP_NJKP# " italic="false" size="12" bold="false" font="0" underline="false"/>				
+	</line>
+	<line><item repeat="0" center="0" rpad="0" lpad="69" text=" "/></line>
+	<line>
+		<!--<item repeat="0" center="0" rpad="30" lpad="5" text="TARIF" italic="false" size="12" bold="false" font="0" underline="false"/>-->
+		<item repeat="0" center="0" rpad="0" lpad="69" text="#OP_TARIF# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+        
+	<line>
+		<item repeat="0" center="0" rpad="24" lpad="29" text="#TITLE_PENGURANGAN1# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="#TITLE_PENGURANGAN2# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#SPPT_PBB_PENGURANGAN#" italic="false" size="12" bold="false" font="0" underline="false"/>						
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="24" lpad="29" text="#TITLE_SELISIH# " italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="30" lpad="0" text="#SELISIH# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	<line>		
+		<item repeat="0" center="0" rpad="0" lpad="68" text="#SPPT_PBB_HARUS_DIBAYAR#" italic="false" size="12" bold="false" font="0" underline="false"/>						
+	</line>
+	<line>		
+		<item repeat="0" center="0" rpad="0" lpad="0" text="#TERBILANG#" italic="false" size="12" bold="false" font="0" underline="false"/>						
+	</line>
+
+	<line></line>
+
+	<line>
+		<item repeat="0" center="0" rpad="24" lpad="65" text="#NAMA_KOTA#, #SPPT_TANGGAL_TERBIT# " italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line></line>
+	<line></line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #SPPT_TANGGAL_JATUH_TEMPO#" italic="false" size="12" bold="false" font="0" underline="false"/>		
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text=" #TEMPAT_PEMBAYARAN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="24" lpad="65" text=" #NAMA_PEJABAT_SK2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="64" text=" NIP.#NAMA_PEJABAT_SK2_NIP#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<!-- 
+	<line></line>
+	<line>
+		<item repeat="0" center="70" rpad="0"  lpad="0" text="PAJAK BUMI DAN BANGUNAN TERUTANG" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="5" text="TAHUN" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="10" text="POKOK" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="DENDA" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="JUMLAH" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="KETERANGAN" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="0" text="#TAHUN_1#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#POKOK_1#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#DENDA_1#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#JUMLAH_1#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="#KETERANGAN_1#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="5" text="#TAHUN_2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7" text="#POKOK_2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#DENDA_2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#JUMLAH_2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="#KETERANGAN_2#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="5" text="#TAHUN_3#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7" text="#POKOK_3#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#DENDA_3#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#JUMLAH_3#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="#KETERANGAN_3#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="5" text="#TAHUN_4#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7" text="#POKOK_4#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#DENDA_4#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#JUMLAH_4#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="#KETERANGAN_4#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0"  lpad="5" text="#TAHUN_5#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="7" text="#POKOK_5#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#DENDA_5#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="15" text="#JUMLAH_5#" italic="false" size="12" bold="false" font="0" underline="false"/>
+		<item repeat="0" center="0" rpad="0"  lpad="20" text="#KETERANGAN_5#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line> -->
+	<line>
+		<item repeat="0" center="100" rpad="0" lpad="100" text="" italic="false" size="10" bold="true" font="0" underline="false"/>		
+	</line>
+	
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="             #WP_NAMA#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="                    #OP_KECAMATAN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="                       #OP_KELURAHAN#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line></line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="             #NOP#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+	<line>
+		<item repeat="0" center="0" rpad="0" lpad="0" text="             #SPPT_TAHUN_PAJAK#/#SPPT_PBB_HARUS_DIBAYAR_TANPA_PADDING#" italic="false" size="12" bold="false" font="0" underline="false"/>
+	</line>
+</tns:report>
